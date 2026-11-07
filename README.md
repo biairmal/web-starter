@@ -28,6 +28,19 @@ pnpm check      # lint, typecheck, format check, unit tests (run before every PR
 pnpm format     # Prettier, writes files
 ```
 
+## API contract
+
+The identity API is described by `openapi/identity.yaml`, a copy of go-identity's `api/openapi.yaml`. `openapi/identity.source.json` records which commit it came from.
+
+```bash
+pnpm api:sync   # copy the spec from IDENTITY_REPO_PATH (default ../go-identity)
+pnpm api:gen    # regenerate src/lib/api/schema.d.ts
+pnpm api:check  # fails when the generated types are stale (part of pnpm check)
+pnpm mock       # Prism mock of identity on http://localhost:4010 (dynamic responses)
+```
+
+Import types from `src/lib/api/types.ts`, never from `schema.d.ts`.
+
 ## Layout
 
 ```text

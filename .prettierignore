@@ -5,3 +5,6 @@ pnpm-lock.yaml
 next-env.d.ts
 openapi/identity.yaml
 src/lib/api/schema.d.ts
+playwright-report
+test-results
+blob-report

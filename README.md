@@ -58,3 +58,13 @@ pnpm exec shadcn add <component>
 ```
 
 The config is in `components.json` (Radix base, Vega preset).
+
+## Testing
+
+```bash
+pnpm test       # unit and component tests (Vitest; jsdom for component tests)
+pnpm e2e:mock   # Playwright against the Prism mock and next dev (starts both)
+pnpm e2e:full   # Playwright against a real identity stack (set E2E_BASE_URL); no specs until F7.1
+```
+
+Unit tests and component tests use MSW fixtures from `tests/msw/handlers.ts`. Accessibility checks use `expectNoA11yViolations` from `tests/e2e/fixtures.ts`, which fails on critical and serious axe violations. `pnpm check` runs the unit and component tests; `pnpm e2e:mock` is a separate job in CI, because it needs a browser.

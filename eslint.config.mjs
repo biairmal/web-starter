@@ -117,6 +117,7 @@ const eslintConfig = [
       "next.config.ts",
       "vitest.config.mts",
       "postcss.config.mjs",
+      "playwright.config.ts",
       "eslint.config.mjs",
     ],
     rules: {
@@ -164,6 +165,13 @@ const eslintConfig = [
     // labels, such as the dialog "Close" text, are overridden through props in
     // F2.4 rather than rewritten here.
     files: ["src/components/ui/**/*.tsx"],
+    rules: {
+      "react/jsx-no-literals": "off",
+    },
+  },
+  {
+    // Test files use literal labels as fixtures. They are not user-facing copy.
+    files: ["tests/**/*.{ts,tsx}"],
     rules: {
       "react/jsx-no-literals": "off",
     },

@@ -114,12 +114,48 @@ const eslintConfig = [
       "**/default.tsx",
       "**/forbidden/**/*.tsx",
       "next.config.ts",
-      "vitest.config.ts",
+      "vitest.config.mts",
       "postcss.config.mjs",
       "eslint.config.mjs",
     ],
     rules: {
       "import/no-default-export": "off",
+    },
+  },
+  {
+    // Design tokens only (DESIGN_BRIEF 10.2): no raw hex colours and no
+    // Tailwind arbitrary values in components, features or app routes.
+    files: [
+      "src/components/**/*.{ts,tsx}",
+      "src/features/**/*.{ts,tsx}",
+      "src/app/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+          message:
+            "Raw hex colours are not allowed. Use a design token (src/app/tokens.css).",
+        },
+        {
+          selector: "TemplateElement[value.raw=/#[0-9a-fA-F]{3,8}\\b/]",
+          message:
+            "Raw hex colours are not allowed. Use a design token (src/app/tokens.css).",
+        },
+        {
+          selector:
+            "Literal[value=/(?:^|[\\s\"'`])(?:[^\\s\"'`]*:)?(?!(?:data|aria|group|peer|has|supports|not|in|max|min|nth|\\[)-)[a-z][a-z0-9-]*-\\[[^\\]]+\\]/]",
+          message:
+            "Tailwind arbitrary values are not allowed. Use a token or a scale class.",
+        },
+        {
+          selector:
+            "TemplateElement[value.raw=/(?:^|[\\s\"'`])(?:[^\\s\"'`]*:)?(?!(?:data|aria|group|peer|has|supports|not|in|max|min|nth|\\[)-)[a-z][a-z0-9-]*-\\[[^\\]]+\\]/]",
+          message:
+            "Tailwind arbitrary values are not allowed. Use a token or a scale class.",
+        },
+      ],
     },
   },
   {

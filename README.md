@@ -7,6 +7,16 @@ The reusable web app every client project starts from. Phase 2 adds the identity
 - Node.js 22 (`engines` allows 22 and newer; CI runs 22)
 - pnpm (version pinned in `package.json` `packageManager`)
 
+## Configuration
+
+Copy `.env.example` to `.env.local` and fill it in. The server checks every variable when it starts and names any that are missing or wrong. Generate a session key with:
+
+```bash
+openssl rand -base64 32
+```
+
+Branding lives in `src/config/brand.ts`, colours and spacing in `src/app/tokens.css`, and the font in `src/app/fonts.ts` with the file in `public/fonts/`. See `docs/DECISIONS.md` (F0.2) for how the design tokens map to Tailwind and shadcn.
+
 ## Commands
 
 ```bash

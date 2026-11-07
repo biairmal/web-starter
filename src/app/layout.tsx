@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { interVariable } from "@/app/fonts";
+import { brand } from "@/config/brand";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { themeInitScript } from "@/lib/theme";
 
-// Fonts (self-hosted Inter), theme and brand arrive in F0.2 (TRD 4.2, 4.3).
 export const metadata: Metadata = {
-  title: "web-starter",
+  title: brand.appName,
 };
 
 export default function RootLayout({
@@ -13,7 +15,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={interVariable.variable} suppressHydrationWarning>
+      <head>
+        {/* Sets data-theme before first paint. Gets a CSP nonce in F1.5. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: themeInitScript(brand.defaultTheme),
+          }}
+        />
+      </head>
       <body className="antialiased">
         <TooltipProvider>{children}</TooltipProvider>
       </body>

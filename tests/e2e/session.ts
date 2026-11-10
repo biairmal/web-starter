@@ -19,6 +19,8 @@ export type E2eClaims = TestClaims & {
   name?: string;
   /** The mock identity answers GET /v1/me with 401 for this token. */
   revoked?: boolean;
+  /** The mock identity answers GET /v1/me with 500 for this token. */
+  fail?: boolean;
 };
 
 function key(secret: string): Uint8Array {

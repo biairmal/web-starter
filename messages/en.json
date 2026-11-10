@@ -131,5 +131,26 @@
       "cancel": "Cancel",
       "typeToConfirm": "Type {text} to confirm"
     }
+  },
+  "publicFrame": {
+    "support": "Help: {email}",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "errorPages": {
+    "notFound": {
+      "title": "We couldn’t find that page",
+      "body": "The link may be old, or the page may have moved.",
+      "home": "Go to home"
+    },
+    "error": {
+      "title": "Something went wrong on our side",
+      "body": "Try again. If it keeps happening, contact {supportEmail} and quote the reference below.",
+      "reference": "Reference {reference}",
+      "copy": "Copy reference",
+      "copied": "Copied",
+      "retry": "Try again",
+      "home": "Go to home"
+    }
   }
 }

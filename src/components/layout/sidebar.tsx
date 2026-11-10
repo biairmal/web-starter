@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMe } from "@/components/auth/session-provider";
 import { UserMenu } from "@/components/layout/user-menu";
-import { brand } from "@/config/brand";
+import { Wordmark } from "@/components/layout/wordmark";
 import { type NavGroup, type NavItem, navItems } from "@/config/nav";
 import { type Tenancy, isVisible } from "@/lib/authz/can";
 import { cn } from "@/lib/utils";
@@ -39,35 +39,6 @@ export function isActivePath(pathname: string, href: string): boolean {
   return href === "/"
     ? pathname === "/"
     : pathname === href || pathname.startsWith(`${href}/`);
-}
-
-/** A client may leave the dark logo empty (brand.ts); the light one is used then. */
-const darkLogo: string = brand.logo.dark;
-
-export function Wordmark() {
-  return (
-    <Link
-      href="/"
-      className="inline-flex items-center rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element -- an SVG at its real size needs no optimisation */}
-      <img
-        src={brand.logo.light}
-        alt={brand.appName}
-        width={160}
-        height={28}
-        className="h-7 w-auto dark:hidden"
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element -- as above */}
-      <img
-        src={darkLogo || brand.logo.light}
-        alt={brand.appName}
-        width={160}
-        height={28}
-        className="hidden h-7 w-auto dark:block"
-      />
-    </Link>
-  );
 }
 
 export function SidebarContent({

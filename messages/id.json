@@ -131,5 +131,26 @@
       "cancel": "Batal",
       "typeToConfirm": "Ketik {text} untuk mengonfirmasi"
     }
+  },
+  "publicFrame": {
+    "support": "Bantuan: {email}",
+    "terms": "Ketentuan",
+    "privacy": "Privasi"
+  },
+  "errorPages": {
+    "notFound": {
+      "title": "Halaman itu tidak ditemukan",
+      "body": "Tautannya mungkin sudah lama, atau halamannya sudah dipindahkan.",
+      "home": "Ke beranda"
+    },
+    "error": {
+      "title": "Terjadi kesalahan di sisi kami",
+      "body": "Coba lagi. Jika terus terjadi, hubungi {supportEmail} dan sebutkan referensi di bawah.",
+      "reference": "Referensi {reference}",
+      "copy": "Salin referensi",
+      "copied": "Disalin",
+      "retry": "Coba lagi",
+      "home": "Ke beranda"
+    }
   }
 }

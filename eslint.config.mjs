@@ -114,6 +114,7 @@ const eslintConfig = [
       "**/template.tsx",
       "**/default.tsx",
       "**/forbidden/**/*.tsx",
+      "src/i18n/request.ts",
       "next.config.ts",
       "vitest.config.mts",
       "postcss.config.mjs",

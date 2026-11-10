@@ -22,7 +22,7 @@ Read this before changing code. The task list is `project-files/phase2/frontend/
    - Package manager is pnpm only. Do not commit `package-lock.json` or `yarn.lock`.
 5. **Definition of Done (every task):**
    - [ ] All "Acceptance" items pass.
-   - [ ] `pnpm check` is green (lint, type check, format check, unit and component tests; `i18n:check` joins once F2.1 adds messages).
+   - [ ] `pnpm check` is green (lint, type check, format check, API types check, i18n key check, unit and component tests).
    - [ ] `pnpm e2e:mock` is green if the task adds or changes a screen (from F0.4).
    - [ ] New screens have axe checks with no critical violations (from F0.4).
    - [ ] The task's row in the **Status** table of `IMPLEMENTATION_PLAN.md` is set to ✅ in the same PR.

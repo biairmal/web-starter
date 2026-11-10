@@ -14,6 +14,7 @@ export const PUBLIC_PAGES = [
   "/reset-password",
   "/invite",
   "/auth/callback",
+  "/auth/session-check",
   "/forbidden",
 ] as const;
 
@@ -50,6 +51,19 @@ export const RESTRICTED_ALLOWED = [
 
 export const CHANGE_PASSWORD_PATH = "/change-password";
 export const SIGN_IN_PATH = "/sign-in";
+
+/**
+ * Re-checks a session the server could not use, then returns to `next` or goes
+ * to sign-in (a route handler, because only those can change cookies).
+ */
+export const SESSION_CHECK_PATH = "/auth/session-check";
+
+/**
+ * Request header with the page's path and query, set by middleware, so Server
+ * Components can say where to return after signing in. Any value the browser
+ * sent is overwritten.
+ */
+export const REQUEST_PATH_HEADER = "x-request-path";
 
 function normalise(path: string): string {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;

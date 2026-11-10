@@ -50,5 +50,45 @@
       "unexpected": "Something went wrong. Try again."
     },
     "requestId": "Request ID {requestId}"
+  },
+  "nav": {
+    "label": "Main",
+    "groups": {
+      "admin": "Admin",
+      "platform": "Platform"
+    },
+    "items": {
+      "users": "Users"
+    }
+  },
+  "shell": {
+    "skipToContent": "Skip to content",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuTitle": "Menu"
+  },
+  "userMenu": {
+    "open": "Open account menu",
+    "account": "Account",
+    "security": "Security",
+    "theme": "Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "home": {
+    "signedIn": "You are signed in to {tenant}.",
+    "signedInWithRoles": "You are signed in to {tenant} as {roles}.",
+    "starter": {
+      "title": "This is where your app starts.",
+      "body": "Replace <code>src/app/(app)/page.tsx</code>. This card only shows in development."
+    }
+  },
+  "forbidden": {
+    "title": "You don’t have permission to view this",
+    "body": "Your role doesn’t include access to this page. Ask an admin if you need it.",
+    "home": "Go to home"
   }
 }

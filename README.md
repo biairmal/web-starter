@@ -54,7 +54,7 @@ The locale comes from the `{prefix}_locale` cookie, then `Accept-Language`, then
 ## Layout
 
 ```text
-src/app/          routes (App Router); placeholder home page until F2.3
+src/app/          routes (App Router); (app)/ is the signed-in shell
 src/components/ui shadcn/ui primitives (Radix base), owned by this repo
 src/lib/          shared helpers (utils for shadcn for now)
 ```
@@ -76,5 +76,7 @@ pnpm test       # unit and component tests (Vitest; jsdom for component tests)
 pnpm e2e:mock   # Playwright against the Prism mock and next dev (starts both)
 pnpm e2e:full   # Playwright against a real identity stack (set E2E_BASE_URL); no specs until F7.1
 ```
+
+The mock suite talks to `tests/e2e/mock-identity.mts`, which answers `GET /v1/me` from the test token's claims and passes everything else to Prism. Sign a test in with `signIn(context, { perms: ["users:read"] })` from `tests/e2e/session.ts`.
 
 Unit tests and component tests use MSW fixtures from `tests/msw/handlers.ts`. Accessibility checks use `expectNoA11yViolations` from `tests/e2e/fixtures.ts`, which fails on critical and serious axe violations. `pnpm check` runs the unit and component tests; `pnpm e2e:mock` is a separate job in CI, because it needs a browser.

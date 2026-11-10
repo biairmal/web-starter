@@ -7,5 +7,48 @@
         "id": "Bahasa Indonesia"
       }
     }
+  },
+  "errors": {
+    "reasons": {
+      "INVALID_CREDENTIALS": "Email atau kata sandi salah.",
+      "ACCOUNT_LOCKED": "Terlalu banyak percobaan. Coba lagi dalam {minutes, plural, other {# menit}}.",
+      "EMAIL_NOT_VERIFIED": "Verifikasi email Anda untuk masuk.",
+      "ACCOUNT_DISABLED": "Akun Anda telah dinonaktifkan. Hubungi {supportEmail}.",
+      "TENANT_SUSPENDED": "Tenant ini ditangguhkan. Hubungi {supportEmail}.",
+      "RATE_LIMITED": "Terlalu banyak permintaan. Coba lagi dalam {seconds, plural, other {# detik}}.",
+      "PASSWORD_POLICY": "Kata sandi ini tidak memenuhi aturan.",
+      "TOKEN_INVALID": "Tautan ini sudah kedaluwarsa atau sudah digunakan.",
+      "REGISTRATION_CLOSED": "Pendaftaran akun baru sedang ditutup.",
+      "PROVIDER_DISABLED": "Masuk dengan Google tidak selesai. Coba lagi atau gunakan kata sandi Anda.",
+      "OAUTH_STATE_INVALID": "Masuk dengan Google tidak selesai. Coba lagi atau gunakan kata sandi Anda.",
+      "OAUTH_EMAIL_UNVERIFIED": "Masuk dengan Google tidak selesai. Coba lagi atau gunakan kata sandi Anda.",
+      "OAUTH_DOMAIN_NOT_ALLOWED": "Masuk dengan Google tidak selesai. Coba lagi atau gunakan kata sandi Anda.",
+      "PERMISSION_NOT_HELD": "Anda tidak dapat memberikan izin yang tidak Anda miliki.",
+      "SELF_ESCALATION": "Anda tidak dapat menambah izin untuk diri sendiri.",
+      "SELF_ACTION": "Anda tidak dapat melakukan itu pada akun Anda sendiri.",
+      "LAST_ADMIN": "Tenant ini membutuhkan setidaknya satu admin.",
+      "SYSTEM_ROLE": "Peran sistem, dikelola oleh {appName}. Tidak dapat diubah.",
+      "SUPER_ADMIN_PROTECTED": "Super admin tidak dapat diubah.",
+      "ROLE_IN_USE": "Ada pengguna dengan peran ini. Menghapusnya akan mencabut semua akses yang diberikan peran ini.",
+      "LAST_SIGN_IN_METHOD": "Simpan setidaknya satu cara untuk masuk.",
+      "VERSION_CONFLICT": "Orang lain telah mengubah data ini. Muat ulang untuk melihat versinya.",
+      "DUPLICATE": "Nama itu sudah dipakai.",
+      "ALREADY_MEMBER": "Orang ini sudah menjadi anggota.",
+      "NOT_A_MEMBER": "Anda bukan lagi anggota tenant tersebut.",
+      "PASSWORD_CHANGE_REQUIRED": "Masuk lagi untuk membuat kata sandi baru.",
+      "REFRESH_REUSED": "Anda dikeluarkan demi keamanan akun Anda. Masuk untuk melanjutkan.",
+      "REFRESH_EXPIRED": "Sesi Anda telah berakhir. Masuk untuk melanjutkan.",
+      "TENANT_REQUIRED": "Masukkan tenant Anda, lalu lanjutkan dengan Google.",
+      "SESSION_ENDED": "Sesi Anda telah berakhir. Masuk untuk melanjutkan.",
+      "CSRF_FAILED": "Permintaan diblokir. Muat ulang halaman dan coba lagi.",
+      "NOT_ALLOWED": "Tindakan itu tidak tersedia.",
+      "UPSTREAM_UNAVAILABLE": "Terjadi kesalahan. Coba lagi."
+    },
+    "generic": {
+      "forbidden": "Anda tidak memiliki izin untuk melakukan itu.",
+      "unavailable": "Terjadi kesalahan. Coba lagi.",
+      "unexpected": "Terjadi kesalahan. Coba lagi."
+    },
+    "requestId": "ID permintaan {requestId}"
   }
 }

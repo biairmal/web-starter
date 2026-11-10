@@ -1,3 +1,7 @@
 allowBuilds:
   "@scarf/scarf": false
   esbuild: true
+  # Pulled in by next-intl's optional message extractor, which is not used.
+  # Both ship prebuilt binaries, so their install scripts are not needed.
+  "@parcel/watcher": false
+  "@swc/core": false

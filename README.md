@@ -24,7 +24,7 @@ pnpm install
 pnpm dev        # Next.js dev server with Turbopack, http://localhost:3000
 pnpm build      # production build
 pnpm start      # serve the production build
-pnpm check      # lint, typecheck, format check, unit tests (run before every PR)
+pnpm check      # lint, typecheck, format, API types, i18n keys, tests (run before every PR)
 pnpm format     # Prettier, writes files
 ```
 
@@ -40,6 +40,16 @@ pnpm mock       # Prism mock of identity on http://localhost:4010 (dynamic respo
 ```
 
 Import types from `src/lib/api/types.ts`, never from `schema.d.ts`.
+
+## Translations
+
+Every user-facing string is in `messages/en.json` (the source) and `messages/id.json`, keyed by feature (`auth.signIn.title`). Keys passed to `t()` are type-checked against `en.json`.
+
+```bash
+pnpm i18n:check # fails when a key is in one locale but not the other (part of pnpm check)
+```
+
+The locale comes from the `{prefix}_locale` cookie, then `Accept-Language`, then `NEXT_PUBLIC_DEFAULT_LOCALE`. There is no locale in the URL.
 
 ## Layout
 

@@ -12,7 +12,8 @@ import { MOCK_IDENTITY_PORT, PRISM_ORIGIN } from "./env.ts";
 //
 // - GET /v1/me: built from the claims of the fake access token (see
 //   tests/e2e/session.ts). A token with `revoked: true` gets a 401 without a
-//   reason, as identity sends for a revoked access token.
+//   reason, as identity sends for a revoked access token; ail: true gets
+//   a 500.
 // - POST /v1/auth/refresh: 401 REFRESH_REUSED, so a refresh ends the session.
 // - GET /v1/auth/config: password sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
@@ -25,6 +26,7 @@ type Claims = {
   sa?: boolean;
   name?: string;
   revoked?: boolean;
+  fail?: boolean;
 };
 
 function json(res: ServerResponse, status: number, body: unknown): void {
@@ -59,6 +61,10 @@ function claimsOf(req: IncomingMessage): Claims | undefined {
 }
 
 function me(res: ServerResponse, claims: Claims | undefined): void {
+  if (claims?.fail) {
+    json(res, 500, errorEnvelope("ERR_INTERNAL", "Something broke."));
+    return;
+  }
   if (!claims || claims.revoked) {
     json(res, 401, errorEnvelope("ERR_UNAUTHORIZED", "Invalid token."));
     return;

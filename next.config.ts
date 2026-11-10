@@ -32,6 +32,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // forbidden() renders forbidden.tsx with status 403 (requirePermission).
   experimental: { authInterrupts: true },
+  // The dev indicator would sit on the sidebar's user row (bottom left).
+  devIndicators: { position: "bottom-right" },
   headers() {
     return Promise.resolve([
       { source: "/:path*", headers: securityHeaders },

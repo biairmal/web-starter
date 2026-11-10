@@ -17,6 +17,9 @@ const testEnv = {
 
 export default defineConfig({
   plugins: [react()],
+  // Components that import CSS (global-error.tsx) need no styles in tests; an
+  // inline config stops Vite loading the Tailwind PostCSS plugin.
+  css: { postcss: { plugins: [] } },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

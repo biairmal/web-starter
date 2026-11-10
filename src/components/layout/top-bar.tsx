@@ -3,7 +3,8 @@
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { SidebarContent, Wordmark } from "@/components/layout/sidebar";
+import { SidebarContent } from "@/components/layout/sidebar";
+import { Wordmark } from "@/components/layout/wordmark";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,

@@ -29,9 +29,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Sets data-theme before first paint. */}
+        {/* Sets data-theme before first paint. Browsers hide a script's nonce
+            from the DOM, so hydration sees "" and would report a mismatch. */}
         <script
           nonce={nonce}
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: themeInitScript(brand.defaultTheme),
           }}

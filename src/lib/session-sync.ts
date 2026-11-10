@@ -35,10 +35,13 @@ export function signInUrlFor(message: SessionMessage, next: string): string {
 export function watchSessionMessages(deps: SessionSyncDeps): () => void {
   let pending: SessionMessage | null = null;
   let acting = false;
+  // Checked as well as removing the listeners, so a stopped watcher never acts
+  // even where an event target fails to remove a capture listener.
+  let stopped = false;
 
   const onAction = () => {
     const message = pending;
-    if (!message || acting) {
+    if (!message || acting || stopped) {
       return;
     }
     acting = true;
@@ -76,6 +79,7 @@ export function watchSessionMessages(deps: SessionSyncDeps): () => void {
   });
 
   return () => {
+    stopped = true;
     unsubscribe();
     stopListening();
   };

@@ -45,6 +45,14 @@
   --color-active: var(--active);
   --color-raised: var(--raised);
   --color-rule: var(--rule);
+  --color-pill-positive: var(--pill-positive-bg);
+  --color-pill-positive-ink: var(--pill-positive-ink);
+  --color-pill-negative: var(--pill-negative-bg);
+  --color-pill-negative-ink: var(--pill-negative-ink);
+  --color-pill-warning: var(--pill-warning-bg);
+  --color-pill-warning-ink: var(--pill-warning-ink);
+  --color-pill-neutral: var(--pill-neutral-bg);
+  --color-pill-neutral-ink: var(--pill-neutral-ink);
 
   /* Shell dimensions (DESIGN_BRIEF 5.2) as spacing: w-sidebar, h-topbar… */
   --spacing-sidebar: var(--sidebar-width);

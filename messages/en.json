@@ -90,5 +90,46 @@
     "title": "You don’t have permission to view this",
     "body": "Your role doesn’t include access to this page. Ask an admin if you need it.",
     "home": "Go to home"
+  },
+  "forms": {
+    "requiredMark": " *",
+    "optional": " (optional)",
+    "invalidCount": "{count, plural, one {# field needs attention} other {# fields need attention}}",
+    "password": {
+      "show": "Show password",
+      "rules": {
+        "min": "At least {min} characters",
+        "max": "No more than {max} characters",
+        "common": "Common passwords are not accepted",
+        "met": "(done)",
+        "notMet": "(not yet)"
+      }
+    }
+  },
+  "dataTable": {
+    "loading": "Loading",
+    "pagination": {
+      "range": "{from}–{to} of {total}",
+      "perPage": "Per page",
+      "previous": "Previous page",
+      "next": "Next page"
+    }
+  },
+  "feedback": {
+    "loading": "Loading",
+    "error": {
+      "retry": "Retry"
+    },
+    "conflict": {
+      "message": "Someone else changed this. Reload to see their version.",
+      "reload": "Reload",
+      "copy": "Copy my changes",
+      "copied": "Copied",
+      "copyFailed": "Couldn’t copy. Select and copy your changes by hand."
+    },
+    "confirm": {
+      "cancel": "Cancel",
+      "typeToConfirm": "Type {text} to confirm"
+    }
   }
 }

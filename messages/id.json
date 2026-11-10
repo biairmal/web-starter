@@ -90,5 +90,46 @@
     "title": "Anda tidak memiliki izin untuk melihat halaman ini",
     "body": "Peran Anda tidak mencakup akses ke halaman ini. Hubungi admin jika Anda membutuhkannya.",
     "home": "Ke beranda"
+  },
+  "forms": {
+    "requiredMark": " *",
+    "optional": " (opsional)",
+    "invalidCount": "{count, plural, other {# kolom perlu diperbaiki}}",
+    "password": {
+      "show": "Tampilkan kata sandi",
+      "rules": {
+        "min": "Minimal {min} karakter",
+        "max": "Maksimal {max} karakter",
+        "common": "Kata sandi yang umum tidak diterima",
+        "met": "(terpenuhi)",
+        "notMet": "(belum)"
+      }
+    }
+  },
+  "dataTable": {
+    "loading": "Memuat",
+    "pagination": {
+      "range": "{from}–{to} dari {total}",
+      "perPage": "Per halaman",
+      "previous": "Halaman sebelumnya",
+      "next": "Halaman berikutnya"
+    }
+  },
+  "feedback": {
+    "loading": "Memuat",
+    "error": {
+      "retry": "Coba lagi"
+    },
+    "conflict": {
+      "message": "Orang lain telah mengubah data ini. Muat ulang untuk melihat versinya.",
+      "reload": "Muat ulang",
+      "copy": "Salin perubahan saya",
+      "copied": "Disalin",
+      "copyFailed": "Gagal menyalin. Pilih dan salin perubahan Anda secara manual."
+    },
+    "confirm": {
+      "cancel": "Batal",
+      "typeToConfirm": "Ketik {text} untuk mengonfirmasi"
+    }
   }
 }

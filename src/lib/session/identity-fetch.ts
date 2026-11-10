@@ -1,90 +1,34 @@
 import "server-only";
 
-import { isIP } from "node:net";
 import { env } from "@/config/env";
-import type { ErrorReason, TokenResponse } from "@/lib/api/types";
 import { BffError, reasonOf } from "@/lib/bff/envelope";
-import { REQUEST_ID_HEADER } from "@/lib/bff/request-id";
 import {
   type CookieWriter,
   applyCookies,
   sealSessionCookies,
 } from "@/lib/session/cookies";
+import { refreshOnce } from "@/lib/session/refresh";
 import type { Session } from "@/lib/session/server";
+import {
+  type RefreshFn,
+  type UpstreamCall,
+  upstreamHeaders,
+} from "@/lib/session/upstream";
+
+export {
+  type RefreshFn,
+  type RefreshResult,
+  type UpstreamCall,
+  callFor,
+  clientIp,
+  upstreamHeaders,
+} from "@/lib/session/upstream";
 
 // Server-side calls to identity, and to resource services behind the same
 // bearer token (TRD 5.2).
 
 /** Upstream calls that take longer than this fail as UPSTREAM_UNAVAILABLE. */
 const UPSTREAM_TIMEOUT_MS = 15_000;
-
-export type RefreshResult =
-  | { kind: "ok"; tokens: TokenResponse }
-  | { kind: "ended"; reason: ErrorReason }
-  | { kind: "unavailable" };
-
-/** Exchanges the session's refresh token for new tokens (TRD 5.3). */
-export type RefreshFn = (
-  sessionId: string,
-  refreshToken: string,
-  call: UpstreamCall,
-) => Promise<RefreshResult>;
-
-/** Who the call is made for: forwarded to identity for its logs and session list. */
-export type UpstreamCall = {
-  requestId: string;
-  clientIp?: string;
-  userAgent?: string;
-};
-
-/**
- * The client IP from `X-Forwarded-For`, trusting the last `hops` entries
- * (each proxy in front of the app appends one). With 0 hops, the header is
- * ignored. Returns `undefined` when there is no valid IP.
- */
-export function clientIp(
-  headers: Headers,
-  hops: number = env.TRUSTED_PROXY_HOPS,
-): string | undefined {
-  if (hops <= 0) {
-    return undefined;
-  }
-  const entries = (headers.get("x-forwarded-for") ?? "")
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
-  const candidate = entries[Math.max(0, entries.length - hops)];
-  return candidate !== undefined && isIP(candidate) !== 0
-    ? candidate
-    : undefined;
-}
-
-/** The upstream call details for an incoming browser request. */
-export function callFor(request: Request, requestId: string): UpstreamCall {
-  const userAgent = request.headers.get("user-agent") ?? undefined;
-  const ip = clientIp(request.headers);
-  return {
-    requestId,
-    ...(ip === undefined ? {} : { clientIp: ip }),
-    ...(userAgent === undefined ? {} : { userAgent }),
-  };
-}
-
-/** Headers identity expects on every call made for a browser (TRD 5.2). */
-export function upstreamHeaders(
-  call: UpstreamCall,
-  init?: HeadersInit,
-): Headers {
-  const headers = new Headers(init);
-  headers.set(REQUEST_ID_HEADER, call.requestId);
-  if (call.clientIp !== undefined) {
-    headers.set("X-Forwarded-For", call.clientIp);
-  }
-  if (call.userAgent !== undefined) {
-    headers.set("User-Agent", call.userAgent);
-  }
-  return headers;
-}
 
 export type AuthorizedFetchOptions = {
   call: UpstreamCall;
@@ -94,15 +38,9 @@ export type AuthorizedFetchOptions = {
    * session at its next refresh. Server Components cannot set cookies.
    */
   cookies?: CookieWriter;
+  /** Replaces the process-wide single-flight refresh, for tests. */
   refresh?: RefreshFn;
 };
-
-/**
- * Placeholder until the single-flight refresh is wired in: the session ends,
- * which is the safe answer when identity rejects the access token.
- */
-const endSession: RefreshFn = () =>
-  Promise.resolve({ kind: "ended", reason: "INVALID_CREDENTIALS" });
 
 /** The request body must be re-sendable, because a 401 is retried once. */
 export type UpstreamInit = Omit<RequestInit, "body"> & {
@@ -182,7 +120,7 @@ export async function authorizedFetch(
     throw BffError.sessionEnded("NO_SESSION");
   }
 
-  const refresh = options.refresh ?? endSession;
+  const refresh = options.refresh ?? refreshOnce;
   const result = await refresh(
     session.sessionId,
     session.refreshToken,

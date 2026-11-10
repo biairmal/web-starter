@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { env } from "@/config/env";
 import { CSRF_HEADER, CSRF_HEADER_VALUE, passesCsrf } from "@/lib/bff/csrf";
 import { BffError, reasonOf } from "@/lib/bff/envelope";
 import { BODY_LIMIT_BYTES, readLimitedBody, withBff } from "@/lib/bff/route";
@@ -259,14 +258,17 @@ describe("body limit", () => {
 
 describe("request log", () => {
   it("writes one JSON line without the body, query or cookies", async () => {
-    const previous = env.LOG_LEVEL;
-    (env as { LOG_LEVEL: string }).LOG_LEVEL = "info";
+    // env is validated once per module graph, so load a fresh graph with
+    // logging switched on.
+    vi.stubEnv("LOG_LEVEL", "info");
+    vi.resetModules();
+    const fresh = await import("@/lib/bff/route");
     const lines: string[] = [];
     vi.spyOn(console, "log").mockImplementation((line: unknown) => {
       lines.push(String(line));
     });
     try {
-      const route = withBff(ok, { csrf: true, session: "none" });
+      const route = fresh.withBff(ok, { csrf: true, session: "none" });
       await route(
         new NextRequest(`${APP}/api/thing?email=user%40example.com`, {
           method: "POST",
@@ -276,7 +278,7 @@ describe("request log", () => {
         {},
       );
     } finally {
-      (env as { LOG_LEVEL: string }).LOG_LEVEL = previous;
+      vi.unstubAllEnvs();
     }
     expect(lines).toHaveLength(1);
     const entry = JSON.parse(lines[0] ?? "{}") as Record<string, unknown>;

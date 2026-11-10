@@ -1,14 +1,13 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
+import type { BffReason } from "@/lib/api/errors";
 import type { ErrorReason } from "@/lib/api/types";
+
+export type { BffReason } from "@/lib/api/errors";
 
 // The BFF's own errors use identity's envelope (BE TRD 9.1), so the browser
 // handles every error the same way (TRD 7.1).
-
-/** Reasons only the BFF returns. They sit next to identity's `ErrorReason`. */
-export type BffReason =
-  "SESSION_ENDED" | "CSRF_FAILED" | "NOT_ALLOWED" | "UPSTREAM_UNAVAILABLE";
 
 /** Why a session ended: identity's reason, or `NO_SESSION` when none was sent. */
 export type SessionEndCause = ErrorReason | "NO_SESSION";

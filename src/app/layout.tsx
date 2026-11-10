@@ -4,8 +4,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import "./globals.css";
 import { interVariable } from "@/app/fonts";
+import { Providers } from "@/app/providers";
 import { brand } from "@/config/brand";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { NONCE_HEADER } from "@/lib/security/csp";
 import { themeInitScript } from "@/lib/theme";
 
@@ -40,7 +40,7 @@ export default async function RootLayout({
       <body className="antialiased">
         {/* Inherits locale, messages and time zone from src/i18n/request.ts. */}
         <NextIntlClientProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <Providers>{children}</Providers>
         </NextIntlClientProvider>
       </body>
     </html>

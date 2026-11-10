@@ -46,7 +46,8 @@ export default defineConfig({
         },
         {
           command: "pnpm run dev",
-          url: "http://localhost:3000",
+          // A static file: every page redirects until the visitor signs in.
+          url: "http://localhost:3000/brand/mark.svg",
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
           env: { ...process.env, ...testEnv },

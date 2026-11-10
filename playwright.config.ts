@@ -1,16 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
-
-// Test-only values. They satisfy the server's env validation (src/config/env-schema.ts)
-// and point at the Prism mock. Never used outside tests.
-const testEnv = {
-  APP_URL: "http://localhost:3000",
-  IDENTITY_INTERNAL_URL: "http://localhost:4010",
-  IDENTITY_PUBLIC_URL: "http://localhost:4010",
-  SESSION_SECRET: Buffer.alloc(32, 7).toString("base64"),
-};
+import { MOCK_IDENTITY_ORIGIN, testEnv } from "./tests/e2e/env";
 
 // With E2E_BASE_URL set (the full suite against a real identity stack), no
-// servers are started here. Otherwise the mock project starts Prism and next dev.
+// servers are started here. Otherwise the mock project starts Prism, the mock
+// identity in front of it (tests/e2e/mock-identity.mts) and next dev.
 const externalBaseUrl = process.env.E2E_BASE_URL;
 
 export default defineConfig({
@@ -43,6 +36,12 @@ export default defineConfig({
           url: "http://localhost:4010/v1/auth/config",
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
+        },
+        {
+          command: "pnpm exec tsx tests/e2e/mock-identity.mts",
+          url: `${MOCK_IDENTITY_ORIGIN}/healthz`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 60_000,
         },
         {
           command: "pnpm run dev",

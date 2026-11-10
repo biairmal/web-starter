@@ -113,6 +113,7 @@ const eslintConfig = [
       "**/global-error.tsx",
       "**/template.tsx",
       "**/default.tsx",
+      "**/forbidden.tsx",
       "**/forbidden/**/*.tsx",
       "src/i18n/request.ts",
       "next.config.ts",

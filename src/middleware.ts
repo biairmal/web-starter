@@ -6,6 +6,7 @@ import {
   createNonce,
 } from "@/lib/security/csp";
 import { guardRequest } from "@/lib/session/guard";
+import { REQUEST_PATH_HEADER } from "@/lib/session/route-rules";
 
 // Session check, single-flight refresh and route guards (TRD 5.3, 6.2), and
 // the per-request Content Security Policy (TRD 11.2). Runs on the Node
@@ -23,6 +24,10 @@ export default async function middleware(request: NextRequest) {
   // Any value the browser sent for these headers is overwritten.
   request.headers.set(NONCE_HEADER, nonce);
   request.headers.set("Content-Security-Policy", csp);
+  request.headers.set(
+    REQUEST_PATH_HEADER,
+    `${request.nextUrl.pathname}${request.nextUrl.search}`,
+  );
 
   const response = await guardRequest(request);
   response.headers.set("Content-Security-Policy", csp);

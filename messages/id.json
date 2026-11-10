@@ -50,5 +50,45 @@
       "unexpected": "Terjadi kesalahan. Coba lagi."
     },
     "requestId": "ID permintaan {requestId}"
+  },
+  "nav": {
+    "label": "Utama",
+    "groups": {
+      "admin": "Admin",
+      "platform": "Platform"
+    },
+    "items": {
+      "users": "Pengguna"
+    }
+  },
+  "shell": {
+    "skipToContent": "Lewati ke konten",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu",
+    "menuTitle": "Menu"
+  },
+  "userMenu": {
+    "open": "Buka menu akun",
+    "account": "Akun",
+    "security": "Keamanan",
+    "theme": "Tema",
+    "themes": {
+      "light": "Terang",
+      "dark": "Gelap",
+      "system": "Sistem"
+    }
+  },
+  "home": {
+    "signedIn": "Anda masuk ke {tenant}.",
+    "signedInWithRoles": "Anda masuk ke {tenant} sebagai {roles}.",
+    "starter": {
+      "title": "Di sinilah aplikasi Anda dimulai.",
+      "body": "Ganti <code>src/app/(app)/page.tsx</code>. Kartu ini hanya tampil saat pengembangan."
+    }
+  },
+  "forbidden": {
+    "title": "Anda tidak memiliki izin untuk melihat halaman ini",
+    "body": "Peran Anda tidak mencakup akses ke halaman ini. Hubungi admin jika Anda membutuhkannya.",
+    "home": "Ke beranda"
   }
 }

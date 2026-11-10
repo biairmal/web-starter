@@ -1,0 +1,60 @@
+{
+  "source": "go-sdk lib/authz/authz__test.go TestMatches; keep in step with it",
+  "cases": [
+    {
+      "name": "exact",
+      "grants": ["notes:read"],
+      "perm": "notes:read",
+      "want": true
+    },
+    {
+      "name": "other key",
+      "grants": ["notes:read"],
+      "perm": "notes:write",
+      "want": false
+    },
+    {
+      "name": "star",
+      "grants": ["*"],
+      "perm": "anything:at:all",
+      "want": true
+    },
+    {
+      "name": "prefix wildcard",
+      "grants": ["notes:*"],
+      "perm": "notes:read",
+      "want": true
+    },
+    {
+      "name": "prefix wildcard nested",
+      "grants": ["notes:*"],
+      "perm": "notes:read:any",
+      "want": true
+    },
+    {
+      "name": "prefix wildcard other resource",
+      "grants": ["notes:*"],
+      "perm": "notesx:read",
+      "want": false
+    },
+    {
+      "name": "any does not imply plain",
+      "grants": ["notes:read:any"],
+      "perm": "notes:read",
+      "want": false
+    },
+    {
+      "name": "wildcard in check refused",
+      "grants": ["*"],
+      "perm": "notes:*",
+      "want": false
+    },
+    {
+      "name": "empty check refused",
+      "grants": ["*"],
+      "perm": "",
+      "want": false
+    },
+    { "name": "no grants", "grants": [], "perm": "notes:read", "want": false }
+  ]
+}

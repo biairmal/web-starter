@@ -30,6 +30,8 @@ const fragmentTokenPages = ["/verify-email", "/reset-password", "/invite"];
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // forbidden() renders forbidden.tsx with status 403 (requirePermission).
+  experimental: { authInterrupts: true },
   headers() {
     return Promise.resolve([
       { source: "/:path*", headers: securityHeaders },

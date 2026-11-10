@@ -42,6 +42,24 @@
   /* --font-sans and --font-mono are set in tokens.css and override Tailwind's
      defaults of the same name, so the font utilities pick them up. */
 
+  --color-active: var(--active);
+  --color-raised: var(--raised);
+  --color-rule: var(--rule);
+
+  /* Shell dimensions (DESIGN_BRIEF 5.2) as spacing: w-sidebar, h-topbar… */
+  --spacing-sidebar: var(--sidebar-width);
+  --spacing-topbar: var(--topbar-height);
+  --spacing-sheet-inset: var(--sheet-inset);
+  --spacing-nav-row: var(--nav-row);
+  --spacing-field: var(--field-height);
+  --spacing-pad: var(--pad);
+
+  /* Type scale (DESIGN_BRIEF 4.2): text-title, text-section, text-body, text-small. */
+  --text-title: var(--fs-title);
+  --text-section: var(--fs-section);
+  --text-body: var(--fs-body);
+  --text-small: var(--fs-small);
+
   --radius-sm: var(--radius-chip);
   --radius-md: var(--radius-control);
   --radius-lg: var(--radius-card);

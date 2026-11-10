@@ -22,6 +22,32 @@ export function resolveTheme(
   return preference;
 }
 
+/** The stored preference, or `fallback` when none is stored or storage fails. */
+export function readThemePreference(
+  fallback: ThemePreference,
+): ThemePreference {
+  try {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return isThemePreference(stored) ? stored : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/** Stores a preference and shows the matching theme at once. */
+export function applyThemePreference(preference: ThemePreference): void {
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, preference);
+  } catch {
+    // Storage blocked: the choice lasts until the page reloads.
+  }
+  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute(
+    "data-theme",
+    resolveTheme(preference, dark),
+  );
+}
+
 /**
  * Inline script for <head>, so the first paint already has the right theme.
  * Reads the stored preference, falls back to the brand default, and sets

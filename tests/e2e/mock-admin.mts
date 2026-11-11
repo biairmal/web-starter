@@ -21,9 +21,12 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 //   PUT …/permissions: SYSTEM_ROLE, 428 without If-Match, VERSION_CONFLICT for
 //   a stale one, DUPLICATE on rename, and PERMISSION_NOT_HELD for an added key
 //   the caller does not hold. Each save raises the version.
+// - GET /v1/admin/audit: a fixed log of 33 entries, filtered by actor, action
+//   (a LIKE pattern) and the from/to instants, newest first.
 //
 // Each route answers 403 without its permission (`users:read`,
-// `users:manage`, `roles:manage`), unless the token is the super admin's.
+// `users:manage`, `roles:manage`, `audit:read`), unless the token is the super
+// admin's.
 
 export type AdminClaims = {
   sub?: string;
@@ -670,6 +673,85 @@ async function setPermissions(
   json(res, 200, envelope(role));
 }
 
+type MockAuditEntry = {
+  id: number;
+  at: string;
+  actor?: { id: string; display_name: string };
+  action: string;
+  target_type?: string;
+  target_id?: string;
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
+  ip?: string;
+  request_id?: string;
+};
+
+/** A fixed log: two entries with a diff, then sign-ins back to 2026-10-01. */
+function seedAudit(): MockAuditEntry[] {
+  const dina = { id: MOCK_USER_IDS.dina, display_name: "Dina Pratama" };
+  const entries: MockAuditEntry[] = [
+    {
+      id: 1000,
+      at: "2026-11-10T09:30:00Z",
+      actor: dina,
+      action: "role.permissions",
+      target_type: "role",
+      target_id: MOCK_ROLE_IDS.manager,
+      before: { name: "Manager", permissions: ["users:read"] },
+      after: { name: "Manager", permissions: ["audit:read", "users:read"] },
+      ip: "198.51.100.4",
+      request_id: "req-audit-1000",
+    },
+    {
+      id: 999,
+      at: "2026-11-09T15:00:00Z",
+      actor: dina,
+      action: "user.roles_assigned",
+      target_type: "user",
+      target_id: MOCK_USER_IDS.citra,
+      before: { roles: ["Sales"] },
+      after: { roles: ["Manager", "Sales"] },
+    },
+    {
+      id: 998,
+      at: "2026-11-08T07:00:00Z",
+      action: "auth.login_failed",
+      ip: "203.0.113.50",
+    },
+  ];
+  for (let index = 0; index < 30; index += 1) {
+    const day = String(1 + (index % 28)).padStart(2, "0");
+    entries.push({
+      id: 900 - index,
+      at: `2026-10-${day}T08:00:00Z`,
+      actor: { id: MOCK_USER_IDS.citra, display_name: "Citra Lestari" },
+      action: "auth.login",
+    });
+  }
+  return entries.sort((a, b) => b.at.localeCompare(a.at));
+}
+
+/** GET /v1/admin/audit: actor, action as a LIKE pattern, from and to. */
+function listAudit(res: ServerResponse, query: URLSearchParams): void {
+  const actor = query.get("actor");
+  const action = query.get("action");
+  const pattern = action
+    ? new RegExp(
+        `^${action.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/%/g, ".*")}$`,
+      )
+    : undefined;
+  const from = query.get("from");
+  const to = query.get("to");
+  const entries = seedAudit().filter(
+    (entry) =>
+      (!actor || entry.actor?.id === actor) &&
+      (!pattern || pattern.test(entry.action)) &&
+      (!from || entry.at >= new Date(from).toISOString()) &&
+      (!to || entry.at <= new Date(to).toISOString()),
+  );
+  json(res, 200, envelope(pageOf(entries, query)));
+}
+
 type Handler = (
   tenant: Tenant,
   claims: AdminClaims,
@@ -749,6 +831,13 @@ function routes(
       /^POST \/v1\/admin\/roles$/,
       "roles:manage",
       (tenant, claims) => createRole(req, res, tenant, claims),
+    ],
+    [
+      /^GET \/v1\/admin\/audit$/,
+      "audit:read",
+      () => {
+        listAudit(res, query);
+      },
     ],
     [
       /^GET \/v1\/admin\/permissions$/,

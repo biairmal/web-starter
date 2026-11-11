@@ -59,7 +59,8 @@
     },
     "items": {
       "users": "Users",
-      "roles": "Roles"
+      "roles": "Roles",
+      "audit": "Audit log"
     }
   },
   "shell": {
@@ -408,6 +409,108 @@
       "backToRoles": "Back to roles",
       "loadFailed": "Couldn’t load this role.",
       "catalogFailed": "Couldn’t load the permissions."
+    }
+  },
+  "audit": {
+    "title": "Audit log",
+    "body": "Who did what in this workspace, newest first. Times are in your time zone; hover one for UTC.",
+    "filters": {
+      "actor": "By",
+      "actorSearch": "Search for a person",
+      "actorResults": "Matching people",
+      "searching": "Searching…",
+      "noActors": "No one matches",
+      "someone": "Selected person",
+      "clearActor": "Clear the person filter",
+      "action": "Action",
+      "anyAction": "Any action",
+      "actions": {
+        "auth": "Sign-in and passwords",
+        "identity": "Linked accounts",
+        "member": "Memberships",
+        "role": "Roles",
+        "role_template": "Role templates",
+        "session": "Sessions",
+        "superadmin": "Super admin",
+        "tenant": "Workspaces",
+        "user": "Users"
+      },
+      "from": "From",
+      "to": "To",
+      "clear": "Clear filters"
+    },
+    "table": {
+      "caption": "Audit log",
+      "when": "When",
+      "actor": "Who",
+      "action": "What",
+      "target": "On",
+      "details": "Details",
+      "expand": "Show the changes of {action}",
+      "collapse": "Hide the changes of {action}",
+      "anonymous": "Anonymous",
+      "unknownActor": "A former member",
+      "ip": "IP {ip}",
+      "requestId": "Request {id}",
+      "refresh": "Refresh",
+      "updated": "Updated {time}",
+      "loading": "Loading",
+      "loadFailed": "Couldn’t load the audit log.",
+      "empty": "Nothing has happened here yet",
+      "noMatch": "No entries match these filters",
+      "clearFilters": "Clear filters"
+    },
+    "diff": {
+      "caption": "Changes",
+      "field": "Field",
+      "before": "Before",
+      "after": "After",
+      "none": "No details were recorded.",
+      "kinds": {
+        "added": "(added)",
+        "removed": "(removed)",
+        "changed": "(changed)"
+      }
+    },
+    "actions": {
+      "auth_email_verified": "Verified their email",
+      "auth_login": "Signed in",
+      "auth_login_failed": "Failed to sign in",
+      "auth_logout": "Signed out",
+      "auth_logout_all": "Signed out everywhere",
+      "auth_password_change": "Changed their password",
+      "auth_password_reset": "Reset their password",
+      "auth_refresh_reuse": "Reused a sign-in token (session ended)",
+      "auth_register": "Created an account",
+      "auth_tenant_switch": "Switched workspace",
+      "auth_token_refresh": "Refreshed a session",
+      "identity_link": "Linked Google",
+      "identity_unlink": "Unlinked Google",
+      "member_add": "Added a member",
+      "member_remove": "Removed a member",
+      "role_create": "Created a role",
+      "role_delete": "Deleted a role",
+      "role_permissions": "Changed a role’s permissions",
+      "role_update": "Renamed a role",
+      "role_template_create": "Created a role template",
+      "role_template_delete": "Deleted a role template",
+      "role_template_update": "Changed a role template",
+      "session_revoke": "Revoked a session",
+      "session_revoke_all": "Revoked every session",
+      "superadmin_create": "Created the super admin",
+      "superadmin_reset": "Reset the super admin",
+      "superadmin_transfer": "Transferred super admin",
+      "tenant_create": "Created a workspace",
+      "tenant_reactivate": "Reactivated a workspace",
+      "tenant_suspend": "Suspended a workspace",
+      "tenant_update": "Changed a workspace",
+      "user_create": "Created a user",
+      "user_delete": "Deleted a user",
+      "user_disable": "Disabled a user",
+      "user_enable": "Enabled a user",
+      "user_invite": "Invited a user",
+      "user_invite_accepted": "Accepted an invite",
+      "user_roles_assigned": "Changed roles"
     }
   },
   "forbidden": {

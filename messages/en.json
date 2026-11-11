@@ -222,6 +222,29 @@
       "expiredBody": "Enter your email and we’ll send a new link.",
       "email": "Email",
       "backToSignIn": "Back to sign in"
+    },
+    "notices": {
+      "PASSWORD_RESET": "Password changed. Sign in with your new password."
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "body": "Enter the email you sign in with and we’ll send you a link to choose a new password.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "emailInvalid": "Enter an email address, like name@example.com.",
+      "sentTitle": "Check your email",
+      "sentBody": "If that address has an account, we’ve sent a reset link. It works once and expires soon.",
+      "back": "Back to sign in"
+    },
+    "resetPassword": {
+      "metaTitle": "Choose a new password",
+      "title": "Choose a new password",
+      "password": "New password",
+      "warning": "This signs you out on all your devices.",
+      "submit": "Change password",
+      "expiredTitle": "This link has expired or was already used",
+      "expiredBody": "Ask for a new link and use it within the time it gives.",
+      "newLink": "Send a new link"
     }
   }
 }

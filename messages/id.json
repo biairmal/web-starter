@@ -60,7 +60,8 @@
     "items": {
       "users": "Pengguna",
       "roles": "Peran",
-      "audit": "Log audit"
+      "audit": "Log audit",
+      "tenants": "Tenant"
     }
   },
   "shell": {
@@ -712,6 +713,109 @@
       "errorTitle": "Kami tidak dapat membuka undangan Anda",
       "retry": "Coba lagi",
       "signedInAsUnnamed": "Anda masuk dengan akun lain. Keluar untuk menerima undangan ini untuk {email}."
+    }
+  },
+  "tenants": {
+    "title": "Tenant",
+    "body": "Buat tenant, lihat mana yang aktif, dan tangguhkan bila perlu.",
+    "status": {
+      "active": "Aktif",
+      "suspended": "Ditangguhkan"
+    },
+    "filters": {
+      "status": "Status",
+      "tabs": {
+        "all": "Semua",
+        "active": "Aktif",
+        "suspended": "Ditangguhkan"
+      },
+      "search": "Cari berdasarkan nama atau slug",
+      "clear": "Hapus filter"
+    },
+    "table": {
+      "caption": "Tenant",
+      "total": "{count, plural, other {# tenant}}",
+      "name": "Nama",
+      "status": "Status",
+      "members": "Pengguna",
+      "created": "Dibuat",
+      "membersShort": "Pengguna: {members}",
+      "loadFailed": "Tidak dapat memuat tenant.",
+      "empty": "Belum ada tenant",
+      "emptyBody": "Buat tenant agar klien baru punya ruang sendiri.",
+      "noMatch": "Tidak ada tenant yang cocok dengan filter ini",
+      "noMatchBody": "Pencarian mencocokkan nama atau slug."
+    },
+    "create": {
+      "open": "Buat tenant",
+      "title": "Buat tenant",
+      "body": "Tenant dimulai dengan templat peran saat ini, dan admin pertamanya menerima undangan lewat email.",
+      "name": "Nama",
+      "nameRequired": "Masukkan nama.",
+      "nameTooLong": "Gunakan paling banyak {max} karakter.",
+      "slug": "Slug",
+      "slugHint": "Huruf kecil, angka, dan tanda hubung. Orang mengetiknya untuk masuk ke tenant ini.",
+      "slugRequired": "Masukkan slug.",
+      "slugTooLong": "Gunakan paling banyak {max} karakter.",
+      "slugInvalid": "Gunakan 2 atau lebih huruf kecil, angka, atau tanda hubung, diawali huruf atau angka.",
+      "slugTaken": "Slug ini sudah dipakai tenant lain.",
+      "email": "Email admin pertama",
+      "emailHint": "Ia mendapat peran admin di tenant ini.",
+      "emailRequired": "Masukkan alamat email.",
+      "emailInvalid": "Masukkan alamat email yang valid.",
+      "cancel": "Batal",
+      "submit": "Buat tenant",
+      "created": "Tenant dibuat. Undangan dikirim ke {email}."
+    },
+    "detail": {
+      "title": "Tenant",
+      "breadcrumb": "Breadcrumb",
+      "tenants": "Tenant",
+      "notFound": "Tenant tidak ditemukan",
+      "notFoundBody": "Tenant mungkin tidak ada, atau tautannya salah.",
+      "backToTenants": "Kembali ke tenant",
+      "loadFailed": "Tidak dapat memuat tenant ini.",
+      "current": "Anda sedang bekerja di tenant ini.",
+      "openAsAdmin": "Buka sebagai admin",
+      "openSuspended": "Aktifkan kembali tenant untuk membukanya.",
+      "facts": {
+        "title": "Detail",
+        "slug": "Slug",
+        "status": "Status",
+        "members": "Pengguna",
+        "created": "Dibuat",
+        "unknown": "Tidak dilaporkan"
+      },
+      "rename": {
+        "open": "Ganti nama",
+        "title": "Ganti nama {name}",
+        "body": "Anggota melihat nama baru saat halaman dimuat berikutnya. Slug tetap sama.",
+        "name": "Nama",
+        "nameRequired": "Masukkan nama.",
+        "nameTooLong": "Gunakan paling banyak {max} karakter.",
+        "cancel": "Batal",
+        "submit": "Simpan nama",
+        "done": "Nama tenant diganti."
+      },
+      "danger": {
+        "title": "Zona berbahaya",
+        "defaultTenant": "Ini tenant bawaan. Tenant ini tidak dapat ditangguhkan.",
+        "suspend": {
+          "label": "Tangguhkan tenant",
+          "consequence": "Anggota tidak dapat masuk sampai tenant diaktifkan kembali. Yang sedang masuk kehilangan akses dalam 15 menit.",
+          "confirmTitle": "Tangguhkan {name}?",
+          "confirmBody": "Anggota tidak dapat masuk sampai Anda mengaktifkannya kembali. Tidak ada yang dihapus.",
+          "confirmBodyCount": "{count, plural, other {# pengguna}} tidak dapat masuk sampai Anda mengaktifkannya kembali. Tidak ada yang dihapus.",
+          "done": "{name} ditangguhkan."
+        },
+        "reactivate": {
+          "label": "Aktifkan kembali tenant",
+          "consequence": "Anggota dapat masuk lagi.",
+          "confirmTitle": "Aktifkan kembali {name}?",
+          "confirmBody": "Anggota dapat langsung masuk lagi.",
+          "done": "{name} aktif kembali."
+        }
+      }
     }
   }
 }

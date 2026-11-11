@@ -118,6 +118,7 @@ function NewPasswordForm({
     <div className="flex flex-col">
       <AuthHeading title={t("title")} />
       <form
+        method="post"
         noValidate
         onSubmit={(event) => {
           void onSubmit(event);

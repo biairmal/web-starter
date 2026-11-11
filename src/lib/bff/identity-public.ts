@@ -18,15 +18,19 @@ const PASSED_HEADERS = ["content-type", "retry-after"] as const;
 
 /**
  * `POST` (or another method) to an identity path such as `/v1/auth/login`,
- * with the request ID, client IP and user agent of the browser request.
+ * with the request ID, client IP and user agent of the browser request, and
+ * a bearer token only when one is given (the restricted token, TRD 5.7).
  * Throws `BffError` UPSTREAM_UNAVAILABLE when identity cannot be reached.
  */
 export async function callIdentity(
   path: string,
-  init: { method: "GET" | "POST"; body?: unknown },
+  init: { method: "GET" | "POST"; body?: unknown; bearer?: string },
   call: UpstreamCall,
 ): Promise<Response> {
   const headers = upstreamHeaders(call, { Accept: "application/json" });
+  if (init.bearer !== undefined) {
+    headers.set("Authorization", `Bearer ${init.bearer}`);
+  }
   if (init.body !== undefined) {
     headers.set("Content-Type", "application/json");
   }

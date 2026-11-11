@@ -76,7 +76,8 @@
       "light": "Terang",
       "dark": "Gelap",
       "system": "Sistem"
-    }
+    },
+    "signOut": "Keluar"
   },
   "home": {
     "signedIn": "Anda masuk ke {tenant}.",
@@ -89,7 +90,8 @@
   "forbidden": {
     "title": "Anda tidak memiliki izin untuk melihat halaman ini",
     "body": "Peran Anda tidak mencakup akses ke halaman ini. Hubungi admin jika Anda membutuhkannya.",
-    "home": "Ke beranda"
+    "home": "Ke beranda",
+    "signOut": "Masuk sebagai orang lain"
   },
   "forms": {
     "requiredMark": " *",
@@ -245,6 +247,13 @@
       "expiredTitle": "Tautan ini sudah kedaluwarsa atau sudah digunakan",
       "expiredBody": "Minta tautan baru dan gunakan sebelum masa berlakunya habis.",
       "newLink": "Kirim tautan baru"
+    },
+    "changePassword": {
+      "title": "Pilih kata sandi baru",
+      "body": "Administrator Anda meminta Anda mengganti kata sandi sebelum melanjutkan.",
+      "password": "Kata sandi baru",
+      "submit": "Ubah kata sandi",
+      "signOut": "Keluar"
     }
   }
 }

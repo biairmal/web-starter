@@ -171,6 +171,7 @@ export function SignInForm({
 
       {config.providers.password && (
         <form
+          method="post"
           noValidate
           onSubmit={(event) => {
             void onSubmit(event);

@@ -26,6 +26,8 @@ import {
 // - POST /v1/auth/login: the accounts in tests/e2e/mock-users.ts.
 // - POST /v1/auth/register and /email/resend: 202. POST /v1/auth/email/verify:
 //   204 for MOCK_GOOD_TOKEN, 400 TOKEN_INVALID for anything else.
+// - POST /v1/me/password: a new session; PASSWORD_POLICY for
+//   MOCK_COMMON_PASSWORD. POST /v1/auth/logout and /logout-all: 204.
 // - POST /v1/auth/password/forgot: 202. /password/reset: like verify, and
 //   PASSWORD_POLICY for MOCK_COMMON_PASSWORD.
 // - GET /v1/auth/config: password sign-in, open registration, single tenancy
@@ -252,6 +254,34 @@ async function reset(req: IncomingMessage, res: ServerResponse): Promise<void> {
   res.end();
 }
 
+/** POST /v1/me/password: a new session for the caller of any token. */
+async function changePassword(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  const claims = claimsOf(req);
+  const body = await readBody(req);
+  if (!claims) {
+    json(res, 401, errorEnvelope("ERR_UNAUTHORIZED", "Invalid token."));
+    return;
+  }
+  if (body.new_password === MOCK_COMMON_PASSWORD) {
+    json(res, 400, {
+      timestamp: new Date().toISOString(),
+      error: {
+        code: "ERR_BAD_REQUEST",
+        message: "validation failed",
+        meta: {
+          reason: "PASSWORD_POLICY",
+          fields: { new_password: "password is too common" },
+        },
+      },
+    });
+    return;
+  }
+  json(res, 200, envelope(tokens(claims.name ?? "Test User")));
+}
+
 const accepted = () => envelope({ status: "accepted" });
 
 const server = createServer((req, res) => {
@@ -276,6 +306,15 @@ const server = createServer((req, res) => {
   ) {
     req.resume();
     json(res, 202, accepted());
+  } else if (req.method === "POST" && path === "/v1/me/password") {
+    void changePassword(req, res);
+  } else if (
+    req.method === "POST" &&
+    (path === "/v1/auth/logout" || path === "/v1/auth/logout-all")
+  ) {
+    req.resume();
+    res.writeHead(204);
+    res.end();
   } else if (req.method === "POST" && path === "/v1/auth/password/reset") {
     void reset(req, res);
   } else if (req.method === "POST" && path === "/v1/auth/email/verify") {

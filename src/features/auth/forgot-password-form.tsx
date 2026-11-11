@@ -71,6 +71,7 @@ export function ForgotPasswordForm() {
     <div className="flex flex-col">
       <AuthHeading title={t("title")} body={t("body")} />
       <form
+        method="post"
         noValidate
         onSubmit={(event) => {
           void onSubmit(event);

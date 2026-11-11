@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
@@ -27,9 +27,10 @@ import {
   isThemePreference,
   readThemePreference,
 } from "@/lib/theme";
+import { signOut } from "@/lib/sign-out";
 
 // The user row pinned to the bottom of the sidebar, and its menu: Account,
-// Security, Language, Theme (APP_FLOW 2, DESIGN_BRIEF 5.2).
+// Security, Language, Theme, Sign out (APP_FLOW 2, 5.9; DESIGN_BRIEF 5.2).
 
 const THEMES: readonly ThemePreference[] = ["light", "dark", "system"];
 
@@ -126,6 +127,15 @@ export function UserMenu() {
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={() => {
+            void signOut();
+          }}
+        >
+          <LogOut aria-hidden="true" />
+          {t("signOut")}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

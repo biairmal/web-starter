@@ -197,7 +197,7 @@ describe("UserDetail", () => {
   });
 
   it("FE-44 disables a role that grants a permission the admin does not hold", async () => {
-    serve();
+    serve({ ...dina, roles: [] });
     render({
       ...meFixture,
       permissions: ["users:read", "users:manage", "roles:manage"],
@@ -212,6 +212,24 @@ describe("UserDetail", () => {
       "Grants a permission you don’t hold, so you can’t assign it.",
     );
     expect(screen.getByRole("checkbox", { name: "Admin" })).toBeEnabled();
+  });
+
+  it("FE-44 a role the user already has can still be taken away", async () => {
+    serve();
+    render({
+      ...meFixture,
+      permissions: ["users:read", "users:manage", "roles:manage"],
+    });
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "Edit roles" }));
+    const sales = await screen.findByRole("checkbox", { name: "Sales" });
+    // Wait for the role permissions, which would disable an unassigned role.
+    await screen.findByRole("checkbox", { name: "Admin" });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(sales).toBeChecked();
+    expect(sales).toBeEnabled();
+    await user.click(sales);
+    expect(sales).not.toBeChecked();
   });
 
   it("FE-42 a rule from identity on save opens a dialog and keeps the edits", async () => {

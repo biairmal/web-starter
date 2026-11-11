@@ -25,7 +25,7 @@ import {
 
 // The roles card of the user detail page (FE-42, FE-23; APP_FLOW 5.12). Edit
 // shows every tenant role; one granting a permission the admin does not hold
-// is disabled with the reason. Save sends the full list, then a toast says
+// is disabled with the reason, unless the user already has it. Save sends the full list, then a toast says
 // when the user sees it, with "Revoke sessions now" to make it immediate.
 
 /** How long the saved toast offers "Revoke sessions now". */
@@ -49,6 +49,7 @@ function RoleEditForm({
   const permissions = useRolePermissions(items.map((role) => role.id));
   const save = useSetUserRoles(user.id);
   const [value, setValue] = useState(() => user.roles.map((role) => role.id));
+  const assigned = new Set(user.roles.map((role) => role.id));
   const [rule, setRule] = useState<string | undefined>();
   const [message, setMessage] = useState<string | undefined>();
 
@@ -99,6 +100,11 @@ function RoleEditForm({
         value={value}
         onChange={setValue}
         disabledReason={(role) => {
+          // Identity checks only the roles a change adds, so a role the
+          // user already has can always be taken away.
+          if (assigned.has(role.id)) {
+            return undefined;
+          }
           const granted = permissions.get(role.id);
           return granted?.some((key) => !can(me, key))
             ? t("notHeld")

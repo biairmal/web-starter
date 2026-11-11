@@ -13,7 +13,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 //   …/revoke-sessions; DELETE. They keep identity's rules: SELF_ESCALATION
 //   and SELF_ACTION on the caller's own account (`sub`), SUPER_ADMIN_PROTECTED
 //   on Sari, LAST_ADMIN when no active member would keep roles:manage, and
-//   PERMISSION_NOT_HELD for a role granting what the caller does not hold.
+//   PERMISSION_NOT_HELD for an added role granting what the caller does not hold.
 // - GET /v1/admin/roles: paging and a name search. GET /v1/admin/roles/{id}.
 // - POST /v1/admin/roles: DUPLICATE for a name in use. DELETE …/{id}:
 //   SYSTEM_ROLE, ROLE_IN_USE without `force=true`, LAST_ADMIN.
@@ -389,7 +389,11 @@ async function setRoles(
   const ids = Array.isArray(body.role_ids) ? body.role_ids : [];
   const next = tenant.roles.filter((role) => ids.includes(role.id));
   if (
-    next.some((role) => role.permissions.some((key) => !allowed(claims, key)))
+    next.some(
+      (role) =>
+        !user.roles.some((entry) => entry.id === role.id) &&
+        role.permissions.some((key) => !allowed(claims, key)),
+    )
   ) {
     fail(res, 403, "ERR_FORBIDDEN", "PERMISSION_NOT_HELD");
     return;

@@ -37,6 +37,7 @@ import {
 // - GET /v1/auth/invite/{token} and POST /v1/auth/invite/accept: MOCK_GOOD_TOKEN
 //   is an invite to Globex for a new account.
 // - POST /v1/auth/exchange: MOCK_GOOD_TOKEN as the code signs in Gina Google.
+// - GET /v1/me/tenants: the tenants in tests/e2e/mock-users.ts.
 // - GET /v1/me/sessions: the token's session (current) and one other device,
 //   until DELETE /v1/me/sessions/{id} revokes it (kept per session).
 // - DELETE /v1/me/identities/google: 409 LAST_SIGN_IN_METHOD when Google is
@@ -477,6 +478,12 @@ const server = createServer((req, res) => {
     me(res, claimsOf(req));
   } else if (req.method === "PATCH" && path === "/v1/me") {
     void updateMe(req, res);
+  } else if (req.method === "GET" && path === "/v1/me/tenants") {
+    json(
+      res,
+      200,
+      envelope(MOCK_TENANTS.map((tenant) => ({ ...tenant, status: "active" }))),
+    );
   } else if (req.method === "GET" && path === "/v1/me/sessions") {
     sessions(res, claimsOf(req));
   } else if (req.method === "DELETE" && path.startsWith("/v1/me/sessions/")) {

@@ -67,7 +67,11 @@
     "skipToContent": "Lewati ke konten",
     "openMenu": "Buka menu",
     "closeMenu": "Tutup menu",
-    "menuTitle": "Menu"
+    "menuTitle": "Menu",
+    "tenantSwitcher": {
+      "open": "Ganti tenant",
+      "label": "Tenant Anda"
+    }
   },
   "userMenu": {
     "open": "Buka menu akun",

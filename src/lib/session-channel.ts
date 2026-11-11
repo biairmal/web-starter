@@ -1,11 +1,14 @@
-// Tells other tabs that the session ended or the user signed out (TRD 5.6).
-// Tabs share cookies, so they share the session; each tab acts on the message
-// on its next action.
+// Tells other tabs that the session ended, the user signed out (TRD 5.6), or
+// the session moved to another tenant (TRD 5.8). Tabs share cookies, so they
+// share the session; each tab acts on the message on its next action: a tab
+// still signed in reloads, so it shows the new tenant's data.
 
 export const SESSION_CHANNEL_NAME = "session";
 
 export type SessionMessage =
-  { type: "ended"; reason: string } | { type: "signed-out" };
+  | { type: "ended"; reason: string }
+  | { type: "signed-out" }
+  | { type: "tenant-switched" };
 
 function isSessionMessage(value: unknown): value is SessionMessage {
   if (typeof value !== "object" || value === null || !("type" in value)) {
@@ -13,6 +16,7 @@ function isSessionMessage(value: unknown): value is SessionMessage {
   }
   return (
     value.type === "signed-out" ||
+    value.type === "tenant-switched" ||
     (value.type === "ended" &&
       "reason" in value &&
       typeof value.reason === "string")

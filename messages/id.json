@@ -176,6 +176,52 @@
       "title": "Pilih ruang kerja",
       "body": "Akun Anda terdaftar di lebih dari satu ruang kerja. Pilih yang ingin dibuka.",
       "back": "Gunakan akun lain"
+    },
+    "password": {
+      "tooShort": "Gunakan minimal {min} karakter.",
+      "tooLong": "Gunakan maksimal {max} karakter.",
+      "policy": "Kata sandi ini terlalu umum. Pilih yang lain."
+    },
+    "resend": {
+      "action": "Kirim ulang email",
+      "wait": "Kirim ulang dalam {seconds} detik",
+      "sent": "Jika alamat itu perlu diverifikasi, kami telah mengirim tautan baru."
+    },
+    "signUp": {
+      "metaTitle": "Buat akun",
+      "title": "Buat akun {appName} Anda",
+      "name": "Nama",
+      "email": "Email",
+      "tenant": "Ruang kerja",
+      "tenantHelp": "ID ruang kerja yang Anda terima, misalnya acme.",
+      "password": "Kata sandi",
+      "submit": "Buat akun",
+      "legal": "Dengan membuat akun, Anda menyetujui ketentuan dan kebijakan privasi yang ditautkan di bawah.",
+      "haveAccount": "Sudah punya akun?",
+      "signIn": "Masuk",
+      "nameRequired": "Masukkan nama Anda.",
+      "nameTooLong": "Gunakan maksimal 100 karakter.",
+      "emailInvalid": "Masukkan alamat email, misalnya nama@contoh.com.",
+      "tenantRequired": "Masukkan ruang kerja Anda."
+    },
+    "checkEmail": {
+      "title": "Periksa email Anda",
+      "body": "Kami telah mengirim tautan untuk memverifikasi alamat Anda. Buka tautan itu untuk menyelesaikan pembuatan akun.",
+      "bodyWithEmail": "Kami telah mengirim tautan ke <strong>{email}</strong>. Buka tautan itu untuk menyelesaikan pembuatan akun.",
+      "wrongAddress": "Alamat salah?",
+      "startAgain": "Mulai lagi"
+    },
+    "verifyEmail": {
+      "metaTitle": "Verifikasi email Anda",
+      "working": "Memverifikasi email Anda",
+      "doneTitle": "Email terverifikasi",
+      "doneBody": "Akun Anda sudah siap. Masuk untuk melanjutkan.",
+      "signIn": "Masuk",
+      "errorTitle": "Kami tidak dapat memverifikasi email Anda",
+      "expiredTitle": "Tautan ini sudah kedaluwarsa atau sudah digunakan",
+      "expiredBody": "Masukkan email Anda dan kami akan mengirim tautan baru.",
+      "email": "Email",
+      "backToSignIn": "Kembali ke halaman masuk"
     }
   }
 }

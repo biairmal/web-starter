@@ -6,7 +6,12 @@ import {
 } from "node:http";
 import { MOCK_IDENTITY_PORT, PRISM_ORIGIN } from "./env.ts";
 import { fakeAccessToken } from "../helpers/tokens.ts";
-import { MOCK_PASSWORD, MOCK_TENANTS, MOCK_USERS } from "./mock-users.ts";
+import {
+  MOCK_GOOD_TOKEN,
+  MOCK_PASSWORD,
+  MOCK_TENANTS,
+  MOCK_USERS,
+} from "./mock-users.ts";
 
 // A stand-in for identity in the mock e2e suite. Prism answers every path with
 // random data from the spec, which cannot drive a permission test, so this
@@ -18,6 +23,8 @@ import { MOCK_PASSWORD, MOCK_TENANTS, MOCK_USERS } from "./mock-users.ts";
 //   a 500.
 // - POST /v1/auth/refresh: 401 REFRESH_REUSED, so a refresh ends the session.
 // - POST /v1/auth/login: the accounts in tests/e2e/mock-users.ts.
+// - POST /v1/auth/register and /email/resend: 202. POST /v1/auth/email/verify:
+//   204 for MOCK_GOOD_TOKEN, 400 TOKEN_INVALID for anything else.
 // - GET /v1/auth/config: password sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
 
@@ -180,12 +187,40 @@ async function login(req: IncomingMessage, res: ServerResponse): Promise<void> {
     );
     return;
   }
+  if (user.unverified) {
+    json(
+      res,
+      403,
+      errorEnvelope("ERR_FORBIDDEN", "forbidden", "EMAIL_NOT_VERIFIED"),
+    );
+    return;
+  }
   if (user.multi && typeof body.tenant !== "string") {
     json(res, 200, envelope({ tenant_required: true, tenants: MOCK_TENANTS }));
     return;
   }
   json(res, 200, envelope(tokens(user.name, user.mustChange)));
 }
+
+/** One-time tokens in email links: MOCK_GOOD_TOKEN works, anything else is used up. */
+async function oneTimeToken(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  const body = await readBody(req);
+  if (body.token === MOCK_GOOD_TOKEN) {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+  json(
+    res,
+    400,
+    errorEnvelope("ERR_BAD_REQUEST", "bad request", "TOKEN_INVALID"),
+  );
+}
+
+const accepted = () => envelope({ status: "accepted" });
 
 const server = createServer((req, res) => {
   const path = new URL(req.url ?? "/", "http://mock").pathname;
@@ -201,6 +236,14 @@ const server = createServer((req, res) => {
     );
   } else if (req.method === "POST" && path === "/v1/auth/login") {
     void login(req, res);
+  } else if (
+    req.method === "POST" &&
+    (path === "/v1/auth/register" || path === "/v1/auth/email/resend")
+  ) {
+    req.resume();
+    json(res, 202, accepted());
+  } else if (req.method === "POST" && path === "/v1/auth/email/verify") {
+    void oneTimeToken(req, res);
   } else if (req.method === "GET" && path === "/v1/auth/config") {
     json(
       res,

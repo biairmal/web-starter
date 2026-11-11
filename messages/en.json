@@ -176,6 +176,52 @@
       "title": "Choose a workspace",
       "body": "Your account belongs to more than one workspace. Pick the one to open.",
       "back": "Use a different account"
+    },
+    "password": {
+      "tooShort": "Use at least {min} characters.",
+      "tooLong": "Use no more than {max} characters.",
+      "policy": "This password is too common. Choose another."
+    },
+    "resend": {
+      "action": "Resend email",
+      "wait": "Resend in {seconds, plural, one {# second} other {# seconds}}",
+      "sent": "If that address needs verifying, we’ve sent a new link."
+    },
+    "signUp": {
+      "metaTitle": "Create an account",
+      "title": "Create your {appName} account",
+      "name": "Name",
+      "email": "Email",
+      "tenant": "Workspace",
+      "tenantHelp": "The workspace ID you were given, like acme.",
+      "password": "Password",
+      "submit": "Create account",
+      "legal": "By creating an account you agree to the terms and privacy policy linked below.",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "nameRequired": "Enter your name.",
+      "nameTooLong": "Use no more than 100 characters.",
+      "emailInvalid": "Enter an email address, like name@example.com.",
+      "tenantRequired": "Enter your workspace."
+    },
+    "checkEmail": {
+      "title": "Check your email",
+      "body": "We’ve sent you a link to verify your address. Open it to finish setting up your account.",
+      "bodyWithEmail": "We’ve sent a link to <strong>{email}</strong>. Open it to finish setting up your account.",
+      "wrongAddress": "Wrong address?",
+      "startAgain": "Start again"
+    },
+    "verifyEmail": {
+      "metaTitle": "Verify your email",
+      "working": "Verifying your email",
+      "doneTitle": "Email verified",
+      "doneBody": "Your account is ready. Sign in to continue.",
+      "signIn": "Sign in",
+      "errorTitle": "We couldn’t verify your email",
+      "expiredTitle": "This link has expired or was already used",
+      "expiredBody": "Enter your email and we’ll send a new link.",
+      "email": "Email",
+      "backToSignIn": "Back to sign in"
     }
   }
 }

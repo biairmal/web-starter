@@ -5,6 +5,7 @@ import {
   request as httpRequest,
 } from "node:http";
 import { MOCK_IDENTITY_PORT, PRISM_ORIGIN } from "./env.ts";
+import { adminRoute } from "./mock-admin.mts";
 import { fakeAccessToken } from "../helpers/tokens.ts";
 import {
   MOCK_COMMON_PASSWORD,
@@ -41,6 +42,7 @@ import {
 // - DELETE /v1/me/identities/google: 409 LAST_SIGN_IN_METHOD when Google is
 //   the only provider, else 204, after which GET /v1/me reports it unlinked.
 // - GET /v1/auth/google/link/start: 302 to a stand-in Google URL.
+// - /v1/admin/*: users and roles of a small tenant, in tests/e2e/mock-admin.mts.
 // - GET /v1/auth/config: password and Google sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
 
@@ -466,6 +468,9 @@ const accepted = () => envelope({ status: "accepted" });
 
 const server = createServer((req, res) => {
   const path = new URL(req.url ?? "/", "http://mock").pathname;
+  if (adminRoute(req, res, claimsOf(req))) {
+    return;
+  }
   if (req.method === "GET" && path === "/healthz") {
     json(res, 200, { status: "ok" });
   } else if (req.method === "GET" && path === "/v1/me") {

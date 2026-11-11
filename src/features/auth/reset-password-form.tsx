@@ -20,7 +20,7 @@ import { isApiError } from "@/lib/api/errors";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { hardNavigate } from "@/lib/hard-navigate";
 import { AuthHeading, InlineNotice } from "@/features/auth/auth-screen";
-import { newPasswordSchema } from "@/features/auth/password-schema";
+import { newPasswordSchema } from "@/components/forms/password-schema";
 import { useFragmentToken } from "@/features/auth/use-fragment-token";
 
 // /reset-password#token=… (FE-6, APP_FLOW 5.5, DESIGN_BRIEF 7.3): a new

@@ -25,6 +25,7 @@ export default async function SignInPage({
       next={param(params, "next") ?? "/"}
       reason={param(params, "reason")}
       initialConfig={config}
+      initialTenant={param(params, "tenant")}
     />
   );
 }

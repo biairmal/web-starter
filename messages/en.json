@@ -38,7 +38,7 @@
       "PASSWORD_CHANGE_REQUIRED": "Sign in again to set a new password.",
       "REFRESH_REUSED": "You were signed out to keep your account safe. Sign in to continue.",
       "REFRESH_EXPIRED": "Your session ended. Sign in to continue.",
-      "TENANT_REQUIRED": "Enter your tenant, then continue with Google.",
+      "TENANT_REQUIRED": "Enter your workspace, then continue with Google.",
       "SESSION_ENDED": "Your session ended. Sign in to continue.",
       "CSRF_FAILED": "The request was blocked. Reload the page and try again.",
       "NOT_ALLOWED": "That action is not available.",
@@ -172,7 +172,8 @@
       "emailInvalid": "Enter an email address, like name@example.com.",
       "passwordRequired": "Enter your password.",
       "noMethods": "Signing in isn’t available right now. Contact {supportEmail}.",
-      "blockedTitle": "You can’t sign in right now"
+      "blockedTitle": "You can’t sign in right now",
+      "or": "or"
     },
     "tenantPicker": {
       "title": "Choose a workspace",
@@ -254,6 +255,11 @@
       "password": "New password",
       "submit": "Change password",
       "signOut": "Sign out"
+    },
+    "google": {
+      "continue": "Continue with Google",
+      "tenant": "Workspace",
+      "tenantHelp": "Enter your workspace ID, like acme, to continue with Google."
     }
   }
 }

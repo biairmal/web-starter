@@ -30,7 +30,8 @@ import {
 //   MOCK_COMMON_PASSWORD. POST /v1/auth/logout and /logout-all: 204.
 // - POST /v1/auth/password/forgot: 202. /password/reset: like verify, and
 //   PASSWORD_POLICY for MOCK_COMMON_PASSWORD.
-// - GET /v1/auth/config: password sign-in, open registration, single tenancy
+// - POST /v1/auth/exchange: MOCK_GOOD_TOKEN as the code signs in Gina Google.
+// - GET /v1/auth/config: password and Google sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
 
 type Claims = {
@@ -282,6 +283,23 @@ async function changePassword(
   json(res, 200, envelope(tokens(claims.name ?? "Test User")));
 }
 
+/** POST /v1/auth/exchange: MOCK_GOOD_TOKEN signs in Gina; anything else is used. */
+async function exchange(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  const body = await readBody(req);
+  if (body.code !== MOCK_GOOD_TOKEN) {
+    json(
+      res,
+      400,
+      errorEnvelope("ERR_BAD_REQUEST", "bad request", "TOKEN_INVALID"),
+    );
+    return;
+  }
+  json(res, 200, envelope(tokens("Gina Google")));
+}
+
 const accepted = () => envelope({ status: "accepted" });
 
 const server = createServer((req, res) => {
@@ -306,6 +324,8 @@ const server = createServer((req, res) => {
   ) {
     req.resume();
     json(res, 202, accepted());
+  } else if (req.method === "POST" && path === "/v1/auth/exchange") {
+    void exchange(req, res);
   } else if (req.method === "POST" && path === "/v1/me/password") {
     void changePassword(req, res);
   } else if (
@@ -324,7 +344,7 @@ const server = createServer((req, res) => {
       res,
       200,
       envelope({
-        providers: { password: true, google: false },
+        providers: { password: true, google: true },
         registration: true,
         tenancy: process.env.MOCK_TENANCY === "multi" ? "multi" : "single",
       }),

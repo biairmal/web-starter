@@ -12,6 +12,7 @@ import { PasswordInput } from "@/components/forms/password-input";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { brand } from "@/config/brand";
 import { applyServerErrors } from "@/lib/api/apply-server-errors";
 import { bffPost } from "@/lib/api/bff-fetch";
@@ -31,6 +32,7 @@ import {
   recallSignIn,
   setPendingSignIn,
 } from "@/features/auth/pending-sign-in";
+import { GoogleButton } from "@/features/auth/google-button";
 import { ReasonBanner } from "@/features/auth/reason-banner";
 import { ResendButton } from "@/features/auth/resend-button";
 import { useAuthConfig } from "@/features/auth/use-auth-config";
@@ -54,13 +56,13 @@ export function SignInForm({
   next,
   reason,
   initialConfig,
-  extraMethods,
+  initialTenant,
 }: {
   next: string;
   reason?: string | undefined;
   initialConfig: AuthConfig | null;
-  /** Other sign-in methods, such as the Google button, under the form. */
-  extraMethods?: React.ReactNode;
+  /** The workspace slug to keep after Google answered TENANT_REQUIRED. */
+  initialTenant?: string | undefined;
 }) {
   const t = useTranslations("auth.signIn");
   const router = useRouter();
@@ -243,7 +245,22 @@ export function SignInForm({
         </form>
       )}
 
-      {extraMethods}
+      {config.providers.google && (
+        <>
+          {config.providers.password && (
+            <div className="my-6 flex items-center gap-3 text-small text-faint">
+              <Separator className="flex-1" />
+              <span>{t("or")}</span>
+              <Separator className="flex-1" />
+            </div>
+          )}
+          <GoogleButton
+            next={next}
+            multi={config.tenancy === "multi"}
+            initialTenant={initialTenant}
+          />
+        </>
+      )}
 
       {!config.providers.password && !config.providers.google && (
         <p role="alert" className="text-body text-muted-foreground">

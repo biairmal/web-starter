@@ -38,7 +38,7 @@
       "PASSWORD_CHANGE_REQUIRED": "Masuk lagi untuk membuat kata sandi baru.",
       "REFRESH_REUSED": "Anda dikeluarkan demi keamanan akun Anda. Masuk untuk melanjutkan.",
       "REFRESH_EXPIRED": "Sesi Anda telah berakhir. Masuk untuk melanjutkan.",
-      "TENANT_REQUIRED": "Masukkan tenant Anda, lalu lanjutkan dengan Google.",
+      "TENANT_REQUIRED": "Masukkan ruang kerja Anda, lalu lanjutkan dengan Google.",
       "SESSION_ENDED": "Sesi Anda telah berakhir. Masuk untuk melanjutkan.",
       "CSRF_FAILED": "Permintaan diblokir. Muat ulang halaman dan coba lagi.",
       "NOT_ALLOWED": "Tindakan itu tidak tersedia.",
@@ -172,7 +172,8 @@
       "emailInvalid": "Masukkan alamat email, misalnya nama@contoh.com.",
       "passwordRequired": "Masukkan kata sandi Anda.",
       "noMethods": "Saat ini Anda belum bisa masuk. Hubungi {supportEmail}.",
-      "blockedTitle": "Anda belum bisa masuk saat ini"
+      "blockedTitle": "Anda belum bisa masuk saat ini",
+      "or": "atau"
     },
     "tenantPicker": {
       "title": "Pilih ruang kerja",
@@ -254,6 +255,11 @@
       "password": "Kata sandi baru",
       "submit": "Ubah kata sandi",
       "signOut": "Keluar"
+    },
+    "google": {
+      "continue": "Lanjutkan dengan Google",
+      "tenant": "Ruang kerja",
+      "tenantHelp": "Masukkan ID ruang kerja Anda, misalnya acme, untuk melanjutkan dengan Google."
     }
   }
 }

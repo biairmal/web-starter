@@ -5,6 +5,8 @@ import {
   request as httpRequest,
 } from "node:http";
 import { MOCK_IDENTITY_PORT, PRISM_ORIGIN } from "./env.ts";
+import { fakeAccessToken } from "../helpers/tokens.ts";
+import { MOCK_PASSWORD, MOCK_TENANTS, MOCK_USERS } from "./mock-users.ts";
 
 // A stand-in for identity in the mock e2e suite. Prism answers every path with
 // random data from the spec, which cannot drive a permission test, so this
@@ -15,6 +17,7 @@ import { MOCK_IDENTITY_PORT, PRISM_ORIGIN } from "./env.ts";
 //   reason, as identity sends for a revoked access token; ail: true gets
 //   a 500.
 // - POST /v1/auth/refresh: 401 REFRESH_REUSED, so a refresh ends the session.
+// - POST /v1/auth/login: the accounts in tests/e2e/mock-users.ts.
 // - GET /v1/auth/config: password sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
 
@@ -108,6 +111,82 @@ function proxy(req: IncomingMessage, res: ServerResponse): void {
   req.pipe(upstream);
 }
 
+function readBody(req: IncomingMessage): Promise<Record<string, unknown>> {
+  return new Promise((resolve) => {
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk: Buffer) => chunks.push(chunk));
+    req.on("end", () => {
+      try {
+        resolve(
+          JSON.parse(Buffer.concat(chunks).toString("utf8")) as Record<
+            string,
+            unknown
+          >,
+        );
+      } catch {
+        resolve({});
+      }
+    });
+  });
+}
+
+function tokens(name: string, mustChange = false) {
+  const access = fakeAccessToken({
+    ...(mustChange ? { scope: "password_change" } : {}),
+  });
+  // The fake token carries the display name the mock /v1/me answers with.
+  const [head, payload, signature] = access.split(".");
+  const claims = JSON.parse(
+    Buffer.from(payload ?? "", "base64url").toString("utf8"),
+  ) as Record<string, unknown>;
+  const token = [
+    head,
+    Buffer.from(JSON.stringify({ ...claims, name })).toString("base64url"),
+    signature,
+  ].join(".");
+  return {
+    access_token: token,
+    token_type: "Bearer",
+    expires_in: 900,
+    ...(mustChange
+      ? {}
+      : { refresh_token: "refresh-token-e2e", refresh_expires_in: 3600 }),
+    user: { id: "00000000-0000-4000-8000-000000000001", display_name: name },
+    tenant: MOCK_TENANTS[0],
+    must_change_password: mustChange,
+  };
+}
+
+async function login(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const body = await readBody(req);
+  const user = MOCK_USERS.find((entry) => entry.email === body.email);
+  if (user?.locked) {
+    res.setHeader("Retry-After", "840");
+    json(res, 401, {
+      timestamp: new Date().toISOString(),
+      error: {
+        code: "ERR_UNAUTHORIZED",
+        message: "unauthorized",
+        meta: { reason: "ACCOUNT_LOCKED", retry_after: 840 },
+      },
+    });
+    return;
+  }
+  if (!user || body.password !== MOCK_PASSWORD) {
+    json(
+      res,
+      401,
+      errorEnvelope("ERR_UNAUTHORIZED", "unauthorized", "INVALID_CREDENTIALS"),
+    );
+    return;
+  }
+  if (user.multi && typeof body.tenant !== "string") {
+    json(res, 200, envelope({ tenant_required: true, tenants: MOCK_TENANTS }));
+    return;
+  }
+  json(res, 200, envelope(tokens(user.name, user.mustChange)));
+}
+
 const server = createServer((req, res) => {
   const path = new URL(req.url ?? "/", "http://mock").pathname;
   if (req.method === "GET" && path === "/healthz") {
@@ -120,6 +199,8 @@ const server = createServer((req, res) => {
       401,
       errorEnvelope("ERR_UNAUTHORIZED", "Refresh refused.", "REFRESH_REUSED"),
     );
+  } else if (req.method === "POST" && path === "/v1/auth/login") {
+    void login(req, res);
   } else if (req.method === "GET" && path === "/v1/auth/config") {
     json(
       res,

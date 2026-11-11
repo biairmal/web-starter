@@ -61,7 +61,8 @@
       "users": "Pengguna",
       "roles": "Peran",
       "audit": "Log audit",
-      "tenants": "Tenant"
+      "tenants": "Tenant",
+      "roleTemplates": "Templat peran"
     }
   },
   "shell": {
@@ -414,6 +415,38 @@
       "backToRoles": "Kembali ke peran",
       "loadFailed": "Peran ini tidak dapat dimuat.",
       "catalogFailed": "Izin tidak dapat dimuat."
+    },
+    "templates": {
+      "title": "Templat peran",
+      "body": "Peran yang dimiliki setiap tenant baru sejak awal.",
+      "new": "Templat baru",
+      "caption": "Templat peran",
+      "name": "Nama",
+      "description": "Deskripsi",
+      "permissions": "Izin",
+      "total": "{count, plural, other {# templat}}",
+      "permissionsCount": "{count, plural, other {# izin}}",
+      "loadFailed": "Tidak dapat memuat templat peran.",
+      "empty": "Belum ada templat peran",
+      "emptyBody": "Tenant baru tidak memiliki peran sampai Anda menambahkan templat."
+    },
+    "templateEditor": {
+      "title": "Templat peran",
+      "notice": "Perubahan hanya berlaku untuk tenant yang dibuat setelah ini. Tenant yang sudah ada tetap memakai peran mereka saat ini.",
+      "roles": "Templat peran",
+      "newTitle": "Templat peran baru",
+      "create": "Buat templat",
+      "created": "Templat “{name}” dibuat.",
+      "delete": "Hapus templat",
+      "deleteTitle": "Hapus templat “{name}”?",
+      "deleteBody": "Tenant yang dibuat mulai sekarang tidak mendapat peran ini. Tenant yang sudah ada tetap menyimpan salinannya.",
+      "deleted": "Templat “{name}” dihapus.",
+      "duplicate": "Templat dengan nama ini sudah ada.",
+      "ruleTitle": "Templat tidak disimpan",
+      "leaveConfirm": "Tinggalkan halaman ini? Perubahan Anda pada templat ini belum disimpan.",
+      "notFound": "Templat ini tidak ada",
+      "backToRoles": "Kembali ke templat peran",
+      "loadFailed": "Tidak dapat memuat templat ini."
     }
   },
   "audit": {

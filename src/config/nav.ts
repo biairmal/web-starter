@@ -1,5 +1,6 @@
 import {
   Building2,
+  LayoutTemplate,
   type LucideIcon,
   ScrollText,
   ShieldCheck,
@@ -56,6 +57,14 @@ export const navItems: readonly NavItem[] = [
     href: "/admin/tenants",
     labelKey: "tenants",
     icon: Building2,
+    group: "platform",
+    superAdmin: true,
+    multiOnly: true,
+  },
+  {
+    href: "/admin/role-templates",
+    labelKey: "roleTemplates",
+    icon: LayoutTemplate,
     group: "platform",
     superAdmin: true,
     multiOnly: true,

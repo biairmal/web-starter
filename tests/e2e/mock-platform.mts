@@ -13,8 +13,47 @@ import { MOCK_TENANTS } from "./mock-users.ts";
 // - PATCH /v1/admin/tenants/{id}: 428 without If-Match, VERSION_CONFLICT for
 //   a stale one, 409 for suspending the default tenant. Each save raises the
 //   version.
+// - GET /v1/admin/role-templates: every template (a system "admin" and a
+//   "member"). POST: 409 DUPLICATE for a name in use, else 201. PATCH
+//   …/{id}: 428 without If-Match, VERSION_CONFLICT for a stale one,
+//   SYSTEM_ROLE for the system template. DELETE …/{id}: 204.
 
 export type PlatformClaims = { sid?: string; sa?: boolean };
+
+type MockTemplate = {
+  id: string;
+  name: string;
+  description?: string;
+  is_system: boolean;
+  permissions: string[];
+  version: number;
+};
+
+export const MOCK_TEMPLATE_IDS = {
+  admin: "00000000-0000-4000-8000-00000000b001",
+  member: "00000000-0000-4000-8000-00000000b002",
+};
+
+function seedTemplates(): MockTemplate[] {
+  return [
+    {
+      id: MOCK_TEMPLATE_IDS.admin,
+      name: "admin",
+      description: "Everything in the tenant",
+      is_system: true,
+      permissions: ["users:read", "users:manage", "roles:manage", "audit:read"],
+      version: 1,
+    },
+    {
+      id: MOCK_TEMPLATE_IDS.member,
+      name: "member",
+      description: "Signed-in member",
+      is_system: false,
+      permissions: [],
+      version: 2,
+    },
+  ];
+}
 
 type MockTenant = {
   id: string;
@@ -67,7 +106,11 @@ function seedTenants(): MockTenant[] {
   ];
 }
 
-type Platform = { tenants: MockTenant[]; nextId: number };
+type Platform = {
+  tenants: MockTenant[];
+  templates: MockTemplate[];
+  nextId: number;
+};
 
 const platforms = new Map<string, Platform>();
 
@@ -75,7 +118,11 @@ function platformOf(claims: PlatformClaims): Platform {
   const key = claims.sid ?? "shared";
   let platform = platforms.get(key);
   if (!platform) {
-    platform = { tenants: seedTenants(), nextId: 1 };
+    platform = {
+      tenants: seedTenants(),
+      templates: seedTemplates(),
+      nextId: 1,
+    };
     platforms.set(key, platform);
   }
   return platform;
@@ -230,6 +277,89 @@ async function updateTenant(
   json(res, 200, envelope(tenant));
 }
 
+function strings(value: unknown): string[] | undefined {
+  return Array.isArray(value)
+    ? value.filter((entry): entry is string => typeof entry === "string")
+    : undefined;
+}
+
+function nameTaken(platform: Platform, name: string, except?: string) {
+  return platform.templates.some(
+    (entry) =>
+      entry.id !== except && entry.name.toLowerCase() === name.toLowerCase(),
+  );
+}
+
+async function createTemplate(
+  req: IncomingMessage,
+  res: ServerResponse,
+  platform: Platform,
+): Promise<void> {
+  const body = await readBody(req);
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  if (!name) {
+    fail(res, 400, "ERR_VALIDATION");
+    return;
+  }
+  if (nameTaken(platform, name)) {
+    fail(res, 409, "ERR_CONFLICT", "DUPLICATE");
+    return;
+  }
+  const template: MockTemplate = {
+    id: `00000000-0000-4000-8000-0000000d${String(platform.nextId).padStart(4, "0")}`,
+    name,
+    is_system: false,
+    permissions: strings(body.permissions) ?? [],
+    version: 1,
+    ...(typeof body.description === "string" && body.description
+      ? { description: body.description }
+      : {}),
+  };
+  platform.nextId += 1;
+  platform.templates.push(template);
+  json(res, 201, envelope(template));
+}
+
+async function updateTemplate(
+  req: IncomingMessage,
+  res: ServerResponse,
+  platform: Platform,
+  id: string,
+): Promise<void> {
+  const body = await readBody(req);
+  const template = platform.templates.find((entry) => entry.id === id);
+  if (!template) {
+    fail(res, 404, "ERR_NOT_FOUND");
+    return;
+  }
+  if (template.is_system) {
+    fail(res, 409, "ERR_CONFLICT", "SYSTEM_ROLE");
+    return;
+  }
+  const version = versionOf(req);
+  if (version === undefined) {
+    fail(res, 428, "ERR_PRECONDITION_REQUIRED");
+    return;
+  }
+  if (version !== template.version) {
+    fail(res, 409, "ERR_CONFLICT", "VERSION_CONFLICT");
+    return;
+  }
+  if (typeof body.name === "string") {
+    if (nameTaken(platform, body.name.trim(), id)) {
+      fail(res, 409, "ERR_CONFLICT", "DUPLICATE");
+      return;
+    }
+    template.name = body.name.trim();
+  }
+  if (typeof body.description === "string") {
+    template.description = body.description;
+  }
+  template.permissions = strings(body.permissions) ?? template.permissions;
+  template.version += 1;
+  json(res, 200, envelope(template));
+}
+
 type Handler = (platform: Platform, id: string) => unknown;
 
 function routes(
@@ -262,6 +392,30 @@ function routes(
     [
       /^PATCH \/v1\/admin\/tenants\/[^/]+$/,
       (platform, id) => updateTenant(req, res, platform, id),
+    ],
+    [
+      /^GET \/v1\/admin\/role-templates$/,
+      (platform) => {
+        json(res, 200, envelope(platform.templates));
+      },
+    ],
+    [
+      /^POST \/v1\/admin\/role-templates$/,
+      (platform) => createTemplate(req, res, platform),
+    ],
+    [
+      /^PATCH \/v1\/admin\/role-templates\/[^/]+$/,
+      (platform, id) => updateTemplate(req, res, platform, id),
+    ],
+    [
+      /^DELETE \/v1\/admin\/role-templates\/[^/]+$/,
+      (platform, id) => {
+        platform.templates = platform.templates.filter(
+          (entry) => entry.id !== id,
+        );
+        res.writeHead(204);
+        res.end();
+      },
     ],
   ];
 }

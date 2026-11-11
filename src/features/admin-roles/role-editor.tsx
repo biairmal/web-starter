@@ -1,12 +1,13 @@
 "use client";
 
-import { ChevronRight, Lock, ShieldX } from "lucide-react";
+import { ChevronRight, Info, Lock, ShieldX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useId, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useMe } from "@/components/auth/session-provider";
+import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { ConflictBanner } from "@/components/feedback/conflict-banner";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
@@ -31,6 +32,13 @@ import {
 import { PermissionMatrix } from "@/features/admin-roles/permission-matrix";
 import { useUnsavedGuard } from "@/features/admin-roles/use-unsaved-guard";
 import {
+  ROLE_TEMPLATES_PATH,
+  useCreateRoleTemplate,
+  useDeleteRoleTemplate,
+  useRoleTemplate,
+  useSaveRoleTemplate,
+} from "@/features/admin-roles/use-role-templates";
+import {
   ROLE_DESCRIPTION_MAX,
   ROLE_NAME_MAX,
   useCreateRole,
@@ -45,8 +53,41 @@ import {
 // and edit are the same screen. A system role is read-only with the reason.
 // A version conflict keeps the edits and shows the conflict banner; a rule
 // identity enforces opens a dialog; leaving with unsaved changes asks first.
+//
+// The same editor edits a tenant's roles (`kind="role"`) and the super
+// admin's role templates (`kind="template"`, FE-52; DESIGN_BRIEF 7.10). A
+// template saves in one `PATCH`, is deleted without the role rules, and
+// carries a standing notice that only tenants created later get the change.
 
 export const ROLES_PATH = "/admin/roles";
+
+export type EditorKind = "role" | "template";
+
+const LIST_PATHS: Record<EditorKind, string> = {
+  role: ROLES_PATH,
+  template: ROLE_TEMPLATES_PATH,
+};
+
+/**
+ * The editor's words that differ between a role and a template. Both
+ * namespaces define every one of these keys.
+ */
+function useKindText(kind: EditorKind) {
+  const role = useTranslations("adminRoles.editor");
+  const template = useTranslations("adminRoles.templateEditor");
+  return kind === "template" ? template : role;
+}
+
+/** "Changes apply only to tenants created later" (FE-52). */
+export function TemplateNotice() {
+  const t = useTranslations("adminRoles.templateEditor");
+  return (
+    <p className="flex items-start gap-2 rounded-md bg-pill-warning px-3 py-2 text-body text-pill-warning-ink">
+      <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+      {t("notice")}
+    </p>
+  );
+}
 
 type Baseline = {
   name: string;
@@ -64,17 +105,24 @@ function baselineOf(role: Role | undefined): Baseline {
   };
 }
 
-function Breadcrumb({ name }: { name: React.ReactNode }) {
+function Breadcrumb({
+  name,
+  kind,
+}: {
+  name: React.ReactNode;
+  kind: EditorKind;
+}) {
   const t = useTranslations("adminRoles.editor");
+  const tKind = useKindText(kind);
   return (
     <nav aria-label={t("breadcrumb")}>
       <ol className="flex items-center gap-1 text-body text-muted-foreground">
         <li>
           <Link
-            href={ROLES_PATH}
+            href={LIST_PATHS[kind]}
             className="hover:text-foreground hover:underline"
           >
-            {t("roles")}
+            {tKind("roles")}
           </Link>
         </li>
         <li aria-hidden="true">
@@ -101,16 +149,20 @@ function EditorSkeleton() {
 }
 
 function Form({
+  kind,
   role,
   catalog,
   onReload,
 }: {
+  kind: EditorKind;
   /** The saved role; undefined on the create screen. */
   role: Role | undefined;
   catalog: readonly Permission[];
   onReload: () => Promise<Role | undefined>;
 }) {
   const t = useTranslations("adminRoles.editor");
+  const tKind = useKindText(kind);
+  const tTemplate = useTranslations("adminRoles.templateEditor");
   const me = useMe();
   const router = useRouter();
   const errorText = useErrorText();
@@ -120,6 +172,11 @@ function Form({
   const searchId = useId();
   const save = useSaveRole();
   const create = useCreateRole();
+  const saveTemplate = useSaveRoleTemplate();
+  const createTemplate = useCreateRoleTemplate();
+  const deleteTemplate = useDeleteRoleTemplate();
+  const template = kind === "template";
+  const listPath = LIST_PATHS[kind];
 
   const [baseline, setBaseline] = useState(() => baselineOf(role));
   const [name, setName] = useState(baseline.name);
@@ -145,9 +202,13 @@ function Form({
     description.trim() !== baseline.description;
   const keysDirty = changes.added.length + changes.removed.length > 0;
   const dirty = !readOnly && (fieldsDirty || keysDirty);
-  const pending = save.isPending || create.isPending;
+  const pending =
+    save.isPending ||
+    create.isPending ||
+    saveTemplate.isPending ||
+    createTemplate.isPending;
 
-  useUnsavedGuard(dirty && !leaving, t("leaveConfirm"));
+  useUnsavedGuard(dirty && !leaving, tKind("leaveConfirm"));
 
   const reset = (next: Baseline) => {
     setBaseline(next);
@@ -173,7 +234,7 @@ function Form({
       return;
     }
     if (isApiError(error) && error.reason === "DUPLICATE") {
-      setNameError(t("duplicate"));
+      setNameError(tKind("duplicate"));
       document.getElementById(nameId)?.focus();
       return;
     }
@@ -198,17 +259,41 @@ function Form({
     const fields = { name: name.trim(), description: description.trim() };
     const permissions = [...selected].sort();
     if (creating) {
-      create.mutate(
+      const onCreated = {
+        onSuccess: (created: Role) => {
+          setLeaving(true);
+          toast.success(tKind("created", { name: created.name }));
+          router.replace(`${listPath}/${encodeURIComponent(created.id)}`);
+        },
+        onError,
+      };
+      const values = {
+        name: fields.name,
+        ...(fields.description ? { description: fields.description } : {}),
+        permissions,
+      };
+      if (template) {
+        createTemplate.mutate(values, onCreated);
+      } else {
+        create.mutate(values, onCreated);
+      }
+      return;
+    }
+    if (template) {
+      saveTemplate.mutate(
         {
-          name: fields.name,
-          ...(fields.description ? { description: fields.description } : {}),
-          permissions,
+          id: role.id,
+          version: baseline.version,
+          changes: {
+            ...(fieldsDirty ? fields : {}),
+            ...(keysDirty ? { permissions } : {}),
+          },
         },
         {
-          onSuccess: (created) => {
-            setLeaving(true);
-            toast.success(t("created", { name: created.name }));
-            router.replace(`${ROLES_PATH}/${encodeURIComponent(created.id)}`);
+          onSuccess: (saved) => {
+            setBaseline(baselineOf(saved));
+            setConflict(false);
+            toast.success(t("saved"));
           },
           onError,
         },
@@ -250,12 +335,12 @@ function Form({
   const disabledReason = (key: string) =>
     can(me, key) || baseline.permissions.has(key) ? undefined : t("notHeld");
 
-  const title = creating ? t("newTitle") : role.name;
+  const title = creating ? tKind("newTitle") : role.name;
 
   return (
     <div className={cn("flex flex-col gap-6", dirty && "pb-24")}>
       <div className="flex flex-col gap-2">
-        <Breadcrumb name={title} />
+        <Breadcrumb name={title} kind={kind} />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-title font-semibold">{title}</h1>
           {!creating && !readOnly && (
@@ -267,11 +352,13 @@ function Form({
                 setDeleting(true);
               }}
             >
-              {t("delete")}
+              {tKind("delete")}
             </Button>
           )}
         </div>
       </div>
+
+      {template && <TemplateNotice />}
 
       {conflict && (
         <ConflictBanner
@@ -440,7 +527,7 @@ function Form({
                 aria-busy={pending || undefined}
                 onClick={onSave}
               >
-                {creating ? t("create") : t("save")}
+                {creating ? tKind("create") : t("save")}
               </Button>
             </div>
           </div>
@@ -448,13 +535,42 @@ function Form({
       )}
 
       <RuleDialog
-        title={t("ruleTitle")}
+        title={tKind("ruleTitle")}
         rule={rule}
         onClose={() => {
           setRule(undefined);
         }}
       />
-      {role && (
+      {role && template && deleting && (
+        <ConfirmDialog
+          open
+          onOpenChange={(next) => {
+            if (!next) {
+              setDeleting(false);
+            }
+          }}
+          destructive
+          pending={deleteTemplate.isPending}
+          title={tTemplate("deleteTitle", { name: role.name })}
+          description={tTemplate("deleteBody")}
+          confirmLabel={tKind("delete")}
+          onConfirm={() => {
+            deleteTemplate.mutate(role.id, {
+              onSuccess: () => {
+                setDeleting(false);
+                setLeaving(true);
+                toast.success(tTemplate("deleted", { name: role.name }));
+                router.push(listPath);
+              },
+              onError: (error) => {
+                setDeleting(false);
+                errorToast(error);
+              },
+            });
+          }}
+        />
+      )}
+      {role && !template && (
         <DeleteRoleDialog
           role={deleting ? { id: role.id, name: role.name } : undefined}
           onClose={() => {
@@ -470,32 +586,49 @@ function Form({
   );
 }
 
-/** `/admin/roles/{id}`, or `/admin/roles/new` without an id. */
-export function RoleEditor({ id }: { id?: string }) {
+/**
+ * `/admin/roles/{id}`, or `/admin/roles/new` without an id. With
+ * `kind="template"`, the same for `/admin/role-templates`.
+ */
+export function RoleEditor({
+  id,
+  kind = "role",
+}: {
+  id?: string;
+  kind?: EditorKind;
+}) {
   const t = useTranslations("adminRoles.editor");
-  const role = useRole(id);
+  const tKind = useKindText(kind);
+  const tenantRole = useRole(kind === "role" ? id : undefined);
+  const template = useRoleTemplate(kind === "template" ? id : undefined);
+  const role = kind === "template" ? template : tenantRole;
   const catalog = usePermissionCatalog();
 
   if ((id !== undefined && role.isPending) || catalog.isPending) {
     return <EditorSkeleton />;
   }
+  // A template is read from the list, so a missing one is absent, not a 404.
+  const missing =
+    id !== undefined &&
+    ((role.isError && isApiError(role.error) && role.error.status === 404) ||
+      (role.isSuccess && role.data === undefined));
+  if (missing) {
+    return (
+      <EmptyState
+        icon={ShieldX}
+        title={tKind("notFound")}
+        action={
+          <Button asChild variant="outline">
+            <Link href={LIST_PATHS[kind]}>{tKind("backToRoles")}</Link>
+          </Button>
+        }
+      />
+    );
+  }
   if (id !== undefined && role.isError) {
-    if (isApiError(role.error) && role.error.status === 404) {
-      return (
-        <EmptyState
-          icon={ShieldX}
-          title={t("notFound")}
-          action={
-            <Button asChild variant="outline">
-              <Link href={ROLES_PATH}>{t("backToRoles")}</Link>
-            </Button>
-          }
-        />
-      );
-    }
     return (
       <ErrorState
-        title={t("loadFailed")}
+        title={tKind("loadFailed")}
         error={role.error}
         retrying={role.isFetching}
         onRetry={() => {
@@ -520,6 +653,7 @@ export function RoleEditor({ id }: { id?: string }) {
     <Form
       // A different role is a different form.
       key={role.data?.id ?? "new"}
+      kind={kind}
       role={id === undefined ? undefined : role.data}
       catalog={catalog.data}
       onReload={async () => (await role.refetch()).data}

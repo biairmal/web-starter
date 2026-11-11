@@ -81,6 +81,20 @@ test.describe("signed-in shell", () => {
     ).toBeVisible();
   });
 
+  test("FE-31 single mode shows no tenant switcher", async ({
+    page,
+    context,
+  }) => {
+    await signIn(context, { sa: true });
+    await page.goto("/");
+    await expect(
+      page.getByRole("button", { name: /Open account menu/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Switch tenant/ }),
+    ).toHaveCount(0);
+  });
+
   test("a revoked session is cleared and sent to sign-in with next", async ({
     page,
     context,

@@ -67,7 +67,11 @@
     "skipToContent": "Skip to content",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "menuTitle": "Menu"
+    "menuTitle": "Menu",
+    "tenantSwitcher": {
+      "open": "Switch tenant",
+      "label": "Your tenants"
+    }
   },
   "userMenu": {
     "open": "Open account menu",

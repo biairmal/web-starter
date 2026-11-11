@@ -46,6 +46,17 @@ describe("watchSessionMessages", () => {
     expect(deps.navigate).not.toHaveBeenCalled();
   });
 
+  it("FE-31 reloads on the next action after another tab switched tenant", async () => {
+    const { deps, send, act } = setup({ signed_in: true });
+    send({ type: "tenant-switched" });
+    expect(deps.reload).not.toHaveBeenCalled();
+    act("focus");
+    await vi.waitFor(() => {
+      expect(deps.reload).toHaveBeenCalledTimes(1);
+    });
+    expect(deps.navigate).not.toHaveBeenCalled();
+  });
+
   it("FE-21 goes to sign-in on the next action when the session is gone", async () => {
     const { deps, send, act } = setup({ signed_in: false });
     send({ type: "signed-out" });

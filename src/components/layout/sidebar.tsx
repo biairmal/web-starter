@@ -4,14 +4,16 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMe } from "@/components/auth/session-provider";
+import { TenantSwitcher } from "@/components/layout/tenant-switcher";
 import { UserMenu } from "@/components/layout/user-menu";
 import { Wordmark } from "@/components/layout/wordmark";
 import { type NavGroup, type NavItem, navItems } from "@/config/nav";
 import { type Tenancy, isVisible } from "@/lib/authz/can";
 import { cn } from "@/lib/utils";
 
-// Sidebar content: wordmark, navigation, user row (DESIGN_BRIEF 5.2). Shown
-// fixed at 1024px and wider, and in the drawer below that.
+// Sidebar content: wordmark, tenant switcher, navigation, user row
+// (DESIGN_BRIEF 5.2). Shown fixed at 1024px and wider, and in the drawer
+// below that.
 
 type Section = { group: NavGroup | undefined; items: NavItem[] };
 
@@ -61,6 +63,7 @@ export function SidebarContent({
       <div className="flex h-topbar shrink-0 items-center px-4">
         <Wordmark />
       </div>
+      <TenantSwitcher tenancy={tenancy} />
       <nav aria-label={t("label")} className="flex-1 overflow-y-auto pb-4">
         {sections.map((section) => (
           <div key={section.group ?? "main"}>

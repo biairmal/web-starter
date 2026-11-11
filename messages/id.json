@@ -87,6 +87,37 @@
       "body": "Ganti <code>src/app/(app)/page.tsx</code>. Kartu ini hanya tampil saat pengembangan."
     }
   },
+  "account": {
+    "title": "Akun",
+    "body": "Nama Anda dan cara Anda masuk.",
+    "profile": {
+      "title": "Profil",
+      "name": "Nama tampilan",
+      "nameRequired": "Masukkan nama.",
+      "nameTooLong": "Gunakan maksimal {max} karakter.",
+      "email": "Email",
+      "verified": "Terverifikasi",
+      "unverified": "Belum terverifikasi",
+      "emailHint": "Email Anda tidak dapat diubah di sini.",
+      "save": "Simpan profil",
+      "saved": "Profil disimpan"
+    },
+    "password": {
+      "title": "Kata sandi",
+      "body": "Mengganti kata sandi akan mengeluarkan Anda dari semua perangkat lain.",
+      "setTitle": "Buat kata sandi",
+      "setBody": "Anda masuk dengan Google. Kata sandi memberi Anda cara masuk kedua.",
+      "current": "Kata sandi saat ini",
+      "currentRequired": "Masukkan kata sandi Anda saat ini.",
+      "currentWrong": "Itu bukan kata sandi Anda saat ini.",
+      "new": "Kata sandi baru",
+      "submit": "Ganti kata sandi",
+      "setSubmit": "Buat kata sandi",
+      "changed": "Kata sandi diganti",
+      "set": "Kata sandi dibuat",
+      "otherDevices": "Perangkat lain telah dikeluarkan."
+    }
+  },
   "forbidden": {
     "title": "Anda tidak memiliki izin untuk melihat halaman ini",
     "body": "Peran Anda tidak mencakup akses ke halaman ini. Hubungi admin jika Anda membutuhkannya.",

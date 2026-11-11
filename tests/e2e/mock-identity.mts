@@ -20,14 +20,17 @@ import {
 //
 // - GET /v1/me: built from the claims of the fake access token (see
 //   tests/e2e/session.ts). A token with `revoked: true` gets a 401 without a
-//   reason, as identity sends for a revoked access token; ail: true gets
-//   a 500.
+//   reason, as identity sends for a revoked access token; `fail: true` gets
+//   a 500. `providers` sets the sign-in methods it reports.
+// - PATCH /v1/me: keeps the display name for the token's session (`sid`), so
+//   later GET /v1/me calls of that session answer with it.
 // - POST /v1/auth/refresh: 401 REFRESH_REUSED, so a refresh ends the session.
 // - POST /v1/auth/login: the accounts in tests/e2e/mock-users.ts.
 // - POST /v1/auth/register and /email/resend: 202. POST /v1/auth/email/verify:
 //   204 for MOCK_GOOD_TOKEN, 400 TOKEN_INVALID for anything else.
 // - POST /v1/me/password: a new session; PASSWORD_POLICY for
-//   MOCK_COMMON_PASSWORD. POST /v1/auth/logout and /logout-all: 204.
+//   MOCK_COMMON_PASSWORD; 401 INVALID_CREDENTIALS for a current password
+//   other than MOCK_PASSWORD. POST /v1/auth/logout and /logout-all: 204.
 // - POST /v1/auth/password/forgot: 202. /password/reset: like verify, and
 //   PASSWORD_POLICY for MOCK_COMMON_PASSWORD.
 // - GET /v1/auth/invite/{token} and POST /v1/auth/invite/accept: MOCK_GOOD_TOKEN
@@ -42,10 +45,15 @@ type Claims = {
   perms?: string[];
   roles?: string[];
   sa?: boolean;
+  sid?: string;
   name?: string;
   revoked?: boolean;
   fail?: boolean;
+  providers?: { password: boolean; google: boolean };
 };
+
+/** Display names saved through PATCH /v1/me, by session. */
+const displayNames = new Map<string, string>();
 
 function json(res: ServerResponse, status: number, body: unknown): void {
   res.writeHead(status, { "Content-Type": "application/json" });
@@ -87,7 +95,10 @@ function me(res: ServerResponse, claims: Claims | undefined): void {
     json(res, 401, errorEnvelope("ERR_UNAUTHORIZED", "Invalid token."));
     return;
   }
-  const name = claims.name ?? "Test User";
+  const name =
+    (claims.sid === undefined ? undefined : displayNames.get(claims.sid)) ??
+    claims.name ??
+    "Test User";
   json(
     res,
     200,
@@ -105,9 +116,22 @@ function me(res: ServerResponse, claims: Claims | undefined): void {
       },
       roles: claims.roles ?? [],
       permissions: claims.perms ?? [],
-      providers: { password: true, google: false },
+      providers: claims.providers ?? { password: true, google: false },
     }),
   );
+}
+
+/** PATCH /v1/me: saves the display name for this session. */
+async function updateMe(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  const claims = claimsOf(req);
+  const body = await readBody(req);
+  if (claims?.sid !== undefined && typeof body.display_name === "string") {
+    displayNames.set(claims.sid, body.display_name);
+  }
+  me(res, claims);
 }
 
 function proxy(req: IncomingMessage, res: ServerResponse): void {
@@ -268,6 +292,17 @@ async function changePassword(
     json(res, 401, errorEnvelope("ERR_UNAUTHORIZED", "Invalid token."));
     return;
   }
+  if (
+    body.current_password !== undefined &&
+    body.current_password !== MOCK_PASSWORD
+  ) {
+    json(
+      res,
+      401,
+      errorEnvelope("ERR_UNAUTHORIZED", "unauthorized", "INVALID_CREDENTIALS"),
+    );
+    return;
+  }
   if (body.new_password === MOCK_COMMON_PASSWORD) {
     json(res, 400, {
       timestamp: new Date().toISOString(),
@@ -352,6 +387,8 @@ const server = createServer((req, res) => {
     json(res, 200, { status: "ok" });
   } else if (req.method === "GET" && path === "/v1/me") {
     me(res, claimsOf(req));
+  } else if (req.method === "PATCH" && path === "/v1/me") {
+    void updateMe(req, res);
   } else if (req.method === "POST" && path === "/v1/auth/refresh") {
     json(
       res,

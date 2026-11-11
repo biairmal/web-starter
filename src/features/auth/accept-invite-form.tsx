@@ -26,7 +26,7 @@ import { hardNavigate } from "@/lib/hard-navigate";
 import { SIGN_OUT_PATH } from "@/lib/sign-out";
 import { postSessionMessage } from "@/lib/session-channel";
 import { AuthHeading, InlineNotice } from "@/features/auth/auth-screen";
-import { newPasswordSchema } from "@/features/auth/password-schema";
+import { newPasswordSchema } from "@/components/forms/password-schema";
 import { useFragmentToken } from "@/features/auth/use-fragment-token";
 
 // /invite#token=… (FE-9, APP_FLOW 5.7, DESIGN_BRIEF 7.4): who is inviting the

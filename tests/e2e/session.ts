@@ -21,6 +21,8 @@ export type E2eClaims = TestClaims & {
   revoked?: boolean;
   /** The mock identity answers GET /v1/me with 500 for this token. */
   fail?: boolean;
+  /** The sign-in methods the mock identity's GET /v1/me reports. */
+  providers?: { password: boolean; google: boolean };
 };
 
 function key(secret: string): Uint8Array {

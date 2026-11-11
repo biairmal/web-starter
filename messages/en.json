@@ -87,6 +87,37 @@
       "body": "Replace <code>src/app/(app)/page.tsx</code>. This card only shows in development."
     }
   },
+  "account": {
+    "title": "Account",
+    "body": "Your name and how you sign in.",
+    "profile": {
+      "title": "Profile",
+      "name": "Display name",
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "Use no more than {max} characters.",
+      "email": "Email",
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "emailHint": "Your email can’t be changed here.",
+      "save": "Save profile",
+      "saved": "Profile saved"
+    },
+    "password": {
+      "title": "Password",
+      "body": "Changing your password signs you out on every other device.",
+      "setTitle": "Set a password",
+      "setBody": "You sign in with Google. A password gives you a second way in.",
+      "current": "Current password",
+      "currentRequired": "Enter your current password.",
+      "currentWrong": "That isn’t your current password.",
+      "new": "New password",
+      "submit": "Change password",
+      "setSubmit": "Set password",
+      "changed": "Password changed",
+      "set": "Password set",
+      "otherDevices": "Other devices were signed out."
+    }
+  },
   "forbidden": {
     "title": "You don’t have permission to view this",
     "body": "Your role doesn’t include access to this page. Ask an admin if you need it.",

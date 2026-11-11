@@ -21,7 +21,7 @@ import { signInUrl } from "@/lib/api/query-client";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { hardNavigate } from "@/lib/hard-navigate";
 import { AuthHeading } from "@/features/auth/auth-screen";
-import { newPasswordSchema } from "@/features/auth/password-schema";
+import { newPasswordSchema } from "@/components/forms/password-schema";
 
 // The forced password change (FE-7, APP_FLOW 5.6, DESIGN_BRIEF 7.3): only the
 // new password (the restricted token stands in for the current one), the live

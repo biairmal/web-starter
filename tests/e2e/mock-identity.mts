@@ -30,6 +30,8 @@ import {
 //   MOCK_COMMON_PASSWORD. POST /v1/auth/logout and /logout-all: 204.
 // - POST /v1/auth/password/forgot: 202. /password/reset: like verify, and
 //   PASSWORD_POLICY for MOCK_COMMON_PASSWORD.
+// - GET /v1/auth/invite/{token} and POST /v1/auth/invite/accept: MOCK_GOOD_TOKEN
+//   is an invite to Globex for a new account.
 // - POST /v1/auth/exchange: MOCK_GOOD_TOKEN as the code signs in Gina Google.
 // - GET /v1/auth/config: password and Google sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
@@ -300,6 +302,48 @@ async function exchange(
   json(res, 200, envelope(tokens("Gina Google")));
 }
 
+/** GET /v1/auth/invite/{token}: MOCK_GOOD_TOKEN invites a new account to Globex. */
+function inviteInfo(res: ServerResponse, token: string): void {
+  if (token !== MOCK_GOOD_TOKEN) {
+    json(
+      res,
+      400,
+      errorEnvelope("ERR_BAD_REQUEST", "bad request", "TOKEN_INVALID"),
+    );
+    return;
+  }
+  json(
+    res,
+    200,
+    envelope({
+      tenant: { name: "Globex" },
+      email_masked: "b**@example.test",
+      has_password: false,
+    }),
+  );
+}
+
+/** POST /v1/auth/invite/accept: a session for the new member. */
+async function acceptInvite(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  const body = await readBody(req);
+  if (body.token !== MOCK_GOOD_TOKEN) {
+    json(
+      res,
+      400,
+      errorEnvelope("ERR_BAD_REQUEST", "bad request", "TOKEN_INVALID"),
+    );
+    return;
+  }
+  const name =
+    typeof body.display_name === "string" && body.display_name
+      ? body.display_name
+      : "Invited User";
+  json(res, 200, envelope(tokens(name)));
+}
+
 const accepted = () => envelope({ status: "accepted" });
 
 const server = createServer((req, res) => {
@@ -324,6 +368,10 @@ const server = createServer((req, res) => {
   ) {
     req.resume();
     json(res, 202, accepted());
+  } else if (req.method === "GET" && path.startsWith("/v1/auth/invite/")) {
+    inviteInfo(res, decodeURIComponent(path.slice("/v1/auth/invite/".length)));
+  } else if (req.method === "POST" && path === "/v1/auth/invite/accept") {
+    void acceptInvite(req, res);
   } else if (req.method === "POST" && path === "/v1/auth/exchange") {
     void exchange(req, res);
   } else if (req.method === "POST" && path === "/v1/me/password") {

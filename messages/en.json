@@ -260,6 +260,25 @@
       "continue": "Continue with Google",
       "tenant": "Workspace",
       "tenantHelp": "Enter your workspace ID, like acme, to continue with Google."
+    },
+    "invite": {
+      "metaTitle": "Accept your invitation",
+      "loading": "Opening your invitation",
+      "title": "Join {tenant}",
+      "body": "You’ve been invited as {email}.",
+      "name": "Your name",
+      "nameTooLong": "Use no more than 100 characters.",
+      "password": "Choose a password",
+      "existingAccount": "You already have an account. Accept to add this workspace to it.",
+      "accept": "Accept invitation",
+      "accepted": "Accepted",
+      "signedInAs": "You are signed in as {name}. Sign out to accept this invite for {email}.",
+      "signOutToAccept": "Sign out and continue",
+      "expiredTitle": "This invitation has expired or was already used",
+      "expiredBody": "Ask the person who invited you to send a new one, or contact {supportEmail}.",
+      "errorTitle": "We couldn’t open your invitation",
+      "retry": "Try again",
+      "signedInAsUnnamed": "You are signed in to another account. Sign out to accept this invite for {email}."
     }
   }
 }

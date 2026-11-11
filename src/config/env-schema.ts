@@ -33,6 +33,13 @@ export const envSchema = z.object({
     .int({ error: "must be a whole number" })
     .min(0, { error: "must be 0 or more" })
     .default(1),
+  /** identity's modules.tenant.default_tenant_slug: the tenant that cannot be suspended. */
+  DEFAULT_TENANT_SLUG: z
+    .string()
+    .regex(/^[a-z0-9][a-z0-9-]{1,62}$/, {
+      error: "must be a tenant slug: lowercase letters, digits and hyphens",
+    })
+    .default("default"),
   NEXT_PUBLIC_DEFAULT_LOCALE: z.enum(["en", "id"]).default("en"),
   LOG_LEVEL: z
     .enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"])

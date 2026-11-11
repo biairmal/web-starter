@@ -52,6 +52,26 @@ describe("SidebarContent", () => {
     );
   });
 
+  it("FE-50 shows Tenants under Platform only to the super admin in multi mode", () => {
+    const superAdmin: Me = { ...meFixture, is_super_admin: true };
+    const { unmount } = renderWith(
+      superAdmin,
+      <SidebarContent tenancy="multi" />,
+    );
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(
+      within(nav).getByRole("heading", { name: "Platform" }),
+    ).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: "Tenants" })).toHaveAttribute(
+      "href",
+      "/admin/tenants",
+    );
+    unmount();
+
+    renderWith(superAdmin, <SidebarContent tenancy="single" />);
+    expect(screen.queryByRole("link", { name: "Tenants" })).toBeNull();
+  });
+
   it("hides the link and the empty Admin heading without the permission", () => {
     renderWith(meFixture, <SidebarContent tenancy="single" />);
     const nav = screen.getByRole("navigation", { name: "Main" });

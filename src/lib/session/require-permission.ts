@@ -1,11 +1,11 @@
 import "server-only";
 
 import { headers } from "next/headers";
-import { forbidden, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import type { Me } from "@/lib/api/types";
 import { safeNext } from "@/lib/bff/next-path";
 import { can } from "@/lib/authz/can";
-import { getCurrentMe } from "@/lib/session/me";
+import { getAuthConfig, getCurrentMe } from "@/lib/session/me";
 import {
   REQUEST_PATH_HEADER,
   SESSION_CHECK_PATH,
@@ -26,6 +26,22 @@ async function toSessionCheck(): Promise<never> {
 export async function requireMe(): Promise<Me> {
   const me = await getCurrentMe();
   return me ?? toSessionCheck();
+}
+
+/**
+ * The signed-in super admin, for the multi-mode platform pages (TRD 6.1,
+ * 6.2). In single mode the page does not exist (404); for anyone else it is
+ * the forbidden state with status 403.
+ */
+export async function requireSuperAdmin(): Promise<Me> {
+  const [me, config] = await Promise.all([requireMe(), getAuthConfig()]);
+  if (config?.tenancy !== "multi") {
+    notFound();
+  }
+  if (!me.is_super_admin) {
+    forbidden();
+  }
+  return me;
 }
 
 /**

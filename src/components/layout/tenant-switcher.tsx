@@ -14,22 +14,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { bffPost } from "@/lib/api/bff-fetch";
-import type { NextResult } from "@/lib/api/bff-types";
 import { api, unwrap } from "@/lib/api/client";
 import { queryKeys, staleTimes } from "@/lib/api/query-keys";
 import { useErrorToast } from "@/lib/api/use-error-toast";
 import type { Tenancy } from "@/lib/authz/can";
-import { hardNavigate } from "@/lib/hard-navigate";
-import { postSessionMessage } from "@/lib/session-channel";
+import { switchTenant } from "@/lib/switch-tenant";
 
 // The tenant switcher at the top of the sidebar (APP_FLOW 2, 5.10; TRD 5.8;
 // DESIGN_BRIEF 5.2; FE-31). Only in multi mode and only for a user in more
 // than one tenant. Picking a tenant replaces the session's cookies, tells the
 // other tabs, and loads `/` in full, so nothing from the old tenant stays in
 // memory. It opens without animation (DESIGN_BRIEF 4.5).
-
-export const SWITCH_TENANT_PATH = "/api/auth/switch-tenant";
 
 /** `GET /v1/me/tenants`: the tenants the user is an active member of. */
 export function useMyTenants(enabled: boolean) {
@@ -39,18 +34,6 @@ export function useMyTenants(enabled: boolean) {
     staleTime: staleTimes.meTenants,
     enabled,
   });
-}
-
-/**
- * Switches the session to `tenantId` and reloads into it. Resolves once the
- * reload has started; rejects with the `ApiError` identity answered.
- */
-export async function switchTenant(tenantId: string): Promise<void> {
-  const result = await bffPost<NextResult>(SWITCH_TENANT_PATH, {
-    tenant_id: tenantId,
-  });
-  postSessionMessage({ type: "tenant-switched" });
-  hardNavigate(result.next);
 }
 
 export function TenantSwitcher({ tenancy }: { tenancy: Tenancy }) {

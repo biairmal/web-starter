@@ -1,4 +1,10 @@
-import { type LucideIcon, ScrollText, ShieldCheck, Users } from "lucide-react";
+import {
+  Building2,
+  type LucideIcon,
+  ScrollText,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import { AUDIT_READ, ROLES_MANAGE, USERS_READ } from "@/lib/authz/permissions";
 import type en from "../../messages/en.json";
 
@@ -45,5 +51,13 @@ export const navItems: readonly NavItem[] = [
     icon: ScrollText,
     group: "admin",
     permission: AUDIT_READ,
+  },
+  {
+    href: "/admin/tenants",
+    labelKey: "tenants",
+    icon: Building2,
+    group: "platform",
+    superAdmin: true,
+    multiOnly: true,
   },
 ];

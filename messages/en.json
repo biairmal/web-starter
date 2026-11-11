@@ -60,7 +60,8 @@
     "items": {
       "users": "Users",
       "roles": "Roles",
-      "audit": "Audit log"
+      "audit": "Audit log",
+      "tenants": "Tenants"
     }
   },
   "shell": {
@@ -712,6 +713,109 @@
       "errorTitle": "We couldn’t open your invitation",
       "retry": "Try again",
       "signedInAsUnnamed": "You are signed in to another account. Sign out to accept this invite for {email}."
+    }
+  },
+  "tenants": {
+    "title": "Tenants",
+    "body": "Create tenants, see which are live, and suspend one when needed.",
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "filters": {
+      "status": "Status",
+      "tabs": {
+        "all": "All",
+        "active": "Active",
+        "suspended": "Suspended"
+      },
+      "search": "Search by name or slug",
+      "clear": "Clear filters"
+    },
+    "table": {
+      "caption": "Tenants",
+      "total": "{count, plural, one {# tenant} other {# tenants}}",
+      "name": "Name",
+      "status": "Status",
+      "members": "Users",
+      "created": "Created",
+      "membersShort": "Users: {members}",
+      "loadFailed": "Couldn’t load tenants.",
+      "empty": "No tenants yet",
+      "emptyBody": "Create a tenant to give a new client their own space.",
+      "noMatch": "No tenants match these filters",
+      "noMatchBody": "Search matches a name or a slug."
+    },
+    "create": {
+      "open": "Create tenant",
+      "title": "Create tenant",
+      "body": "The tenant starts with the current role templates, and its first admin gets an email invitation.",
+      "name": "Name",
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "Use {max} characters or fewer.",
+      "slug": "Slug",
+      "slugHint": "Lowercase letters, digits and hyphens. People type it to sign in to this tenant.",
+      "slugRequired": "Enter a slug.",
+      "slugTooLong": "Use {max} characters or fewer.",
+      "slugInvalid": "Use 2 or more lowercase letters, digits or hyphens, starting with a letter or digit.",
+      "slugTaken": "Another tenant already uses this slug.",
+      "email": "First admin’s email",
+      "emailHint": "They get the admin role in this tenant.",
+      "emailRequired": "Enter an email address.",
+      "emailInvalid": "Enter a valid email address.",
+      "cancel": "Cancel",
+      "submit": "Create tenant",
+      "created": "Tenant created. Invite sent to {email}."
+    },
+    "detail": {
+      "title": "Tenant",
+      "breadcrumb": "Breadcrumb",
+      "tenants": "Tenants",
+      "notFound": "Tenant not found",
+      "notFoundBody": "It may not exist, or the link is wrong.",
+      "backToTenants": "Back to tenants",
+      "loadFailed": "Couldn’t load this tenant.",
+      "current": "You’re working in this tenant now.",
+      "openAsAdmin": "Open as admin",
+      "openSuspended": "Reactivate the tenant to open it.",
+      "facts": {
+        "title": "Details",
+        "slug": "Slug",
+        "status": "Status",
+        "members": "Users",
+        "created": "Created",
+        "unknown": "Not reported"
+      },
+      "rename": {
+        "open": "Rename",
+        "title": "Rename {name}",
+        "body": "Members see the new name the next time a page loads. The slug stays the same.",
+        "name": "Name",
+        "nameRequired": "Enter a name.",
+        "nameTooLong": "Use {max} characters or fewer.",
+        "cancel": "Cancel",
+        "submit": "Save name",
+        "done": "Tenant renamed."
+      },
+      "danger": {
+        "title": "Danger zone",
+        "defaultTenant": "This is the default tenant. It can’t be suspended.",
+        "suspend": {
+          "label": "Suspend tenant",
+          "consequence": "Members can’t sign in until it is reactivated. Anyone signed in loses access within 15 minutes.",
+          "confirmTitle": "Suspend {name}?",
+          "confirmBody": "Members can’t sign in until you reactivate it. Nothing is deleted.",
+          "confirmBodyCount": "{count, plural, one {# user} other {# users}} can’t sign in until you reactivate it. Nothing is deleted.",
+          "done": "{name} is suspended."
+        },
+        "reactivate": {
+          "label": "Reactivate tenant",
+          "consequence": "Members can sign in again.",
+          "confirmTitle": "Reactivate {name}?",
+          "confirmBody": "Members can sign in again right away.",
+          "done": "{name} is active again."
+        }
+      }
     }
   }
 }

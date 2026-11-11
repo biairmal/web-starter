@@ -59,7 +59,8 @@
     },
     "items": {
       "users": "Pengguna",
-      "roles": "Peran"
+      "roles": "Peran",
+      "audit": "Log audit"
     }
   },
   "shell": {
@@ -408,6 +409,108 @@
       "backToRoles": "Kembali ke peran",
       "loadFailed": "Peran ini tidak dapat dimuat.",
       "catalogFailed": "Izin tidak dapat dimuat."
+    }
+  },
+  "audit": {
+    "title": "Log audit",
+    "body": "Siapa melakukan apa di ruang kerja ini, terbaru lebih dulu. Waktu sesuai zona waktu Anda; arahkan kursor untuk UTC.",
+    "filters": {
+      "actor": "Oleh",
+      "actorSearch": "Cari seseorang",
+      "actorResults": "Orang yang cocok",
+      "searching": "Mencari…",
+      "noActors": "Tidak ada yang cocok",
+      "someone": "Orang terpilih",
+      "clearActor": "Hapus filter orang",
+      "action": "Tindakan",
+      "anyAction": "Semua tindakan",
+      "actions": {
+        "auth": "Masuk dan kata sandi",
+        "identity": "Akun tertaut",
+        "member": "Keanggotaan",
+        "role": "Peran",
+        "role_template": "Templat peran",
+        "session": "Sesi",
+        "superadmin": "Super admin",
+        "tenant": "Ruang kerja",
+        "user": "Pengguna"
+      },
+      "from": "Dari",
+      "to": "Sampai",
+      "clear": "Hapus filter"
+    },
+    "table": {
+      "caption": "Log audit",
+      "when": "Kapan",
+      "actor": "Siapa",
+      "action": "Apa",
+      "target": "Pada",
+      "details": "Detail",
+      "expand": "Tampilkan perubahan {action}",
+      "collapse": "Sembunyikan perubahan {action}",
+      "anonymous": "Anonim",
+      "unknownActor": "Mantan anggota",
+      "ip": "IP {ip}",
+      "requestId": "Permintaan {id}",
+      "refresh": "Muat ulang",
+      "updated": "Diperbarui {time}",
+      "loading": "Memuat",
+      "loadFailed": "Log audit tidak dapat dimuat.",
+      "empty": "Belum ada kejadian di sini",
+      "noMatch": "Tidak ada entri yang cocok dengan filter ini",
+      "clearFilters": "Hapus filter"
+    },
+    "diff": {
+      "caption": "Perubahan",
+      "field": "Kolom",
+      "before": "Sebelum",
+      "after": "Sesudah",
+      "none": "Tidak ada detail yang dicatat.",
+      "kinds": {
+        "added": "(ditambahkan)",
+        "removed": "(dihapus)",
+        "changed": "(diubah)"
+      }
+    },
+    "actions": {
+      "auth_email_verified": "Memverifikasi email",
+      "auth_login": "Masuk",
+      "auth_login_failed": "Gagal masuk",
+      "auth_logout": "Keluar",
+      "auth_logout_all": "Keluar dari semua perangkat",
+      "auth_password_change": "Mengganti kata sandi",
+      "auth_password_reset": "Mengatur ulang kata sandi",
+      "auth_refresh_reuse": "Memakai ulang token masuk (sesi diakhiri)",
+      "auth_register": "Membuat akun",
+      "auth_tenant_switch": "Berpindah ruang kerja",
+      "auth_token_refresh": "Memperbarui sesi",
+      "identity_link": "Menautkan Google",
+      "identity_unlink": "Melepas tautan Google",
+      "member_add": "Menambahkan anggota",
+      "member_remove": "Mengeluarkan anggota",
+      "role_create": "Membuat peran",
+      "role_delete": "Menghapus peran",
+      "role_permissions": "Mengubah izin peran",
+      "role_update": "Mengganti nama peran",
+      "role_template_create": "Membuat templat peran",
+      "role_template_delete": "Menghapus templat peran",
+      "role_template_update": "Mengubah templat peran",
+      "session_revoke": "Mencabut sesi",
+      "session_revoke_all": "Mencabut semua sesi",
+      "superadmin_create": "Membuat super admin",
+      "superadmin_reset": "Mengatur ulang super admin",
+      "superadmin_transfer": "Memindahkan super admin",
+      "tenant_create": "Membuat ruang kerja",
+      "tenant_reactivate": "Mengaktifkan kembali ruang kerja",
+      "tenant_suspend": "Menangguhkan ruang kerja",
+      "tenant_update": "Mengubah ruang kerja",
+      "user_create": "Membuat pengguna",
+      "user_delete": "Menghapus pengguna",
+      "user_disable": "Menonaktifkan pengguna",
+      "user_enable": "Mengaktifkan pengguna",
+      "user_invite": "Mengundang pengguna",
+      "user_invite_accepted": "Menerima undangan",
+      "user_roles_assigned": "Mengubah peran"
     }
   },
   "forbidden": {

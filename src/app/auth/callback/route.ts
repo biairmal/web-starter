@@ -18,7 +18,8 @@ import { callFor } from "@/lib/session/upstream";
 // redirect.
 
 /** Where a linked Google account returns to (account security, FE-33). */
-const LINKED_PATH = "/account/security?linked=1";
+const SECURITY_PATH = "/account/security";
+const LINKED_PATH = `${SECURITY_PATH}?linked=1`;
 
 /** Reasons are upper-case identifiers; anything else in `error` is replaced. */
 const REASON_PATTERN = /^[A-Z][A-Z_]{0,63}$/;
@@ -42,6 +43,14 @@ function toSignIn(reason: string, saved: NextCookie | null): Response {
     params.set("tenant", saved.tenant);
   }
   return redirect(`${SIGN_IN_PATH}?${params.toString()}`);
+}
+
+/** A failed Google link returns to the security page with the reason. */
+function toSecurity(reason: string): Response {
+  const params = new URLSearchParams({
+    error: REASON_PATTERN.test(reason) ? reason : FALLBACK_REASON,
+  });
+  return redirect(`${SECURITY_PATH}?${params.toString()}`);
 }
 
 async function exchange(
@@ -107,7 +116,7 @@ export const GET = withBff(
     }
     const error = params.get("error");
     if (error) {
-      return toSignIn(error, saved);
+      return saved?.link ? toSecurity(error) : toSignIn(error, saved);
     }
     const code = params.get("code");
     if (!code) {

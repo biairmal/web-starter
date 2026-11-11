@@ -238,6 +238,87 @@
       "sent": "Undangan terkirim ke {email}",
       "resend": "Kirim ulang",
       "resent": "Undangan dikirim ulang ke {email}"
+    },
+    "detail": {
+      "title": "Pengguna",
+      "breadcrumb": "Navigasi",
+      "users": "Pengguna",
+      "loadFailed": "Pengguna ini tidak dapat dimuat.",
+      "notFound": "Pengguna ini tidak ada di ruang kerja ini",
+      "notFoundBody": "Mungkin sudah dikeluarkan, atau tautannya salah.",
+      "backToUsers": "Kembali ke pengguna",
+      "selfRoles": "Ini akun Anda. Admin lain harus mengubah peran Anda.",
+      "selfActions": "Ini akun Anda. Anda tidak dapat menonaktifkan atau mengeluarkan diri sendiri di sini.",
+      "profile": {
+        "title": "Profil",
+        "name": "Nama",
+        "noName": "Tanpa nama",
+        "email": "Email",
+        "account": "Akun",
+        "accountStatus": {
+          "pending": "Email belum diverifikasi",
+          "active": "Aktif",
+          "disabled": "Dinonaktifkan di semua tempat"
+        },
+        "methods": "Metode masuk",
+        "password": "Kata sandi",
+        "google": "Google",
+        "noMethods": "Belum ada (undangan belum diterima)"
+      },
+      "membership": {
+        "title": "Keanggotaan",
+        "status": "Status",
+        "added": "Ditambahkan",
+        "lastSignIn": "Masuk terakhir",
+        "never": "Belum pernah"
+      },
+      "roles": {
+        "title": "Peran",
+        "edit": "Ubah peran",
+        "legend": "Peran di ruang kerja ini",
+        "none": "Tanpa peran. Orang ini bisa masuk tetapi belum bisa melakukan apa pun.",
+        "loading": "Memuat peran",
+        "loadFailed": "Peran tidak dapat dimuat.",
+        "notHeld": "Memberi izin yang tidak Anda miliki, jadi Anda tidak dapat memberikannya.",
+        "needsRolesManage": "Mengubah peran memerlukan izin mengelola peran.",
+        "save": "Simpan peran",
+        "cancel": "Batal",
+        "saved": "Peran diperbarui. {name} melihat perubahannya dalam 15 menit.",
+        "revokeNow": "Cabut sesi sekarang",
+        "revoked": "{name} telah dikeluarkan dari semua perangkat.",
+        "ruleTitle": "Peran tidak disimpan"
+      },
+      "actions": {
+        "title": "Zona berbahaya",
+        "disable": {
+          "label": "Nonaktifkan",
+          "consequence": "Memblokir akses ke ruang kerja ini dan mengakhiri sesinya di sini.",
+          "confirmTitle": "Nonaktifkan {name}?",
+          "confirmBody": "Aksesnya ke ruang kerja ini langsung hilang. Peran dan riwayatnya tetap ada, dan Anda bisa mengaktifkannya lagi.",
+          "done": "{name} telah dinonaktifkan."
+        },
+        "enable": {
+          "label": "Aktifkan",
+          "consequence": "Mengizinkannya masuk ke ruang kerja ini lagi.",
+          "confirmTitle": "Aktifkan {name}?",
+          "confirmBody": "Ia bisa masuk lagi dengan peran yang dimilikinya.",
+          "done": "{name} telah diaktifkan."
+        },
+        "revokeSessions": {
+          "label": "Cabut sesi",
+          "consequence": "Mengeluarkannya dari semua perangkat. Perubahan peran langsung berlaku.",
+          "confirmTitle": "Keluarkan {name} dari semua perangkat?",
+          "confirmBody": "Semua sesi berakhir sekarang. Ia bisa masuk lagi.",
+          "done": "{name} telah dikeluarkan dari semua perangkat."
+        },
+        "remove": {
+          "label": "Keluarkan dari ruang kerja",
+          "consequence": "Mencabut keanggotaan dan perannya di sini. Akunnya tetap ada.",
+          "confirmTitle": "Keluarkan {name} dari ruang kerja ini?",
+          "confirmBody": "Aksesnya langsung hilang dan perannya di sini dihapus. Akun dan riwayat auditnya tetap ada.",
+          "done": "{name} telah dikeluarkan."
+        }
+      }
     }
   },
   "forbidden": {
@@ -285,6 +366,9 @@
     "confirm": {
       "cancel": "Batal",
       "typeToConfirm": "Ketik {text} untuk mengonfirmasi"
+    },
+    "rule": {
+      "close": "Tutup"
     }
   },
   "publicFrame": {

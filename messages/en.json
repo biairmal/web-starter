@@ -116,6 +116,52 @@
       "changed": "Password changed",
       "set": "Password set",
       "otherDevices": "Other devices were signed out."
+    },
+    "security": {
+      "title": "Security",
+      "body": "Where you’re signed in, and the ways you can sign in."
+    },
+    "sessions": {
+      "title": "Sessions",
+      "body": "Devices signed in to your account.",
+      "loadFailed": "Couldn’t load your sessions.",
+      "deviceOn": "{browser} on {os}",
+      "unknownDevice": "Unknown device",
+      "current": "Current session",
+      "lastUsed": "Last used {when}",
+      "revoke": "Revoke",
+      "revokeLabel": "Revoke the session on {device}",
+      "revoked": "{device} was signed out.",
+      "signOutHere": "Sign out"
+    },
+    "methods": {
+      "title": "Sign-in methods",
+      "body": "Keep at least one way to sign in.",
+      "password": "Password",
+      "passwordSet": "Set",
+      "passwordNotSet": "Not set",
+      "changePassword": "Change",
+      "setPassword": "Set a password",
+      "google": "Google",
+      "googleLinked": "Linked",
+      "googleNotLinked": "Not linked",
+      "link": "Link Google",
+      "linked": "Google linked",
+      "linkFailed": "Google wasn’t linked.",
+      "unlink": "Unlink",
+      "unlinkTitle": "Unlink Google?",
+      "unlinkBody": "You won’t be able to sign in with Google. Your password still works.",
+      "unlinked": "Google unlinked",
+      "lastMethod": "Keep at least one way to sign in.",
+      "setPasswordFirst": "Set a password first"
+    },
+    "everywhere": {
+      "title": "Sign out everywhere",
+      "body": "Ends every session, including this one.",
+      "action": "Sign out everywhere",
+      "confirmTitle": "Sign out everywhere?",
+      "confirmBody": "{count, plural, =0 {You’re signed in only here. This signs you out on this device.} one {This ends # other session and signs you out on this device.} other {This ends # other sessions and signs you out on this device.}}",
+      "confirmBodyUnknown": "This ends every session and signs you out on this device."
     }
   },
   "forbidden": {

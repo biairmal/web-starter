@@ -6,8 +6,10 @@ import { safeNext } from "@/lib/bff/next-path";
 import type { CookieReader, CookieSpec } from "@/lib/session/cookies";
 import { seal, unseal } from "@/lib/session/crypto";
 
-// Where to return after a Google round trip (TRD 5.5, 8.1): the path, and the
-// tenant slug the user typed, so a TENANT_REQUIRED answer can keep it. Sealed
+// Where to return after a Google round trip (TRD 5.5, 8.1): the path, the
+// tenant slug the user typed, so a TENANT_REQUIRED answer can keep it, and
+// whether the trip links Google to a signed-in account, so an error returns
+// to the security page instead of sign-in. Sealed
 // like the session cookies, so the browser can neither read nor change it.
 // SameSite=Lax, because identity sends the browser back with a top-level GET.
 
@@ -16,6 +18,7 @@ const NEXT_COOKIE_SECONDS = 10 * 60;
 const nextCookieSchema = z.object({
   path: z.string(),
   tenant: z.string().optional(),
+  link: z.boolean().optional(),
 });
 
 export type NextCookie = z.infer<typeof nextCookieSchema>;
@@ -32,6 +35,7 @@ export async function sealNextCookie(value: NextCookie): Promise<CookieSpec> {
     value: await seal({
       path: safeNext(value.path),
       ...(value.tenant === undefined ? {} : { tenant: value.tenant }),
+      ...(value.link === true ? { link: true } : {}),
     }),
     options: {
       httpOnly: true,
@@ -72,5 +76,6 @@ export async function readNextCookie(
   return {
     path: safeNext(result.data.path),
     ...(result.data.tenant === undefined ? {} : { tenant: result.data.tenant }),
+    ...(result.data.link === true ? { link: true } : {}),
   };
 }

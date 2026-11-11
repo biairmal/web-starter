@@ -36,6 +36,11 @@ import {
 // - GET /v1/auth/invite/{token} and POST /v1/auth/invite/accept: MOCK_GOOD_TOKEN
 //   is an invite to Globex for a new account.
 // - POST /v1/auth/exchange: MOCK_GOOD_TOKEN as the code signs in Gina Google.
+// - GET /v1/me/sessions: the token's session (current) and one other device,
+//   until DELETE /v1/me/sessions/{id} revokes it (kept per session).
+// - DELETE /v1/me/identities/google: 409 LAST_SIGN_IN_METHOD when Google is
+//   the only provider, else 204, after which GET /v1/me reports it unlinked.
+// - GET /v1/auth/google/link/start: 302 to a stand-in Google URL.
 // - GET /v1/auth/config: password and Google sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
 
@@ -54,6 +59,84 @@ type Claims = {
 
 /** Display names saved through PATCH /v1/me, by session. */
 const displayNames = new Map<string, string>();
+/** Sessions whose other device was revoked, and those that unlinked Google. */
+const revokedOthers = new Set<string>();
+const unlinkedGoogle = new Set<string>();
+
+const OTHER_SESSION_ID = "00000000-0000-4000-8000-0000000000ee";
+
+function providersOf(claims: Claims): { password: boolean; google: boolean } {
+  const providers = claims.providers ?? { password: true, google: false };
+  return claims.sid !== undefined && unlinkedGoogle.has(claims.sid)
+    ? { ...providers, google: false }
+    : providers;
+}
+
+/** GET /v1/me/sessions: this device, and one other until it is revoked. */
+function sessions(res: ServerResponse, claims: Claims | undefined): void {
+  if (!claims?.sid) {
+    json(res, 401, errorEnvelope("ERR_UNAUTHORIZED", "Invalid token."));
+    return;
+  }
+  const list = [
+    {
+      id: claims.sid,
+      created_at: "2026-11-11T08:00:00Z",
+      last_used_at: new Date().toISOString(),
+      user_agent:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
+      ip: "198.51.100.4",
+      current: true,
+    },
+  ];
+  if (!revokedOthers.has(claims.sid)) {
+    list.push({
+      id: OTHER_SESSION_ID,
+      created_at: "2026-11-01T08:00:00Z",
+      last_used_at: "2026-11-09T08:00:00Z",
+      user_agent:
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      ip: "203.0.113.9",
+      current: false,
+    });
+  }
+  json(res, 200, envelope(list));
+}
+
+/** DELETE /v1/me/sessions/{id}. */
+function revokeSession(
+  res: ServerResponse,
+  claims: Claims | undefined,
+  id: string,
+): void {
+  if (claims?.sid !== undefined && id === OTHER_SESSION_ID) {
+    revokedOthers.add(claims.sid);
+  }
+  res.writeHead(204);
+  res.end();
+}
+
+/** DELETE /v1/me/identities/google. */
+function unlinkGoogle(res: ServerResponse, claims: Claims | undefined): void {
+  if (!claims) {
+    json(res, 401, errorEnvelope("ERR_UNAUTHORIZED", "Invalid token."));
+    return;
+  }
+  const providers = providersOf(claims);
+  if (providers.google && !providers.password) {
+    json(
+      res,
+      409,
+      errorEnvelope("ERR_CONFLICT", "conflict", "LAST_SIGN_IN_METHOD"),
+    );
+    return;
+  }
+  if (claims.sid !== undefined) {
+    unlinkedGoogle.add(claims.sid);
+  }
+  res.writeHead(204);
+  res.end();
+}
 
 function json(res: ServerResponse, status: number, body: unknown): void {
   res.writeHead(status, { "Content-Type": "application/json" });
@@ -116,7 +199,7 @@ function me(res: ServerResponse, claims: Claims | undefined): void {
       },
       roles: claims.roles ?? [],
       permissions: claims.perms ?? [],
-      providers: claims.providers ?? { password: true, google: false },
+      providers: providersOf(claims),
     }),
   );
 }
@@ -389,6 +472,25 @@ const server = createServer((req, res) => {
     me(res, claimsOf(req));
   } else if (req.method === "PATCH" && path === "/v1/me") {
     void updateMe(req, res);
+  } else if (req.method === "GET" && path === "/v1/me/sessions") {
+    sessions(res, claimsOf(req));
+  } else if (req.method === "DELETE" && path.startsWith("/v1/me/sessions/")) {
+    revokeSession(
+      res,
+      claimsOf(req),
+      decodeURIComponent(path.slice("/v1/me/sessions/".length)),
+    );
+  } else if (req.method === "DELETE" && path === "/v1/me/identities/google") {
+    unlinkGoogle(res, claimsOf(req));
+  } else if (req.method === "GET" && path === "/v1/auth/google/link/start") {
+    const target = new URL("/stand-in-google", PRISM_ORIGIN);
+    target.searchParams.set(
+      "redirect_to",
+      new URL(req.url ?? "/", "http://mock").searchParams.get("redirect_to") ??
+        "",
+    );
+    res.writeHead(302, { Location: target.toString() });
+    res.end();
   } else if (req.method === "POST" && path === "/v1/auth/refresh") {
     json(
       res,

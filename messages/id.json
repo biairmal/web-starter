@@ -116,6 +116,52 @@
       "changed": "Kata sandi diganti",
       "set": "Kata sandi dibuat",
       "otherDevices": "Perangkat lain telah dikeluarkan."
+    },
+    "security": {
+      "title": "Keamanan",
+      "body": "Tempat Anda masuk, dan cara Anda bisa masuk."
+    },
+    "sessions": {
+      "title": "Sesi",
+      "body": "Perangkat yang masuk ke akun Anda.",
+      "loadFailed": "Tidak dapat memuat sesi Anda.",
+      "deviceOn": "{browser} di {os}",
+      "unknownDevice": "Perangkat tidak dikenal",
+      "current": "Sesi saat ini",
+      "lastUsed": "Terakhir dipakai {when}",
+      "revoke": "Cabut",
+      "revokeLabel": "Cabut sesi di {device}",
+      "revoked": "{device} telah dikeluarkan.",
+      "signOutHere": "Keluar"
+    },
+    "methods": {
+      "title": "Metode masuk",
+      "body": "Sisakan setidaknya satu cara untuk masuk.",
+      "password": "Kata sandi",
+      "passwordSet": "Sudah dibuat",
+      "passwordNotSet": "Belum dibuat",
+      "changePassword": "Ganti",
+      "setPassword": "Buat kata sandi",
+      "google": "Google",
+      "googleLinked": "Tertaut",
+      "googleNotLinked": "Belum tertaut",
+      "link": "Tautkan Google",
+      "linked": "Google tertaut",
+      "linkFailed": "Google tidak tertaut.",
+      "unlink": "Lepas tautan",
+      "unlinkTitle": "Lepas tautan Google?",
+      "unlinkBody": "Anda tidak akan bisa masuk dengan Google. Kata sandi Anda tetap berlaku.",
+      "unlinked": "Tautan Google dilepas",
+      "lastMethod": "Sisakan setidaknya satu cara untuk masuk.",
+      "setPasswordFirst": "Buat kata sandi dulu"
+    },
+    "everywhere": {
+      "title": "Keluar dari semua perangkat",
+      "body": "Mengakhiri semua sesi, termasuk sesi ini.",
+      "action": "Keluar dari semua perangkat",
+      "confirmTitle": "Keluar dari semua perangkat?",
+      "confirmBody": "{count, plural, =0 {Anda hanya masuk di sini. Ini akan mengeluarkan Anda dari perangkat ini.} other {Ini mengakhiri # sesi lain dan mengeluarkan Anda dari perangkat ini.}}",
+      "confirmBodyUnknown": "Ini mengakhiri semua sesi dan mengeluarkan Anda dari perangkat ini."
     }
   },
   "forbidden": {

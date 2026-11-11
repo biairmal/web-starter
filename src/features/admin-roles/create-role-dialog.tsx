@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { applyServerErrors } from "@/lib/api/apply-server-errors";
 import { isApiError } from "@/lib/api/errors";
+import type { Role } from "@/lib/api/types";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { useErrorToast } from "@/lib/api/use-error-toast";
 import {
@@ -31,7 +33,8 @@ import {
 
 // "Create role" (FE-43, DESIGN_BRIEF 7.8): a name of 1 to 50 characters and
 // an optional description. A name already used in the tenant shows on the
-// field (DUPLICATE). The new role has no permissions; its editor adds them.
+// field (DUPLICATE). The new role has no permissions, so the dialog opens its
+// editor next.
 
 type FormValues = { name: string; description: string };
 
@@ -39,7 +42,7 @@ function CreateRoleForm({
   onCreated,
   onCancel,
 }: {
-  onCreated: (name: string) => void;
+  onCreated: (role: Role) => void;
   onCancel: () => void;
 }) {
   const t = useTranslations("adminRoles.create");
@@ -79,7 +82,7 @@ function CreateRoleForm({
         name,
         ...(description ? { description } : {}),
       });
-      onCreated(role.name);
+      onCreated(role);
     } catch (error) {
       const { applied } = applyServerErrors(
         form,
@@ -152,6 +155,7 @@ function CreateRoleForm({
 
 export function CreateRoleDialog() {
   const t = useTranslations("adminRoles.create");
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   return (
@@ -173,9 +177,10 @@ export function CreateRoleDialog() {
         {/* Mounted only while open, so every opening starts empty. */}
         {open && (
           <CreateRoleForm
-            onCreated={(name) => {
+            onCreated={(role) => {
               setOpen(false);
-              toast.success(t("created", { name }));
+              toast.success(t("created", { name: role.name }));
+              router.push(`/admin/roles/${encodeURIComponent(role.id)}`);
             }}
             onCancel={() => {
               setOpen(false);

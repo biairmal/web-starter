@@ -333,9 +333,7 @@ describe("CreateRoleDialog", () => {
       within(dialog).getByRole("button", { name: "Create role" }),
     );
     expect(
-      await screen.findByText(
-        "Role “Support” created. Open it to choose its permissions.",
-      ),
+      await screen.findByText("Role “Support” created. Choose what it can do."),
     ).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).toBeNull();

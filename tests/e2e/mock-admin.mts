@@ -17,6 +17,10 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 // - GET /v1/admin/roles: paging and a name search. GET /v1/admin/roles/{id}.
 // - POST /v1/admin/roles: DUPLICATE for a name in use. DELETE …/{id}:
 //   SYSTEM_ROLE, ROLE_IN_USE without `force=true`, LAST_ADMIN.
+// - GET /v1/admin/permissions: MOCK_CATALOG. PATCH /v1/admin/roles/{id} and
+//   PUT …/permissions: SYSTEM_ROLE, 428 without If-Match, VERSION_CONFLICT for
+//   a stale one, DUPLICATE on rename, and PERMISSION_NOT_HELD for an added key
+//   the caller does not hold. Each save raises the version.
 //
 // Each route answers 403 without its permission (`users:read`,
 // `users:manage`, `roles:manage`), unless the token is the super admin's.
@@ -481,11 +485,19 @@ async function createRole(
   req: IncomingMessage,
   res: ServerResponse,
   tenant: Tenant,
+  claims: AdminClaims,
 ): Promise<void> {
   const body = await readBody(req);
   const name = typeof body.name === "string" ? body.name.trim() : "";
   if (!name || name.length > 50) {
     fail(res, 400, "ERR_VALIDATION");
+    return;
+  }
+  const permissions = Array.isArray(body.permissions)
+    ? body.permissions.filter((key): key is string => typeof key === "string")
+    : [];
+  if (permissions.some((key) => !allowed(claims, key))) {
+    fail(res, 403, "ERR_FORBIDDEN", "PERMISSION_NOT_HELD");
     return;
   }
   if (
@@ -501,7 +513,7 @@ async function createRole(
       ? { description: body.description }
       : {}),
     is_system: false,
-    permissions: [],
+    permissions: [...new Set(permissions)].sort(),
     version: 1,
   };
   tenant.roles.push(role);
@@ -543,6 +555,119 @@ function deleteRole(
   tenant.roles = roles;
   tenant.users = users;
   noContent(res);
+}
+
+/** GET /v1/admin/permissions. */
+export const MOCK_CATALOG = [
+  { key: "audit:read", description: "Read the audit log", is_system: true },
+  { key: "notes:read", description: "Read notes", is_system: false },
+  {
+    key: "notes:read:any",
+    description: "Read anyone's notes",
+    is_system: false,
+  },
+  { key: "notes:write", description: "Write notes", is_system: false },
+  { key: "roles:manage", description: "Manage roles", is_system: true },
+  {
+    key: "users:manage",
+    description: "Invite and change users",
+    is_system: true,
+  },
+  { key: "users:read", description: "See users", is_system: true },
+];
+
+/** The version an update is based on: `If-Match: "3"`. */
+function versionOf(req: IncomingMessage): number | undefined {
+  const match = /^"?(\d+)"?$/.exec(req.headers["if-match"] ?? "");
+  return match ? Number(match[1]) : undefined;
+}
+
+/** The checks a PATCH or PUT on a role passes, in identity's order. */
+function editableRole(
+  req: IncomingMessage,
+  res: ServerResponse,
+  tenant: Tenant,
+  id: string,
+): MockRole | undefined {
+  const role = tenant.roles.find((entry) => entry.id === id);
+  if (!role) {
+    fail(res, 404, "ERR_NOT_FOUND");
+    return undefined;
+  }
+  if (role.is_system) {
+    fail(res, 409, "ERR_CONFLICT", "SYSTEM_ROLE");
+    return undefined;
+  }
+  const version = versionOf(req);
+  if (version === undefined) {
+    fail(res, 428, "ERR_PRECONDITION_REQUIRED");
+    return undefined;
+  }
+  if (version !== role.version) {
+    fail(res, 409, "ERR_CONFLICT", "VERSION_CONFLICT");
+    return undefined;
+  }
+  return role;
+}
+
+async function updateRole(
+  req: IncomingMessage,
+  res: ServerResponse,
+  tenant: Tenant,
+  id: string,
+): Promise<void> {
+  const body = await readBody(req);
+  const role = editableRole(req, res, tenant, id);
+  if (!role) {
+    return;
+  }
+  const name = typeof body.name === "string" ? body.name.trim() : role.name;
+  if (
+    tenant.roles.some(
+      (entry) =>
+        entry.id !== id && entry.name.toLowerCase() === name.toLowerCase(),
+    )
+  ) {
+    fail(res, 409, "ERR_CONFLICT", "DUPLICATE");
+    return;
+  }
+  role.name = name;
+  if (typeof body.description === "string") {
+    role.description = body.description;
+  }
+  role.version += 1;
+  for (const user of tenant.users) {
+    user.roles = user.roles.map((entry) =>
+      entry.id === id ? ref(role) : entry,
+    );
+  }
+  json(res, 200, envelope(role));
+}
+
+async function setPermissions(
+  req: IncomingMessage,
+  res: ServerResponse,
+  tenant: Tenant,
+  claims: AdminClaims,
+  id: string,
+): Promise<void> {
+  const body = await readBody(req);
+  const role = editableRole(req, res, tenant, id);
+  if (!role) {
+    return;
+  }
+  const keys = Array.isArray(body.permissions)
+    ? body.permissions.filter((key): key is string => typeof key === "string")
+    : [];
+  if (
+    keys.some((key) => !role.permissions.includes(key) && !allowed(claims, key))
+  ) {
+    fail(res, 403, "ERR_FORBIDDEN", "PERMISSION_NOT_HELD");
+    return;
+  }
+  role.permissions = [...new Set(keys)].sort();
+  role.version += 1;
+  json(res, 200, envelope(role));
 }
 
 type Handler = (
@@ -623,7 +748,24 @@ function routes(
     [
       /^POST \/v1\/admin\/roles$/,
       "roles:manage",
-      (tenant) => createRole(req, res, tenant),
+      (tenant, claims) => createRole(req, res, tenant, claims),
+    ],
+    [
+      /^GET \/v1\/admin\/permissions$/,
+      "roles:manage",
+      () => {
+        json(res, 200, envelope(MOCK_CATALOG));
+      },
+    ],
+    [
+      /^PATCH \/v1\/admin\/roles\/[^/]+$/,
+      "roles:manage",
+      (tenant, _claims, id) => updateRole(req, res, tenant, id),
+    ],
+    [
+      /^PUT \/v1\/admin\/roles\/[^/]+\/permissions$/,
+      "roles:manage",
+      (tenant, claims, id) => setPermissions(req, res, tenant, claims, id),
     ],
     [
       /^DELETE \/v1\/admin\/roles\/[^/]+$/,

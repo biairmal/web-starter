@@ -25,7 +25,10 @@ export function DeleteRoleDialog({
   onDeleted,
 }: {
   /** The role to delete; the dialog is open while it is set. */
-  role: Pick<RoleSummary, "id" | "name" | "user_count"> | undefined;
+  role:
+    | (Pick<RoleSummary, "id" | "name"> &
+        Partial<Pick<RoleSummary, "user_count">>)
+    | undefined;
   onClose: () => void;
   onDeleted?: () => void;
 }) {
@@ -87,9 +90,11 @@ export function DeleteRoleDialog({
           pending={remove.isPending}
           title={t("title", { name: role.name })}
           description={
-            stage === "inUse"
-              ? t("inUseBody", { count: role.user_count })
-              : t("body")
+            stage !== "inUse"
+              ? t("body")
+              : role.user_count === undefined
+                ? t("inUseBodyUnknown")
+                : t("inUseBody", { count: role.user_count })
           }
           confirmLabel={stage === "inUse" ? t("force") : t("confirm")}
           {...(stage === "inUse" ? { confirmText: role.name } : {})}

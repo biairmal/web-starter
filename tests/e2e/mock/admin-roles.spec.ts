@@ -59,10 +59,13 @@ test.describe("admin roles", () => {
     await dialog.getByRole("textbox", { name: /Name/ }).fill("Support");
     await dialog.getByRole("button", { name: "Create role" }).click();
     await expect(
-      page.getByText(
-        "Role “Support” created. Open it to choose its permissions.",
-      ),
+      page.getByText("Role “Support” created. Choose what it can do."),
     ).toBeVisible();
+    // The new role has no permissions yet, so its editor opens.
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Support" }),
+    ).toBeVisible();
+    await page.goto("/admin/roles");
     await expect(row(page, "Support")).toHaveCount(1);
   });
 

@@ -359,7 +359,7 @@
       "duplicate": "Peran dengan nama ini sudah ada.",
       "cancel": "Batal",
       "submit": "Buat peran",
-      "created": "Peran “{name}” dibuat. Buka untuk memilih izinnya."
+      "created": "Peran “{name}” dibuat. Pilih apa yang bisa dilakukannya."
     },
     "delete": {
       "title": "Hapus peran “{name}”?",
@@ -368,7 +368,46 @@
       "inUseBody": "{count, plural, other {# pengguna memiliki peran ini. Mereka kehilangan semua yang diberikannya.}}",
       "force": "Tetap hapus",
       "deleted": "Peran “{name}” dihapus.",
-      "refused": "Peran tidak dihapus"
+      "refused": "Peran tidak dihapus",
+      "inUseBodyUnknown": "Ada pengguna yang memiliki peran ini. Mereka kehilangan semua yang diberikannya."
+    },
+    "matrix": {
+      "selectGroup": "Semua izin {resource}",
+      "groupCount": "{count} dari {total} dipilih"
+    },
+    "editor": {
+      "title": "Peran",
+      "newTitle": "Peran baru",
+      "breadcrumb": "Navigasi",
+      "roles": "Peran",
+      "details": "Detail",
+      "name": "Nama",
+      "description": "Deskripsi",
+      "optional": " (opsional)",
+      "noDescription": "Tanpa deskripsi",
+      "nameRequired": "Masukkan nama.",
+      "nameTooLong": "Gunakan paling banyak {max} karakter.",
+      "duplicate": "Peran dengan nama ini sudah ada.",
+      "systemReadOnly": "Peran sistem, dikelola oleh {appName}. Tidak dapat diubah.",
+      "permissions": "Izin",
+      "search": "Saring izin",
+      "hidden": "{count, plural, other {# izin disembunyikan oleh saringan}}",
+      "noCatalog": "Belum ada izin di katalog.",
+      "notHeld": "Anda tidak dapat memberi izin yang tidak Anda miliki.",
+      "changes": "{added, plural, other {# izin ditambahkan}}, {removed, plural, other {# dihapus}}",
+      "detailsChanged": "Nama atau deskripsi berubah",
+      "cancel": "Buang perubahan",
+      "save": "Simpan",
+      "create": "Buat peran",
+      "saved": "Tersimpan",
+      "created": "Peran “{name}” dibuat.",
+      "delete": "Hapus peran",
+      "ruleTitle": "Peran tidak disimpan",
+      "leaveConfirm": "Tinggalkan halaman ini? Perubahan pada peran ini belum disimpan.",
+      "notFound": "Peran ini tidak ada",
+      "backToRoles": "Kembali ke peran",
+      "loadFailed": "Peran ini tidak dapat dimuat.",
+      "catalogFailed": "Izin tidak dapat dimuat."
     }
   },
   "forbidden": {

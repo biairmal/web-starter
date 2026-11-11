@@ -79,6 +79,16 @@ export class BffError extends Error {
     );
   }
 
+  /** A body that is not JSON or not the expected shape. */
+  static badRequest(fields?: Record<string, string>): BffError {
+    return new BffError(
+      400,
+      "ERR_BAD_REQUEST",
+      "validation failed",
+      fields && Object.keys(fields).length > 0 ? { fields } : undefined,
+    );
+  }
+
   static internal(): BffError {
     return new BffError(500, "ERR_INTERNAL", "Something went wrong.");
   }

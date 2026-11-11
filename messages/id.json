@@ -152,5 +152,30 @@
       "retry": "Coba lagi",
       "home": "Ke beranda"
     }
+  },
+  "auth": {
+    "common": {
+      "back": "Kembali ke halaman masuk"
+    },
+    "signIn": {
+      "metaTitle": "Masuk",
+      "title": "Masuk ke {appName}",
+      "email": "Email",
+      "password": "Kata sandi",
+      "forgot": "Lupa kata sandi?",
+      "submit": "Masuk",
+      "retryIn": "Coba lagi dalam {seconds} detik",
+      "noAccount": "Baru di sini?",
+      "createAccount": "Buat akun",
+      "emailInvalid": "Masukkan alamat email, misalnya nama@contoh.com.",
+      "passwordRequired": "Masukkan kata sandi Anda.",
+      "noMethods": "Saat ini Anda belum bisa masuk. Hubungi {supportEmail}.",
+      "blockedTitle": "Anda belum bisa masuk saat ini"
+    },
+    "tenantPicker": {
+      "title": "Pilih ruang kerja",
+      "body": "Akun Anda terdaftar di lebih dari satu ruang kerja. Pilih yang ingin dibuka.",
+      "back": "Gunakan akun lain"
+    }
   }
 }

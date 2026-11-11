@@ -152,5 +152,30 @@
       "retry": "Try again",
       "home": "Go to home"
     }
+  },
+  "auth": {
+    "common": {
+      "back": "Back to sign in"
+    },
+    "signIn": {
+      "metaTitle": "Sign in",
+      "title": "Sign in to {appName}",
+      "email": "Email",
+      "password": "Password",
+      "forgot": "Forgot password?",
+      "submit": "Sign in",
+      "retryIn": "Try again in {seconds, plural, one {# second} other {# seconds}}",
+      "noAccount": "New here?",
+      "createAccount": "Create an account",
+      "emailInvalid": "Enter an email address, like name@example.com.",
+      "passwordRequired": "Enter your password.",
+      "noMethods": "Signing in isn’t available right now. Contact {supportEmail}.",
+      "blockedTitle": "You can’t sign in right now"
+    },
+    "tenantPicker": {
+      "title": "Choose a workspace",
+      "body": "Your account belongs to more than one workspace. Pick the one to open.",
+      "back": "Use a different account"
+    }
   }
 }

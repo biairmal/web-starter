@@ -66,10 +66,14 @@ describe("SidebarContent", () => {
       "href",
       "/admin/tenants",
     );
+    expect(
+      within(nav).getByRole("link", { name: "Role templates" }),
+    ).toHaveAttribute("href", "/admin/role-templates");
     unmount();
 
     renderWith(superAdmin, <SidebarContent tenancy="single" />);
     expect(screen.queryByRole("link", { name: "Tenants" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Role templates" })).toBeNull();
   });
 
   it("hides the link and the empty Admin heading without the permission", () => {

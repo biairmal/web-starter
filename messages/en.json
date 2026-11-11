@@ -61,7 +61,8 @@
       "users": "Users",
       "roles": "Roles",
       "audit": "Audit log",
-      "tenants": "Tenants"
+      "tenants": "Tenants",
+      "roleTemplates": "Role templates"
     }
   },
   "shell": {
@@ -414,6 +415,38 @@
       "backToRoles": "Back to roles",
       "loadFailed": "Couldn’t load this role.",
       "catalogFailed": "Couldn’t load the permissions."
+    },
+    "templates": {
+      "title": "Role templates",
+      "body": "The roles every new tenant starts with.",
+      "new": "New template",
+      "caption": "Role templates",
+      "name": "Name",
+      "description": "Description",
+      "permissions": "Permissions",
+      "total": "{count, plural, one {# template} other {# templates}}",
+      "permissionsCount": "{count, plural, one {# permission} other {# permissions}}",
+      "loadFailed": "Couldn’t load the role templates.",
+      "empty": "No role templates yet",
+      "emptyBody": "New tenants start with no roles until you add a template."
+    },
+    "templateEditor": {
+      "title": "Role template",
+      "notice": "Changes apply only to tenants created later. Existing tenants keep their current roles.",
+      "roles": "Role templates",
+      "newTitle": "New role template",
+      "create": "Create template",
+      "created": "Template “{name}” created.",
+      "delete": "Delete template",
+      "deleteTitle": "Delete the “{name}” template?",
+      "deleteBody": "Tenants created from now on won’t get this role. Existing tenants keep their copy.",
+      "deleted": "Template “{name}” deleted.",
+      "duplicate": "A template with this name already exists.",
+      "ruleTitle": "The template wasn’t saved",
+      "leaveConfirm": "Leave this page? Your changes to this template aren’t saved.",
+      "notFound": "This template doesn’t exist",
+      "backToRoles": "Back to role templates",
+      "loadFailed": "Couldn’t load this template."
     }
   },
   "audit": {

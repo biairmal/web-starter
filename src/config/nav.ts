@@ -1,5 +1,5 @@
-import { type LucideIcon, Users } from "lucide-react";
-import { USERS_READ } from "@/lib/authz/permissions";
+import { type LucideIcon, ShieldCheck, Users } from "lucide-react";
+import { ROLES_MANAGE, USERS_READ } from "@/lib/authz/permissions";
 import type en from "../../messages/en.json";
 
 // Sidebar entries (TRD 4.3, APP_FLOW 2, FE-62). Each screen adds its entry
@@ -31,5 +31,12 @@ export const navItems: readonly NavItem[] = [
     icon: Users,
     group: "admin",
     permission: USERS_READ,
+  },
+  {
+    href: "/admin/roles",
+    labelKey: "roles",
+    icon: ShieldCheck,
+    group: "admin",
+    permission: ROLES_MANAGE,
   },
 ];

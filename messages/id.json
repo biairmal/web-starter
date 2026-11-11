@@ -58,7 +58,8 @@
       "platform": "Platform"
     },
     "items": {
-      "users": "Pengguna"
+      "users": "Pengguna",
+      "roles": "Peran"
     }
   },
   "shell": {
@@ -319,6 +320,55 @@
           "done": "{name} telah dikeluarkan."
         }
       }
+    }
+  },
+  "adminRoles": {
+    "title": "Peran",
+    "body": "Apa yang bisa dilakukan setiap peran di ruang kerja ini. Orang mendapat izin hanya melalui perannya.",
+    "table": {
+      "caption": "Peran",
+      "search": "Cari peran",
+      "name": "Nama",
+      "description": "Deskripsi",
+      "users": "Pengguna",
+      "permissions": "Izin",
+      "usersCount": "{count, plural, other {# pengguna}}",
+      "permissionsCount": "{count, plural, other {# izin}}",
+      "system": "Sistem",
+      "actionsHeader": "Tindakan",
+      "actions": "Tindakan untuk {name}",
+      "edit": "Ubah",
+      "view": "Lihat",
+      "delete": "Hapus",
+      "loadFailed": "Peran tidak dapat dimuat.",
+      "empty": "Belum ada peran",
+      "emptyBody": "Buat peran, lalu pilih apa yang bisa dilakukannya.",
+      "noMatch": "Tidak ada peran yang cocok dengan pencarian ini",
+      "clearSearch": "Hapus pencarian"
+    },
+    "create": {
+      "open": "Buat peran",
+      "title": "Buat peran",
+      "body": "Beri nama sesuai pekerjaannya, seperti “Dukungan” atau “Tagihan”. Anda memilih izinnya setelah ini.",
+      "name": "Nama",
+      "nameHint": "Paling banyak {max} karakter.",
+      "nameRequired": "Masukkan nama.",
+      "nameTooLong": "Gunakan paling banyak {max} karakter.",
+      "description": "Deskripsi",
+      "descriptionTooLong": "Gunakan paling banyak {max} karakter.",
+      "duplicate": "Peran dengan nama ini sudah ada.",
+      "cancel": "Batal",
+      "submit": "Buat peran",
+      "created": "Peran “{name}” dibuat. Buka untuk memilih izinnya."
+    },
+    "delete": {
+      "title": "Hapus peran “{name}”?",
+      "body": "Peran dan izinnya dihapus. Tindakan ini tidak dapat dibatalkan.",
+      "confirm": "Hapus peran",
+      "inUseBody": "{count, plural, other {# pengguna memiliki peran ini. Mereka kehilangan semua yang diberikannya.}}",
+      "force": "Tetap hapus",
+      "deleted": "Peran “{name}” dihapus.",
+      "refused": "Peran tidak dihapus"
     }
   },
   "forbidden": {

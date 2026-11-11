@@ -15,6 +15,8 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 //   on Sari, LAST_ADMIN when no active member would keep roles:manage, and
 //   PERMISSION_NOT_HELD for a role granting what the caller does not hold.
 // - GET /v1/admin/roles: paging and a name search. GET /v1/admin/roles/{id}.
+// - POST /v1/admin/roles: DUPLICATE for a name in use. DELETE …/{id}:
+//   SYSTEM_ROLE, ROLE_IN_USE without `force=true`, LAST_ADMIN.
 //
 // Each route answers 403 without its permission (`users:read`,
 // `users:manage`, `roles:manage`), unless the token is the super admin's.
@@ -471,6 +473,74 @@ function getRole(res: ServerResponse, tenant: Tenant, id: string): void {
   json(res, 200, envelope(role));
 }
 
+async function createRole(
+  req: IncomingMessage,
+  res: ServerResponse,
+  tenant: Tenant,
+): Promise<void> {
+  const body = await readBody(req);
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  if (!name || name.length > 50) {
+    fail(res, 400, "ERR_VALIDATION");
+    return;
+  }
+  if (
+    tenant.roles.some((role) => role.name.toLowerCase() === name.toLowerCase())
+  ) {
+    fail(res, 409, "ERR_CONFLICT", "DUPLICATE");
+    return;
+  }
+  const role: MockRole = {
+    id: `00000000-0000-4000-8000-0000000e${String(tenant.nextId++).padStart(4, "0")}`,
+    name,
+    ...(typeof body.description === "string" && body.description
+      ? { description: body.description }
+      : {}),
+    is_system: false,
+    permissions: [],
+    version: 1,
+  };
+  tenant.roles.push(role);
+  json(res, 201, envelope(role));
+}
+
+/** DELETE /v1/admin/roles/{id}?force: SYSTEM_ROLE, ROLE_IN_USE, LAST_ADMIN. */
+function deleteRole(
+  res: ServerResponse,
+  tenant: Tenant,
+  id: string,
+  force: boolean,
+): void {
+  const role = tenant.roles.find((entry) => entry.id === id);
+  if (!role) {
+    fail(res, 404, "ERR_NOT_FOUND");
+    return;
+  }
+  if (role.is_system) {
+    fail(res, 409, "ERR_CONFLICT", "SYSTEM_ROLE");
+    return;
+  }
+  const holders = tenant.users.filter((user) =>
+    user.roles.some((entry) => entry.id === id),
+  );
+  if (holders.length > 0 && !force) {
+    fail(res, 409, "ERR_CONFLICT", "ROLE_IN_USE");
+    return;
+  }
+  const roles = tenant.roles.filter((entry) => entry.id !== id);
+  const users = tenant.users.map((user) => ({
+    ...user,
+    roles: user.roles.filter((entry) => entry.id !== id),
+  }));
+  if (!keepsAdmin(users, roles)) {
+    fail(res, 409, "ERR_CONFLICT", "LAST_ADMIN");
+    return;
+  }
+  tenant.roles = roles;
+  tenant.users = users;
+  noContent(res);
+}
+
 type Handler = (
   tenant: Tenant,
   claims: AdminClaims,
@@ -544,6 +614,18 @@ function routes(
       "roles:manage",
       (tenant) => {
         listRoles(res, tenant, query);
+      },
+    ],
+    [
+      /^POST \/v1\/admin\/roles$/,
+      "roles:manage",
+      (tenant) => createRole(req, res, tenant),
+    ],
+    [
+      /^DELETE \/v1\/admin\/roles\/[^/]+$/,
+      "roles:manage",
+      (tenant, _claims, id) => {
+        deleteRole(res, tenant, id, query.get("force") === "true");
       },
     ],
     [

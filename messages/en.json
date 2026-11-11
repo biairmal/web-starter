@@ -164,6 +164,82 @@
       "confirmBodyUnknown": "This ends every session and signs you out on this device."
     }
   },
+  "adminUsers": {
+    "title": "Users",
+    "body": "Everyone with access to this workspace, and the invites still open.",
+    "table": {
+      "caption": "Users",
+      "total": "{count, plural, one {# user} other {# users}}",
+      "name": "Name",
+      "roles": "Roles",
+      "status": "Status",
+      "lastSignIn": "Last sign-in",
+      "lastSignInShort": "Signed in {when}",
+      "added": "Added",
+      "never": "Never",
+      "unnamed": "No name",
+      "noRoles": "No roles",
+      "moreRoles": "+{count}",
+      "loadFailed": "Couldn’t load users.",
+      "empty": "No users yet",
+      "emptyBody": "Invite people to give them access.",
+      "noMatch": "No users match these filters",
+      "noMatchBody": "Search matches a name, or an email typed in full.",
+      "clearFilters": "Clear filters"
+    },
+    "filters": {
+      "membership": "Membership",
+      "tabs": {
+        "all": "All",
+        "active": "Active",
+        "invited": "Invited",
+        "disabled": "Disabled"
+      },
+      "search": "Search by name or exact email",
+      "status": "Account status",
+      "anyStatus": "Any account status",
+      "statuses": {
+        "pending": "Email not verified",
+        "active": "Account active",
+        "disabled": "Account disabled"
+      },
+      "role": "Role",
+      "anyRole": "Any role",
+      "clear": "Clear filters"
+    },
+    "status": {
+      "accountDisabled": "Account disabled",
+      "invited": "Invited",
+      "disabled": "Disabled",
+      "removed": "Removed",
+      "unverified": "Not verified",
+      "active": "Active"
+    },
+    "roles": {
+      "none": "There are no roles yet. Create one under Roles first."
+    },
+    "invite": {
+      "open": "Invite user",
+      "title": "Invite a user",
+      "body": "They get an email with a link to join. The link works for 7 days.",
+      "email": "Email",
+      "emailRequired": "Enter an email address.",
+      "emailInvalid": "Enter an email address like name@example.com.",
+      "name": "Name",
+      "nameTooLong": "Use {max} characters or fewer.",
+      "roles": "Roles",
+      "rolesRequired": "Choose at least one role.",
+      "rolesLoading": "Loading roles",
+      "rolesFailed": "Couldn’t load roles.",
+      "rolesForbidden": "Choosing roles needs permission to manage roles. Ask an admin who has it to send this invite.",
+      "alreadyMember": "This person is already a member.",
+      "cancel": "Cancel",
+      "submit": "Send invitation",
+      "sent": "Invite sent to {email}",
+      "resend": "Resend",
+      "resent": "Invite sent to {email} again"
+    }
+  },
   "forbidden": {
     "title": "You don’t have permission to view this",
     "body": "Your role doesn’t include access to this page. Ask an admin if you need it.",

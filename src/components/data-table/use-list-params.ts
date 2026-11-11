@@ -126,9 +126,25 @@ export function useListParams(config: ListParamsConfig) {
     [queryString],
   );
 
+  // Changes build on the last state asked for, not the last one rendered:
+  // the router updates the URL a moment later, and two quick changes (a tab,
+  // then a select) must not drop the first. Once the URL catches up, or
+  // changes from elsewhere (back button), it is the state again.
+  const latest = useRef(params);
+  const pending = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const current = serializeListParams(params, configRef.current);
+    if (pending.current === undefined || pending.current === current) {
+      pending.current = undefined;
+      latest.current = params;
+    }
+  }, [params]);
+
   const navigate = useCallback(
     (next: ListParams, mode: "push" | "replace") => {
       const query = serializeListParams(next, configRef.current);
+      latest.current = next;
+      pending.current = query;
       router[mode](query ? `${pathname}?${query}` : pathname, {
         scroll: false,
       });
@@ -138,16 +154,16 @@ export function useListParams(config: ListParamsConfig) {
 
   const setPage = useCallback(
     (page: number) => {
-      navigate({ ...params, page }, "push");
+      navigate({ ...latest.current, page }, "push");
     },
-    [navigate, params],
+    [navigate],
   );
 
   const setSize = useCallback(
     (size: number) => {
-      navigate({ ...params, size, page: 1 }, "push");
+      navigate({ ...latest.current, size, page: 1 }, "push");
     },
-    [navigate, params],
+    [navigate],
   );
 
   const setSort = useCallback(
@@ -155,33 +171,33 @@ export function useListParams(config: ListParamsConfig) {
       navigate(
         {
           page: 1,
-          size: params.size,
-          filters: params.filters,
+          size: latest.current.size,
+          filters: latest.current.filters,
           ...(sort ? { sort } : {}),
         },
         "push",
       );
     },
-    [navigate, params],
+    [navigate],
   );
 
   /** Any filter change goes back to page 1. An empty value removes the filter. */
   const setFilter = useCallback(
     (key: string, value: string, mode: "push" | "replace" = "push") => {
-      const others = Object.entries(params.filters).filter(
+      const others = Object.entries(latest.current.filters).filter(
         ([name]) => name !== key,
       );
       const filters = Object.fromEntries(
         value ? [...others, [key, value]] : others,
       );
-      navigate({ ...params, filters, page: 1 }, mode);
+      navigate({ ...latest.current, filters, page: 1 }, mode);
     },
-    [navigate, params],
+    [navigate],
   );
 
   const clearFilters = useCallback(() => {
-    navigate({ ...params, filters: {}, page: 1 }, "push");
-  }, [navigate, params]);
+    navigate({ ...latest.current, filters: {}, page: 1 }, "push");
+  }, [navigate]);
 
   // The search box shows what the user types at once; the URL follows after
   // a pause. A URL change from elsewhere (back button) updates the box.

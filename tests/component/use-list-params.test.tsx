@@ -169,6 +169,19 @@ describe("useListParams", () => {
     });
   });
 
+  it("keeps both of two quick changes made before the URL updates", () => {
+    const { result } = start("/admin/users?page=2");
+    const { setFilter, setSort } = result.current;
+    act(() => {
+      setFilter("status", "active");
+      setFilter("role", "r1");
+      setSort("display_name,ASC");
+    });
+    expect(nav.url).toBe(
+      "/admin/users?sort=display_name%2CASC&status=active&role=r1",
+    );
+  });
+
   it("removes a filter set to empty, and clears all filters", () => {
     const { result } = start("/admin/users?status=active&role=r1");
     act(() => {

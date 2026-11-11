@@ -17,6 +17,10 @@ export type Tenant = Schemas["Tenant"];
 export type AdminUser = Schemas["AdminUser"];
 export type AdminUserDetail = Schemas["AdminUserDetail"];
 export type Role = Schemas["Role"];
+/** One row of the roles list, with its user and permission counts. */
+export type RoleSummary = Schemas["RoleSummary"];
+/** A role as a user carries it: id and name. */
+export type RoleRef = Schemas["RoleRef"];
 /** The Role schema carries permissions and version, so it serves as the detail type. */
 export type RoleDetail = Schemas["Role"];
 /**

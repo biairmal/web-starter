@@ -164,6 +164,82 @@
       "confirmBodyUnknown": "Ini mengakhiri semua sesi dan mengeluarkan Anda dari perangkat ini."
     }
   },
+  "adminUsers": {
+    "title": "Pengguna",
+    "body": "Semua orang yang punya akses ke ruang kerja ini, dan undangan yang masih terbuka.",
+    "table": {
+      "caption": "Pengguna",
+      "total": "{count, plural, other {# pengguna}}",
+      "name": "Nama",
+      "roles": "Peran",
+      "status": "Status",
+      "lastSignIn": "Masuk terakhir",
+      "lastSignInShort": "Masuk {when}",
+      "added": "Ditambahkan",
+      "never": "Belum pernah",
+      "unnamed": "Tanpa nama",
+      "noRoles": "Tanpa peran",
+      "moreRoles": "+{count}",
+      "loadFailed": "Pengguna tidak dapat dimuat.",
+      "empty": "Belum ada pengguna",
+      "emptyBody": "Undang orang untuk memberi mereka akses.",
+      "noMatch": "Tidak ada pengguna yang cocok dengan filter ini",
+      "noMatchBody": "Pencarian mencocokkan nama, atau email yang diketik lengkap.",
+      "clearFilters": "Hapus filter"
+    },
+    "filters": {
+      "membership": "Keanggotaan",
+      "tabs": {
+        "all": "Semua",
+        "active": "Aktif",
+        "invited": "Diundang",
+        "disabled": "Dinonaktifkan"
+      },
+      "search": "Cari berdasarkan nama atau email lengkap",
+      "status": "Status akun",
+      "anyStatus": "Semua status akun",
+      "statuses": {
+        "pending": "Email belum diverifikasi",
+        "active": "Akun aktif",
+        "disabled": "Akun dinonaktifkan"
+      },
+      "role": "Peran",
+      "anyRole": "Semua peran",
+      "clear": "Hapus filter"
+    },
+    "status": {
+      "accountDisabled": "Akun dinonaktifkan",
+      "invited": "Diundang",
+      "disabled": "Dinonaktifkan",
+      "removed": "Dikeluarkan",
+      "unverified": "Belum diverifikasi",
+      "active": "Aktif"
+    },
+    "roles": {
+      "none": "Belum ada peran. Buat dulu di menu Peran."
+    },
+    "invite": {
+      "open": "Undang pengguna",
+      "title": "Undang pengguna",
+      "body": "Mereka menerima email berisi tautan untuk bergabung. Tautan berlaku 7 hari.",
+      "email": "Email",
+      "emailRequired": "Masukkan alamat email.",
+      "emailInvalid": "Masukkan alamat email seperti nama@contoh.com.",
+      "name": "Nama",
+      "nameTooLong": "Gunakan paling banyak {max} karakter.",
+      "roles": "Peran",
+      "rolesRequired": "Pilih minimal satu peran.",
+      "rolesLoading": "Memuat peran",
+      "rolesFailed": "Peran tidak dapat dimuat.",
+      "rolesForbidden": "Memilih peran memerlukan izin mengelola peran. Minta admin yang memilikinya untuk mengirim undangan ini.",
+      "alreadyMember": "Orang ini sudah menjadi anggota.",
+      "cancel": "Batal",
+      "submit": "Kirim undangan",
+      "sent": "Undangan terkirim ke {email}",
+      "resend": "Kirim ulang",
+      "resent": "Undangan dikirim ulang ke {email}"
+    }
+  },
   "forbidden": {
     "title": "Anda tidak memiliki izin untuk melihat halaman ini",
     "body": "Peran Anda tidak mencakup akses ke halaman ini. Hubungi admin jika Anda membutuhkannya.",

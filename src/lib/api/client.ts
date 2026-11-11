@@ -1,6 +1,7 @@
 import createClient from "openapi-fetch";
 import { ApiError } from "@/lib/api/errors";
 import type { paths } from "@/lib/api/schema";
+import type { Page } from "@/lib/api/types";
 
 // The browser's client for identity, through the BFF proxy `/api/id` (TRD 7.4,
 // 8.2). Requests carry the custom header the BFF's CSRF check needs (TRD 7.1).
@@ -69,12 +70,35 @@ export type Unwrapped<R> = R extends { data: infer Body }
 export async function unwrap<R extends FetchResult>(
   request: Promise<R> | R,
 ): Promise<Unwrapped<R>> {
-  const { data, error, response } = await request;
+  return envelopeData(await request) as Unwrapped<R>;
+}
+
+/** The envelope's `data`, or `undefined` without a body; throws on an error. */
+function envelopeData({ data, error, response }: FetchResult): unknown {
   if (!response.ok) {
     throw ApiError.from(response, error);
   }
   if (typeof data === "object" && data !== null && "data" in data) {
-    return data.data as Unwrapped<R>;
+    return data.data;
   }
-  return undefined as Unwrapped<R>;
+  return undefined;
+}
+
+/** The item type of a list call's page. */
+type PageItem<R> = Unwrapped<R> extends { items?: (infer T)[] } ? T : never;
+
+/**
+ * `unwrap()` for a list call: the spec types `items` as optional, but a page
+ * always has them, so a missing list becomes an empty one.
+ */
+export async function unwrapPage<R extends FetchResult>(
+  request: Promise<R> | R,
+): Promise<Page<PageItem<R>>> {
+  const page = envelopeData(await request) as Omit<
+    Page<PageItem<R>>,
+    "items"
+  > & {
+    items?: PageItem<R>[];
+  };
+  return { ...page, items: page.items ?? [] };
 }

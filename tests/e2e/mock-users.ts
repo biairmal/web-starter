@@ -8,6 +8,8 @@ export type MockUser = {
   name: string;
   /** Answers ACCOUNT_LOCKED with 14 minutes to wait. */
   locked?: boolean;
+  /** Answers EMAIL_NOT_VERIFIED after the right password. */
+  unverified?: boolean;
   /** Belongs to several tenants: asks for one when none is named. */
   multi?: boolean;
   /** Signs in with a restricted token (forced password change). */
@@ -17,6 +19,7 @@ export type MockUser = {
 export const MOCK_USERS: readonly MockUser[] = [
   { email: "dina@example.test", name: "Dina Pratama" },
   { email: "locked@example.test", name: "Locked User", locked: true },
+  { email: "new@example.test", name: "New User", unverified: true },
   { email: "multi@example.test", name: "Multi Tenant", multi: true },
   { email: "change@example.test", name: "Change Me", mustChange: true },
 ];
@@ -29,3 +32,6 @@ export const MOCK_TENANTS = [
     name: "Globex",
   },
 ];
+
+/** The one email-link token the mock identity accepts (verify, reset, invite). */
+export const MOCK_GOOD_TOKEN = "good-token";

@@ -32,6 +32,7 @@ import {
   setPendingSignIn,
 } from "@/features/auth/pending-sign-in";
 import { ReasonBanner } from "@/features/auth/reason-banner";
+import { ResendButton } from "@/features/auth/resend-button";
 import { useAuthConfig } from "@/features/auth/use-auth-config";
 import { useCountdown } from "@/features/auth/use-countdown";
 
@@ -208,7 +209,17 @@ export function SignInForm({
           </div>
 
           {failure?.kind === "notice" && (
-            <InlineNotice>{failure.text}</InlineNotice>
+            <InlineNotice
+              action={
+                <ResendButton
+                  email={form.getValues("email").trim()}
+                  variant="link"
+                  className="h-auto self-start p-0"
+                />
+              }
+            >
+              {failure.text}
+            </InlineNotice>
           )}
           <FormErrorSummary
             invalidCount={errorCount}

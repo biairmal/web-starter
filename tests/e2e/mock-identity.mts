@@ -7,6 +7,7 @@ import {
 import { MOCK_IDENTITY_PORT, PRISM_ORIGIN } from "./env.ts";
 import { fakeAccessToken } from "../helpers/tokens.ts";
 import {
+  MOCK_COMMON_PASSWORD,
   MOCK_GOOD_TOKEN,
   MOCK_PASSWORD,
   MOCK_TENANTS,
@@ -25,6 +26,8 @@ import {
 // - POST /v1/auth/login: the accounts in tests/e2e/mock-users.ts.
 // - POST /v1/auth/register and /email/resend: 202. POST /v1/auth/email/verify:
 //   204 for MOCK_GOOD_TOKEN, 400 TOKEN_INVALID for anything else.
+// - POST /v1/auth/password/forgot: 202. /password/reset: like verify, and
+//   PASSWORD_POLICY for MOCK_COMMON_PASSWORD.
 // - GET /v1/auth/config: password sign-in, open registration, single tenancy
 //   (MOCK_TENANCY=multi switches it).
 
@@ -220,6 +223,35 @@ async function oneTimeToken(
   );
 }
 
+/** A reset with MOCK_GOOD_TOKEN; MOCK_COMMON_PASSWORD fails the policy. */
+async function reset(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const body = await readBody(req);
+  if (body.token !== MOCK_GOOD_TOKEN) {
+    json(
+      res,
+      400,
+      errorEnvelope("ERR_BAD_REQUEST", "bad request", "TOKEN_INVALID"),
+    );
+    return;
+  }
+  if (body.password === MOCK_COMMON_PASSWORD) {
+    json(res, 400, {
+      timestamp: new Date().toISOString(),
+      error: {
+        code: "ERR_BAD_REQUEST",
+        message: "validation failed",
+        meta: {
+          reason: "PASSWORD_POLICY",
+          fields: { password: "password is too common" },
+        },
+      },
+    });
+    return;
+  }
+  res.writeHead(204);
+  res.end();
+}
+
 const accepted = () => envelope({ status: "accepted" });
 
 const server = createServer((req, res) => {
@@ -238,10 +270,14 @@ const server = createServer((req, res) => {
     void login(req, res);
   } else if (
     req.method === "POST" &&
-    (path === "/v1/auth/register" || path === "/v1/auth/email/resend")
+    (path === "/v1/auth/register" ||
+      path === "/v1/auth/email/resend" ||
+      path === "/v1/auth/password/forgot")
   ) {
     req.resume();
     json(res, 202, accepted());
+  } else if (req.method === "POST" && path === "/v1/auth/password/reset") {
+    void reset(req, res);
   } else if (req.method === "POST" && path === "/v1/auth/email/verify") {
     void oneTimeToken(req, res);
   } else if (req.method === "GET" && path === "/v1/auth/config") {

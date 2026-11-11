@@ -35,3 +35,6 @@ export const MOCK_TENANTS = [
 
 /** The one email-link token the mock identity accepts (verify, reset, invite). */
 export const MOCK_GOOD_TOKEN = "good-token";
+
+/** A password the mock identity refuses as too common (PASSWORD_POLICY). */
+export const MOCK_COMMON_PASSWORD = "password1234";

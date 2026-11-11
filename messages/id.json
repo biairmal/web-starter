@@ -222,6 +222,29 @@
       "expiredBody": "Masukkan email Anda dan kami akan mengirim tautan baru.",
       "email": "Email",
       "backToSignIn": "Kembali ke halaman masuk"
+    },
+    "notices": {
+      "PASSWORD_RESET": "Kata sandi diubah. Masuk dengan kata sandi baru Anda."
+    },
+    "forgotPassword": {
+      "title": "Atur ulang kata sandi",
+      "body": "Masukkan email yang Anda gunakan untuk masuk, dan kami akan mengirim tautan untuk memilih kata sandi baru.",
+      "email": "Email",
+      "submit": "Kirim tautan atur ulang",
+      "emailInvalid": "Masukkan alamat email, misalnya nama@contoh.com.",
+      "sentTitle": "Periksa email Anda",
+      "sentBody": "Jika alamat itu memiliki akun, kami telah mengirim tautan atur ulang. Tautan hanya berlaku sekali dan segera kedaluwarsa.",
+      "back": "Kembali ke halaman masuk"
+    },
+    "resetPassword": {
+      "metaTitle": "Pilih kata sandi baru",
+      "title": "Pilih kata sandi baru",
+      "password": "Kata sandi baru",
+      "warning": "Ini akan mengeluarkan Anda dari semua perangkat.",
+      "submit": "Ubah kata sandi",
+      "expiredTitle": "Tautan ini sudah kedaluwarsa atau sudah digunakan",
+      "expiredBody": "Minta tautan baru dan gunakan sebelum masa berlakunya habis.",
+      "newLink": "Kirim tautan baru"
     }
   }
 }

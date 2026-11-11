@@ -260,6 +260,25 @@
       "continue": "Lanjutkan dengan Google",
       "tenant": "Ruang kerja",
       "tenantHelp": "Masukkan ID ruang kerja Anda, misalnya acme, untuk melanjutkan dengan Google."
+    },
+    "invite": {
+      "metaTitle": "Terima undangan Anda",
+      "loading": "Membuka undangan Anda",
+      "title": "Bergabung dengan {tenant}",
+      "body": "Anda diundang sebagai {email}.",
+      "name": "Nama Anda",
+      "nameTooLong": "Gunakan maksimal 100 karakter.",
+      "password": "Pilih kata sandi",
+      "existingAccount": "Anda sudah punya akun. Terima untuk menambahkan ruang kerja ini ke akun Anda.",
+      "accept": "Terima undangan",
+      "accepted": "Diterima",
+      "signedInAs": "Anda masuk sebagai {name}. Keluar untuk menerima undangan ini untuk {email}.",
+      "signOutToAccept": "Keluar dan lanjutkan",
+      "expiredTitle": "Undangan ini sudah kedaluwarsa atau sudah digunakan",
+      "expiredBody": "Minta orang yang mengundang Anda untuk mengirim undangan baru, atau hubungi {supportEmail}.",
+      "errorTitle": "Kami tidak dapat membuka undangan Anda",
+      "retry": "Coba lagi",
+      "signedInAsUnnamed": "Anda masuk dengan akun lain. Keluar untuk menerima undangan ini untuk {email}."
     }
   }
 }

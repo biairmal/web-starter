@@ -27,6 +27,8 @@ export type RoleTemplate = Schemas["Role"];
 export type Permission = Schemas["Permission"];
 export type AuditEntry = Schemas["AuditEntry"];
 export type Session = Schemas["Session"];
+/** What an invite is for, before it is accepted (BE TRD 9.4). */
+export type InvitePreview = Schemas["InvitePreview"];
 
 /** Error envelope (BE TRD 9.1). Branch on error.meta.reason, never on message. */
 export type ApiError = Schemas["ErrorEnvelope"];

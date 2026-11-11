@@ -238,6 +238,87 @@
       "sent": "Invite sent to {email}",
       "resend": "Resend",
       "resent": "Invite sent to {email} again"
+    },
+    "detail": {
+      "title": "User",
+      "breadcrumb": "Breadcrumb",
+      "users": "Users",
+      "loadFailed": "Couldn’t load this user.",
+      "notFound": "This user isn’t in this workspace",
+      "notFoundBody": "They may have been removed, or the link is wrong.",
+      "backToUsers": "Back to users",
+      "selfRoles": "This is your account. Another admin has to change your roles.",
+      "selfActions": "This is your account. You can’t disable or remove yourself here.",
+      "profile": {
+        "title": "Profile",
+        "name": "Name",
+        "noName": "No name",
+        "email": "Email",
+        "account": "Account",
+        "accountStatus": {
+          "pending": "Email not verified",
+          "active": "Active",
+          "disabled": "Disabled everywhere"
+        },
+        "methods": "Sign-in methods",
+        "password": "Password",
+        "google": "Google",
+        "noMethods": "None yet (invite not accepted)"
+      },
+      "membership": {
+        "title": "Membership",
+        "status": "Status",
+        "added": "Added",
+        "lastSignIn": "Last sign-in",
+        "never": "Never"
+      },
+      "roles": {
+        "title": "Roles",
+        "edit": "Edit roles",
+        "legend": "Roles in this workspace",
+        "none": "No roles. This person can sign in but do nothing yet.",
+        "loading": "Loading roles",
+        "loadFailed": "Couldn’t load roles.",
+        "notHeld": "Grants a permission you don’t hold, so you can’t assign it.",
+        "needsRolesManage": "Changing roles needs permission to manage roles.",
+        "save": "Save roles",
+        "cancel": "Cancel",
+        "saved": "Roles updated. {name} sees the change within 15 minutes.",
+        "revokeNow": "Revoke sessions now",
+        "revoked": "{name} was signed out everywhere.",
+        "ruleTitle": "Roles weren’t saved"
+      },
+      "actions": {
+        "title": "Danger zone",
+        "disable": {
+          "label": "Disable",
+          "consequence": "Blocks sign-in to this workspace and ends their sessions here.",
+          "confirmTitle": "Disable {name}?",
+          "confirmBody": "They lose access to this workspace at once. Their roles and history stay, and you can enable them again.",
+          "done": "{name} was disabled."
+        },
+        "enable": {
+          "label": "Enable",
+          "consequence": "Lets them sign in to this workspace again.",
+          "confirmTitle": "Enable {name}?",
+          "confirmBody": "They can sign in again with the roles they had.",
+          "done": "{name} was enabled."
+        },
+        "revokeSessions": {
+          "label": "Revoke sessions",
+          "consequence": "Signs them out on every device. Role changes apply at once.",
+          "confirmTitle": "Sign {name} out everywhere?",
+          "confirmBody": "Every session ends now. They can sign in again.",
+          "done": "{name} was signed out everywhere."
+        },
+        "remove": {
+          "label": "Remove from workspace",
+          "consequence": "Takes away membership and roles here. The account stays.",
+          "confirmTitle": "Remove {name} from this workspace?",
+          "confirmBody": "They lose access immediately and their roles here are removed. Their account and audit history stay.",
+          "done": "{name} was removed."
+        }
+      }
     }
   },
   "forbidden": {
@@ -285,6 +366,9 @@
     "confirm": {
       "cancel": "Cancel",
       "typeToConfirm": "Type {text} to confirm"
+    },
+    "rule": {
+      "close": "Close"
     }
   },
   "publicFrame": {

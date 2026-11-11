@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ErrorPageBody, PublicFrame } from "@/components/layout/public-frame";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -18,6 +19,7 @@ export default async function Forbidden() {
             {t("home")}
           </Link>
         }
+        secondary={<SignOutButton>{t("signOut")}</SignOutButton>}
       />
     </PublicFrame>
   );

@@ -76,7 +76,8 @@
       "light": "Light",
       "dark": "Dark",
       "system": "System"
-    }
+    },
+    "signOut": "Sign out"
   },
   "home": {
     "signedIn": "You are signed in to {tenant}.",
@@ -89,7 +90,8 @@
   "forbidden": {
     "title": "You don’t have permission to view this",
     "body": "Your role doesn’t include access to this page. Ask an admin if you need it.",
-    "home": "Go to home"
+    "home": "Go to home",
+    "signOut": "Sign in as someone else"
   },
   "forms": {
     "requiredMark": " *",
@@ -245,6 +247,13 @@
       "expiredTitle": "This link has expired or was already used",
       "expiredBody": "Ask for a new link and use it within the time it gives.",
       "newLink": "Send a new link"
+    },
+    "changePassword": {
+      "title": "Choose a new password",
+      "body": "Your administrator asked you to change your password before you continue.",
+      "password": "New password",
+      "submit": "Change password",
+      "signOut": "Sign out"
     }
   }
 }

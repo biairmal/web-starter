@@ -138,6 +138,7 @@ export function SignUpForm({ initialConfig }: { initialConfig: AuthConfig }) {
     <div className="flex flex-col">
       <AuthHeading title={t("title", { appName: brand.appName })} />
       <form
+        method="post"
         noValidate
         onSubmit={(event) => {
           void onSubmit(event);

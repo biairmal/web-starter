@@ -58,7 +58,8 @@
       "platform": "Platform"
     },
     "items": {
-      "users": "Users"
+      "users": "Users",
+      "roles": "Roles"
     }
   },
   "shell": {
@@ -319,6 +320,55 @@
           "done": "{name} was removed."
         }
       }
+    }
+  },
+  "adminRoles": {
+    "title": "Roles",
+    "body": "What each role can do in this workspace. People get permissions only through their roles.",
+    "table": {
+      "caption": "Roles",
+      "search": "Search roles",
+      "name": "Name",
+      "description": "Description",
+      "users": "Users",
+      "permissions": "Permissions",
+      "usersCount": "{count, plural, one {# user} other {# users}}",
+      "permissionsCount": "{count, plural, one {# permission} other {# permissions}}",
+      "system": "System",
+      "actionsHeader": "Actions",
+      "actions": "Actions for {name}",
+      "edit": "Edit",
+      "view": "View",
+      "delete": "Delete",
+      "loadFailed": "Couldn’t load roles.",
+      "empty": "No roles yet",
+      "emptyBody": "Create a role, then choose what it can do.",
+      "noMatch": "No roles match this search",
+      "clearSearch": "Clear search"
+    },
+    "create": {
+      "open": "Create role",
+      "title": "Create a role",
+      "body": "Name it for what people do, like “Support” or “Billing”. You choose its permissions next.",
+      "name": "Name",
+      "nameHint": "Up to {max} characters.",
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "Use {max} characters or fewer.",
+      "description": "Description",
+      "descriptionTooLong": "Use {max} characters or fewer.",
+      "duplicate": "A role with this name already exists.",
+      "cancel": "Cancel",
+      "submit": "Create role",
+      "created": "Role “{name}” created. Open it to choose its permissions."
+    },
+    "delete": {
+      "title": "Delete the role “{name}”?",
+      "body": "The role and its permissions are deleted. This can’t be undone.",
+      "confirm": "Delete role",
+      "inUseBody": "{count, plural, one {# user has this role. They lose everything it grants.} other {# users have this role. They lose everything it grants.}}",
+      "force": "Delete anyway",
+      "deleted": "Role “{name}” deleted.",
+      "refused": "The role wasn’t deleted"
     }
   },
   "forbidden": {

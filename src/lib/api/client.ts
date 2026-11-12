@@ -48,6 +48,30 @@ export function createApiClient(
 
 export const api = createApiClient();
 
+/**
+ * A service's generated `paths` without their `/v1` prefix, as its BFF proxy
+ * serves them: `/v1/notes/{id}` becomes `/notes/{id}` under `/api/notes`.
+ */
+export type WithoutVersion<P> = {
+  [K in keyof P as K extends `/v1${infer Rest}` ? Rest : never]: P[K];
+};
+
+/**
+ * A browser client for a business service's BFF proxy at `prefix` (such as
+ * `/api/notes`), typed by that service's generated paths (FE-62). Same
+ * headers and fetch as the identity client.
+ */
+export function createServiceClient<Paths extends object>(prefix: string) {
+  return createClient<WithoutVersion<Paths>>({
+    baseUrl:
+      typeof window === "undefined"
+        ? prefix
+        : `${window.location.origin}${prefix}`,
+    headers: { "X-Requested-With": REQUESTED_WITH },
+    fetch: (request) => globalThis.fetch(request),
+  });
+}
+
 /** What every `api.GET(…)`, `api.POST(…)`… call resolves to. */
 type FetchResult = { data?: unknown; error?: unknown; response: Response };
 

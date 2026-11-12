@@ -7,3 +7,10 @@ export const USERS_MANAGE = "users:manage";
 export const ROLES_MANAGE = "roles:manage";
 export const AUDIT_READ = "audit:read";
 export const TENANTS_MANAGE = "tenants:manage";
+
+// The example notes module (go-service-template). `:any` widens a key to
+// every note in the tenant; it does not imply the base key (TRD 9).
+export const NOTES_READ = "notes:read";
+export const NOTES_READ_ANY = "notes:read:any";
+export const NOTES_WRITE = "notes:write";
+export const NOTES_WRITE_ANY = "notes:write:any";

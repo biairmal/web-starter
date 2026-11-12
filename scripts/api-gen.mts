@@ -1,5 +1,8 @@
 import { writeFileSync } from "node:fs";
-import { generateSchema, schemaPath } from "./api-schema.mts";
+import { relative } from "node:path";
+import { generateSchema, listSpecs, root } from "./api-schema.mts";
 
-writeFileSync(schemaPath, await generateSchema());
-console.log(`api:gen: wrote ${schemaPath}`);
+for (const spec of listSpecs()) {
+  writeFileSync(spec.schemaPath, await generateSchema(spec));
+  console.log(`api:gen: wrote ${relative(root, spec.schemaPath)}`);
+}

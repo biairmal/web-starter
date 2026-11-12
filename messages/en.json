@@ -58,6 +58,7 @@
       "platform": "Platform"
     },
     "items": {
+      "notes": "Notes",
       "users": "Users",
       "roles": "Roles",
       "audit": "Audit log",
@@ -849,6 +850,64 @@
           "done": "{name} is active again."
         }
       }
+    }
+  },
+  "notes": {
+    "title": "Notes",
+    "body": "An example module: notes from the go-service-template service, through the BFF.",
+    "status": {
+      "draft": "Draft",
+      "archived": "Archived",
+      "unknown": "Unknown"
+    },
+    "filters": {
+      "status": "Status",
+      "tabs": {
+        "all": "All",
+        "draft": "Drafts",
+        "archived": "Archived"
+      },
+      "search": "Search title or text",
+      "clear": "Clear filters"
+    },
+    "table": {
+      "caption": "Notes",
+      "total": "{count, plural, one {# note} other {# notes}}",
+      "title": "Title",
+      "status": "Status",
+      "updated": "Updated",
+      "updatedShort": "Updated {updated}",
+      "pinned": "Pinned",
+      "actionsHeader": "Actions",
+      "actions": "Actions for {title}",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "archive": "Archive",
+      "restore": "Restore to drafts",
+      "delete": "Delete",
+      "loadFailed": "Couldn’t load notes.",
+      "empty": "No notes yet",
+      "emptyBody": "Create a note to see it here.",
+      "emptyBodyReadOnly": "Notes you can read show here.",
+      "noMatch": "No notes match these filters",
+      "noMatchBody": "Search matches a title or a note’s text.",
+      "conflict": "Someone else changed this note. The list now shows their version.",
+      "deleteTitle": "Delete “{title}”?",
+      "deleteBody": "The note is gone for good. This can’t be undone.",
+      "deleteConfirm": "Delete note",
+      "deleted": "Note deleted."
+    },
+    "create": {
+      "open": "New note",
+      "dialogTitle": "New note",
+      "dialogBody": "It starts as a draft. Only you see it, unless someone can read every note in the tenant.",
+      "title": "Title",
+      "titleRequired": "Enter a title.",
+      "titleTooLong": "Use {max} characters or fewer.",
+      "body": "Text",
+      "cancel": "Cancel",
+      "submit": "Create note",
+      "created": "Note created."
     }
   }
 }

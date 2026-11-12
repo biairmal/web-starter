@@ -58,6 +58,7 @@
       "platform": "Platform"
     },
     "items": {
+      "notes": "Catatan",
       "users": "Pengguna",
       "roles": "Peran",
       "audit": "Log audit",
@@ -849,6 +850,64 @@
           "done": "{name} aktif kembali."
         }
       }
+    }
+  },
+  "notes": {
+    "title": "Catatan",
+    "body": "Modul contoh: catatan dari layanan go-service-template, melalui BFF.",
+    "status": {
+      "draft": "Draf",
+      "archived": "Diarsipkan",
+      "unknown": "Tidak diketahui"
+    },
+    "filters": {
+      "status": "Status",
+      "tabs": {
+        "all": "Semua",
+        "draft": "Draf",
+        "archived": "Diarsipkan"
+      },
+      "search": "Cari judul atau isi",
+      "clear": "Hapus filter"
+    },
+    "table": {
+      "caption": "Catatan",
+      "total": "{count, plural, other {# catatan}}",
+      "title": "Judul",
+      "status": "Status",
+      "updated": "Diperbarui",
+      "updatedShort": "Diperbarui {updated}",
+      "pinned": "Disematkan",
+      "actionsHeader": "Tindakan",
+      "actions": "Tindakan untuk {title}",
+      "pin": "Sematkan",
+      "unpin": "Lepas sematan",
+      "archive": "Arsipkan",
+      "restore": "Kembalikan ke draf",
+      "delete": "Hapus",
+      "loadFailed": "Tidak dapat memuat catatan.",
+      "empty": "Belum ada catatan",
+      "emptyBody": "Buat catatan untuk melihatnya di sini.",
+      "emptyBodyReadOnly": "Catatan yang dapat Anda baca tampil di sini.",
+      "noMatch": "Tidak ada catatan yang cocok dengan filter ini",
+      "noMatchBody": "Pencarian mencocokkan judul atau isi catatan.",
+      "conflict": "Orang lain mengubah catatan ini. Daftar kini menampilkan versi mereka.",
+      "deleteTitle": "Hapus “{title}”?",
+      "deleteBody": "Catatan dihapus permanen. Tindakan ini tidak dapat dibatalkan.",
+      "deleteConfirm": "Hapus catatan",
+      "deleted": "Catatan dihapus."
+    },
+    "create": {
+      "open": "Catatan baru",
+      "dialogTitle": "Catatan baru",
+      "dialogBody": "Dimulai sebagai draf. Hanya Anda yang melihatnya, kecuali seseorang dapat membaca semua catatan di tenant.",
+      "title": "Judul",
+      "titleRequired": "Masukkan judul.",
+      "titleTooLong": "Gunakan paling banyak {max} karakter.",
+      "body": "Isi",
+      "cancel": "Batal",
+      "submit": "Buat catatan",
+      "created": "Catatan dibuat."
     }
   }
 }

@@ -9,3 +9,5 @@ playwright-report
 test-results
 blob-report
 deploy/helm/*/templates
+openapi/*.json
+src/lib/api/*-schema.d.ts

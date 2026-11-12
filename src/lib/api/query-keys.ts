@@ -42,6 +42,11 @@ export const queryKeys = {
       detail: (id: string) => ["admin", "role-templates", id] as const,
     },
   },
+  // Business modules add one key family each, named after the module.
+  notes: {
+    all: ["notes"] as const,
+    list: (params: ListParams) => ["notes", params] as const,
+  },
 } as const;
 
 const SECOND = 1000;
@@ -59,6 +64,7 @@ export const staleTimes = {
   adminAudit: 0,
   adminTenants: 30 * SECOND,
   adminRoleTemplates: 30 * SECOND,
+  notes: 30 * SECOND,
 } as const;
 
 /** `me` is also refetched on this interval, so role changes show up (TRD 9). */

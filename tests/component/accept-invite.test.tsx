@@ -7,6 +7,7 @@ import { AcceptInvite } from "@/features/auth/accept-invite-form";
 import type { InvitePreview } from "@/lib/api/types";
 import { renderWithIntl } from "../helpers/intl";
 import { server } from "../msw/server";
+import { brand } from "@/config/brand";
 
 const hardNavigate = vi.fn();
 vi.mock("@/lib/hard-navigate", () => ({
@@ -115,7 +116,9 @@ describe("AcceptInvite", () => {
         name: "This invitation has expired or was already used",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/support@acme.com/)).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(brand.supportEmail)),
+    ).toBeInTheDocument();
   });
 
   it("FE-9 asks someone signed in as another user to sign out first, keeping the token", async () => {

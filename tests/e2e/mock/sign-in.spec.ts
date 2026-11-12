@@ -1,6 +1,7 @@
 import { expect, expectNoA11yViolations, test } from "../fixtures";
 import { MOCK_PASSWORD } from "../mock-users";
 import { signIn } from "../session";
+import { brand } from "@/config/brand";
 
 // Sign in with a password and the tenant picker (APP_FLOW 5.1, 5.2; FE-1,
 // FE-2, FE-8, FE-10). Accounts come from tests/e2e/mock-users.ts.
@@ -13,7 +14,10 @@ test.describe("sign in", () => {
     await page.goto("/admin/users?page=2");
     await expect(page).toHaveURL("/sign-in?next=%2Fadmin%2Fusers%3Fpage%3D2");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Sign in to Acme Portal" }),
+      page.getByRole("heading", {
+        level: 1,
+        name: `Sign in to ${brand.appName}`,
+      }),
     ).toBeVisible();
     await expectNoA11yViolations(page);
 
@@ -81,7 +85,7 @@ test.describe("sign in", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: "Choose a workspace" }),
     ).toBeVisible();
-    await expect(page).toHaveTitle("Choose a workspace · Acme Portal");
+    await expect(page).toHaveTitle(`Choose a workspace · ${brand.appName}`);
     await expectNoA11yViolations(page);
     await page.getByRole("button", { name: /Globex/ }).click();
 

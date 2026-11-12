@@ -7,6 +7,9 @@ export const PRISM_ORIGIN = "http://localhost:4010";
 export const MOCK_IDENTITY_PORT = 4011;
 export const MOCK_IDENTITY_ORIGIN = `http://localhost:${String(MOCK_IDENTITY_PORT)}`;
 
+/** `pnpm mock:notes`: Prism serving openapi/notes.json (the example module). */
+export const NOTES_MOCK_ORIGIN = "http://localhost:4012";
+
 export const SESSION_SECRET = Buffer.alloc(32, 7).toString("base64");
 export const SESSION_COOKIE_PREFIX = "ws";
 
@@ -16,4 +19,5 @@ export const testEnv = {
   IDENTITY_PUBLIC_URL: PRISM_ORIGIN,
   SESSION_SECRET,
   SESSION_COOKIE_PREFIX,
+  NOTES_INTERNAL_URL: NOTES_MOCK_ORIGIN,
 };

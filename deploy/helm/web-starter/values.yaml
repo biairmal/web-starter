@@ -1,0 +1,65 @@
+# Example values for one client (TRD 14, FE-NFR-7). The same image runs on
+# any cluster; everything that differs per client is below. docs/deploy.md.
+
+image:
+  repository: ghcr.io/biairmal/web-starter
+  tag: "" # defaults to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+# Any replica count works: the refresh lock is per process and identity's
+# refresh_reuse_grace covers two pods refreshing one session (TRD 5.3,
+# decision 3). Ignored while autoscaling is on.
+replicaCount: 2
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 192Mi
+  limits:
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Seconds a terminating pod keeps serving after it leaves the Service, so the
+# ingress stops sending it requests first.
+drainDelaySeconds: 5
+
+route:
+  enabled: false
+  kind: ingress # ingress | openshift
+  host: "" # the host of APP_URL
+  className: ""
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: ""
+
+# Non-secret environment, by the names src/config/env-schema.ts reads.
+# Rendered into a ConfigMap and loaded with envFrom.
+env:
+  APP_URL: "" # https://app.client.com; identity's FRONTEND_URL
+  IDENTITY_INTERNAL_URL: "" # http://<identity release>-identity (cluster DNS)
+  IDENTITY_PUBLIC_URL: "" # https://id.client.com
+  SESSION_COOKIE_PREFIX: ws
+  TRUSTED_PROXY_HOPS: "1" # the ingress controller
+  NEXT_PUBLIC_DEFAULT_LOCALE: en
+  LOG_LEVEL: info
+  # DEFAULT_TENANT_SLUG: default
+  # NOTES_INTERNAL_URL: http://notes   # business modules, docs/adding-a-module.md
+
+# Name of a Secret this chart does not create, with SESSION_SECRET (32+
+# random bytes, base64; "NEW,OLD" while rotating). Loaded with envFrom.
+secret:
+  existingSecret: ""

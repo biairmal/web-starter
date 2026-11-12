@@ -25,6 +25,9 @@ jobs:
 
       - run: pnpm run build
 
+      # TRD 12: sign-in JS <= 200 KB gzip, counting every chunk the route loads.
+      - run: pnpm run budget
+
   e2e-mock:
     runs-on: ubuntu-latest
     steps:

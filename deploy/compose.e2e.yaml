@@ -1,0 +1,130 @@
+# The full e2e stack (TRD 13; plan F7.1): identity, Postgres, a fake Google
+# OIDC provider and two web-starter replicas behind Caddy, all on plain HTTP
+# at localhost. Run through `pnpm e2e:full` (scripts/e2e-full.mts), which
+# first writes deploy/e2e/.generated/ (signing keys and identity's config
+# with a short access_ttl), then runs the Playwright `full` project.
+#
+#   Browser ─► localhost:3000 (Caddy) ─► web ×2 ─► identity:8080
+#           └► localhost:8080 (identity, Google start and callback)
+#           └► localhost:9090 (fake OIDC, the "Google" consent form)
+name: ws-e2e
+
+x-identity: &identity
+  image: ${IDENTITY_IMAGE:-ghcr.io/biairmal/go-identity:latest}
+  environment: &identity-env
+    APP_ENV: local # the logging mailer prints each mail link to the worker log
+    LOG_FORMAT: json
+    LOG_LEVEL: info
+    DB_HOST: postgres
+    DB_PASSWORD: identity
+    AUTH_ENABLED: "true"
+    AUTH_JWKS_URL: http://localhost:8080/.well-known/jwks.json
+    IDENTITY_PUBLIC_URL: http://localhost:8080
+    FRONTEND_URL: http://localhost:3000
+    CORS_ORIGINS: ""
+    # web-starter forwards the browser's address in X-Forwarded-For.
+    TRUST_PROXY: "true"
+    SIGNING_KEYS_DIR: /etc/identity/keys
+    AUTH_PASSWORD_ENABLED: "true"
+    AUTH_GOOGLE_ENABLED: "true"
+    GOOGLE_CLIENT_ID: e2e-client
+    GOOGLE_CLIENT_SECRET: e2e-secret
+    # The fake provider shares identity's network namespace, so identity and
+    # the browser both reach it at localhost:9090 and agree on the issuer.
+    GOOGLE_ISSUER_URL: http://localhost:9090
+    REGISTRATION_ENABLED: "true"
+    TENANCY_MODE: ${TENANCY_MODE:-single}
+    SUPER_ADMIN_EMAIL: super@e2e.test
+    SUPER_ADMIN_PASSWORD: ${E2E_SUPER_ADMIN_TEMP_PASSWORD:-Temp-Super-2026-e2e}
+  volumes:
+    - ./e2e/.generated/keys:/etc/identity/keys:ro
+    - ./e2e/.generated/identity-config.yaml:/app/config/config.yaml:ro
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      IDENTITY_DB_PASSWORD: identity
+    volumes:
+      - ./identity/initdb:/docker-entrypoint-initdb.d:ro
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d app"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  identity-migrate:
+    <<: *identity
+    command: ["migrate", "up"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  identity:
+    <<: *identity
+    command: ["serve"]
+    ports:
+      - "8080:8080"
+      - "9090:9090" # fake-oidc, which lives in this container's network
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+
+  identity-worker:
+    <<: *identity
+    command: ["worker"]
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+
+  fake-oidc:
+    image: node:22-alpine
+    command: ["node", "/srv/fake-oidc.mjs"]
+    environment:
+      PORT: "9090"
+      ISSUER: http://localhost:9090
+      CLIENT_ID: e2e-client
+    volumes:
+      - ./e2e/fake-oidc.mjs:/srv/fake-oidc.mjs:ro
+    network_mode: "service:identity"
+    depends_on:
+      - identity
+
+  web:
+    image: ${WEB_IMAGE:-web-starter:e2e}
+    build:
+      context: ..
+    environment:
+      APP_URL: http://localhost:3000
+      IDENTITY_INTERNAL_URL: http://identity:8080
+      IDENTITY_PUBLIC_URL: http://localhost:8080
+      # Test-only key. Never reuse it.
+      SESSION_SECRET: ZTJlLW9ubHktc2Vzc2lvbi1zZWNyZXQtMzItYnl0ZXMh
+      SESSION_COOKIE_PREFIX: ws
+      TRUSTED_PROXY_HOPS: "1"
+      LOG_LEVEL: info
+    deploy:
+      replicas: ${E2E_WEB_REPLICAS:-2}
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      - identity
+
+  proxy:
+    image: caddy:2-alpine
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
+    ports:
+      - "3000:80"
+      - "3443:3443"
+    volumes:
+      - ./e2e/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - web

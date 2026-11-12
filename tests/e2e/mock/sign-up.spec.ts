@@ -1,5 +1,6 @@
 import { expect, expectNoA11yViolations, test } from "../fixtures";
 import { MOCK_GOOD_TOKEN, MOCK_PASSWORD } from "../mock-users";
+import { brand } from "@/config/brand";
 
 // Sign up, check email and verify (APP_FLOW 5.4; FE-4, FE-5). The mock
 // identity answers 202 to every registration, as identity does for a new and
@@ -15,7 +16,7 @@ test.describe("sign up", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "Create your Acme Portal account",
+        name: `Create your ${brand.appName} account`,
       }),
     ).toBeVisible();
     await expectNoA11yViolations(page);

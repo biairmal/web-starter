@@ -29,9 +29,31 @@ const securityHeaders = [
 const fragmentTokenPages = ["/verify-email", "/reset-password", "/invite"];
 
 const nextConfig: NextConfig = {
+  // A self-contained server in .next/standalone for the Docker image (TRD 14).
+  // Only when the Dockerfile asks: copying it makes symlinks, which Windows
+  // refuses without Developer Mode, so a local `pnpm build` would fail.
+  ...(process.env.NEXT_OUTPUT === "standalone"
+    ? { output: "standalone" as const }
+    : {}),
+  // Traced into the standalone output but never loaded by the server: the
+  // app uses no next/image (sharp) and the config is compiled in (typescript).
+  // Keeps the image under its size budget.
+  outputFileTracingExcludes: {
+    "*": [
+      "**/node_modules/sharp/**",
+      "**/node_modules/@img/**",
+      "**/node_modules/typescript/**",
+    ],
+  },
   poweredByHeader: false,
-  // forbidden() renders forbidden.tsx with status 403 (requirePermission).
-  experimental: { authInterrupts: true },
+  experimental: {
+    // forbidden() renders forbidden.tsx with status 403 (requirePermission).
+    authInterrupts: true,
+    // `radix-ui` is one barrel over every primitive; without this the whole
+    // library (menubar, slider, toast…) ships with any page that uses one
+    // (TRD 12 budget).
+    optimizePackageImports: ["radix-ui"],
+  },
   // The dev indicator would sit on the sidebar's user row (bottom left).
   devIndicators: { position: "bottom-right" },
   headers() {

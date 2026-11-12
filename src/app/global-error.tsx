@@ -9,9 +9,11 @@ import en from "../../messages/en.json";
 // Shown when the root layout itself fails, so it renders its own <html> and
 // has no providers: no next-intl context and no theme script. Its copy is the
 // English source, read straight from messages/en.json.
+// Only this namespace is passed, so the build keeps just it from en.json:
+// this boundary loads with every page.
 const t = createTranslator({
   locale: "en",
-  messages: en,
+  messages: { errorPages: { error: en.errorPages.error } },
   namespace: "errorPages.error",
 });
 

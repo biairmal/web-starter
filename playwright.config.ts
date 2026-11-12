@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
-import { MOCK_IDENTITY_ORIGIN, testEnv } from "./tests/e2e/env";
+import {
+  MOCK_IDENTITY_ORIGIN,
+  NOTES_MOCK_ORIGIN,
+  testEnv,
+} from "./tests/e2e/env";
 
 // With E2E_BASE_URL set (the full suite against a real identity stack), no
 // servers are started here. Otherwise the mock project starts Prism, the mock
@@ -34,6 +38,15 @@ export default defineConfig({
         {
           command: "pnpm run mock",
           url: "http://localhost:4010/v1/auth/config",
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+        {
+          // The example notes module's service (docs/adding-a-module.md).
+          // Prism answers 401 without a bearer token, which is enough to know
+          // it is up.
+          command: "pnpm run mock:notes",
+          url: `${NOTES_MOCK_ORIGIN}/v1/notes`,
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
         },

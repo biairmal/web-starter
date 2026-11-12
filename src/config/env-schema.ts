@@ -40,6 +40,12 @@ export const envSchema = z.object({
       error: "must be a tenant slug: lowercase letters, digits and hyphens",
     })
     .default("default"),
+  /**
+   * The example notes service (go-service-template). Optional: without it
+   * `/api/notes/*` answers 503 UPSTREAM_UNAVAILABLE. Business modules add
+   * their own `<NAME>_INTERNAL_URL` here.
+   */
+  NOTES_INTERNAL_URL: z.url({ error: "must be an absolute URL" }).optional(),
   NEXT_PUBLIC_DEFAULT_LOCALE: z.enum(["en", "id"]).default("en"),
   LOG_LEVEL: z
     .enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"])

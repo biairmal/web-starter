@@ -41,6 +41,7 @@ const eslintConfig = [
       "blob-report/**",
       "next-env.d.ts",
       "src/lib/api/schema.d.ts",
+      "src/lib/api/*-schema.d.ts",
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),

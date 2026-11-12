@@ -9,6 +9,7 @@ const testEnv = {
   APP_URL: "http://localhost:3000",
   IDENTITY_INTERNAL_URL: "http://identity.test",
   IDENTITY_PUBLIC_URL: "https://id.example.test",
+  NOTES_INTERNAL_URL: "http://notes.test",
   SESSION_SECRET: Buffer.alloc(32, 7).toString("base64"),
   SESSION_COOKIE_PREFIX: "ws",
   TRUSTED_PROXY_HOPS: "1",

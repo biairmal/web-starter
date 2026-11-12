@@ -1,0 +1,686 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "A resource service that trusts go-identity's tokens.",
+    "title": "go-service-template API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "paths": {
+    "/v1/notes": {
+      "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "The caller's notes, or the tenant's with notes:read:any. Needs notes:read or notes:read:any.\nFilters: field=value, or title=value%3Blike for contains (the ; must be percent-encoded).\nSortable: title, status, pinned, created_at, updated_at; default updated_at,DESC.",
+        "tags": [
+          "notes"
+        ],
+        "summary": "List notes",
+        "parameters": [
+          {
+            "description": "Page, 1-based",
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Page size, max modules.note.list_max_size",
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "field,ASC|DESC; repeatable",
+            "name": "sort",
+            "in": "query",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "description": "Exact title, or value%3Blike for contains (case-sensitive)",
+            "name": "title",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "draft or archived",
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "true or false",
+            "name": "pinned",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "One owner's notes; needs notes:read:any",
+            "name": "owner_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Title or body contains, case-insensitive",
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "created_at >= this; RFC 3339 date or timestamp",
+            "name": "created_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "created_at < this; RFC 3339 date or timestamp",
+            "name": "created_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-internal_module_note_NotePageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown key, disallowed sort or filter, bad value or range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No read permission, or owner_id without notes:read:any",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Creates a note owned by the caller in the caller's tenant. Needs notes:write.",
+        "tags": [
+          "notes"
+        ],
+        "summary": "Create a note",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/internal_module_note.CreateNoteRequest"
+              }
+            }
+          },
+          "description": "Request body",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-internal_module_note_NoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or validation error (meta.fields)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No notes:write",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notes/{id}": {
+      "get": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "One of the caller's notes, or any in the tenant with notes:read:any.",
+        "tags": [
+          "notes"
+        ],
+        "summary": "Get a note",
+        "parameters": [
+          {
+            "description": "Note ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-internal_module_note_NoteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No notes:read or notes:read:any",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such note, or not the caller's",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Deletes one of the caller's notes, or any in the tenant with notes:write:any.",
+        "tags": [
+          "notes"
+        ],
+        "summary": "Delete a note",
+        "parameters": [
+          {
+            "description": "Note ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Missing, invalid or expired token",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No notes:write",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such note, or not the caller's without notes:write:any",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Changes the fields sent. If-Match carries the version read last; a stale one is 409.",
+        "tags": [
+          "notes"
+        ],
+        "summary": "Update a note",
+        "parameters": [
+          {
+            "description": "Note ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Version, e.g. \\",
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/internal_module_note.UpdateNoteRequest"
+              }
+            }
+          },
+          "description": "Fields to change",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-internal_module_note_NoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or validation error (meta.fields)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No notes:write",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such note, or not the caller's without notes:write:any",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "VERSION_CONFLICT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "No If-Match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.BaseResponse-any"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "description": "\"Bearer\" followed by a space and an access token from go-identity.",
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "internal_module_note.CreateNoteRequest": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "archived"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          }
+        }
+      },
+      "internal_module_note.NotePageResponse": {
+        "type": "object",
+        "properties": {
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/internal_module_note.NoteResponse"
+            }
+          },
+          "page": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          }
+        }
+      },
+      "internal_module_note.NoteResponse": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          }
+        }
+      },
+      "internal_module_note.UpdateNoteRequest": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "archived"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        }
+      },
+      "response.BaseResponse-any": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {},
+          "error": {},
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "response.BaseResponse-internal_module_note_NotePageResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/internal_module_note.NotePageResponse"
+          },
+          "error": {},
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "response.BaseResponse-internal_module_note_NoteResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/internal_module_note.NoteResponse"
+          },
+          "error": {},
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

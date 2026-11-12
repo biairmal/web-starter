@@ -2,11 +2,17 @@ import {
   Building2,
   LayoutTemplate,
   type LucideIcon,
+  NotebookPen,
   ScrollText,
   ShieldCheck,
   Users,
 } from "lucide-react";
-import { AUDIT_READ, ROLES_MANAGE, USERS_READ } from "@/lib/authz/permissions";
+import {
+  AUDIT_READ,
+  NOTES_READ,
+  ROLES_MANAGE,
+  USERS_READ,
+} from "@/lib/authz/permissions";
 import type en from "../../messages/en.json";
 
 // Sidebar entries (TRD 4.3, APP_FLOW 2, FE-62). Each screen adds its entry
@@ -32,6 +38,13 @@ export type NavItem = {
 };
 
 export const navItems: readonly NavItem[] = [
+  // The example business module (docs/adding-a-module.md).
+  {
+    href: "/notes",
+    labelKey: "notes",
+    icon: NotebookPen,
+    permission: NOTES_READ,
+  },
   {
     href: "/admin/users",
     labelKey: "users",

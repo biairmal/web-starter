@@ -8,3 +8,5 @@ src/lib/api/schema.d.ts
 playwright-report
 test-results
 blob-report
+openapi/*.json
+src/lib/api/*-schema.d.ts

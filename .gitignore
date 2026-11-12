@@ -51,3 +51,6 @@ next-env.d.ts
 # deploy/: filled-in env files and local signing keys
 /deploy/*.env
 /deploy/keys/
+
+# Full e2e stack: generated keys and identity config
+/deploy/e2e/.generated/

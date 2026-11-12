@@ -22,9 +22,21 @@ export default defineConfig({
       testDir: "tests/e2e/mock",
       use: { ...devices["Desktop Chrome"] },
     },
+    // The full suite against a real identity stack (`pnpm e2e:full`). The
+    // setup project finishes the super admin's first sign-in first.
+    {
+      name: "full-setup",
+      testDir: "tests/e2e/full/setup",
+      testMatch: /.*\.setup\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
     {
       name: "full",
       testDir: "tests/e2e/full",
+      testIgnore: /setup\//,
+      dependencies: ["full-setup"],
+      // Session tests wait for tokens to reach their refresh window.
+      timeout: 180_000,
       use: { ...devices["Desktop Chrome"] },
     },
   ],

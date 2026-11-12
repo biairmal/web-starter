@@ -36,7 +36,7 @@ describe("SessionProvider and useMe", () => {
     expect(screen.getByText("Test User")).toBeInTheDocument();
   });
 
-  it("shows the refetched Me after it changes", async () => {
+  it("FE-23 shows the refetched Me after it changes", async () => {
     server.use(
       http.get("*/api/id/me", () =>
         HttpResponse.json({
@@ -50,7 +50,7 @@ describe("SessionProvider and useMe", () => {
     expect(await screen.findByText("Renamed User")).toBeInTheDocument();
   });
 
-  it("refetches on window focus and every 5 minutes", () => {
+  it("FE-23 refetches on window focus and every 5 minutes", () => {
     const client = setup();
     const query = client.getQueryCache().find({ queryKey: queryKeys.me });
     expect(query?.observers[0]?.options).toMatchObject({

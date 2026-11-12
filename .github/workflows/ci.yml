@@ -25,6 +25,12 @@ jobs:
 
       - run: pnpm run build
 
+      # TRD 12: sign-in JS <= 120 KB gzip. Reported, not yet blocking: the
+      # route is over budget (docs/release-v0.1.0.md). Remove
+      # continue-on-error once it fits.
+      - run: pnpm run budget
+        continue-on-error: true
+
   e2e-mock:
     runs-on: ubuntu-latest
     steps:

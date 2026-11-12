@@ -61,10 +61,11 @@ test.describe("admin roles", () => {
     await expect(
       page.getByText("Role “Support” created. Choose what it can do."),
     ).toBeVisible();
-    // The new role has no permissions yet, so its editor opens.
+    // The new role has no permissions yet, so its editor opens. Under a busy
+    // `next dev` the editor route may compile on this first visit.
     await expect(
       page.getByRole("heading", { level: 1, name: "Support" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15_000 });
     await page.goto("/admin/roles");
     await expect(row(page, "Support")).toHaveCount(1);
   });

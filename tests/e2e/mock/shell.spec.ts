@@ -1,5 +1,6 @@
 import { expect, expectNoA11yViolations, test } from "../fixtures";
 import { signIn } from "../session";
+import { brand } from "@/config/brand";
 
 // The signed-in shell, navigation gating and the server permission gate
 // (TRD 6.2, 9; APP_FLOW 2). /v1/me comes from tests/e2e/mock-identity.mts.
@@ -13,7 +14,7 @@ test.describe("signed-in shell", () => {
     await page.goto("/");
     await expect(page).toHaveURL("/");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Acme Portal" }),
+      page.getByRole("heading", { level: 1, name: brand.appName }),
     ).toBeVisible();
     await expect(
       page.getByText("You are signed in to Acme as Manager."),

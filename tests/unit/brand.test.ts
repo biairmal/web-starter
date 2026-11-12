@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { brand, brandSchema } from "@/config/brand";
 
 describe("brand config", () => {
-  it("matches the brand schema", () => {
+  it("FE-60 the one brand file matches the brand schema", () => {
     expect(brandSchema.safeParse(brand).success).toBe(true);
   });
 

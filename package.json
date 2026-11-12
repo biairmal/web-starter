@@ -25,7 +25,9 @@
     "mock:notes": "prism mock openapi/notes.json --port 4012 --dynamic",
     "e2e:mock": "playwright test --project=mock",
     "e2e:full": "tsx scripts/e2e-full.mts",
-    "e2e:full:run": "playwright test --project=full"
+    "e2e:full:run": "playwright test --project=full",
+    "budget": "tsx scripts/bundle-budget.mts",
+    "rebrand:smoke": "tsx scripts/rebrand-smoke.mts"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.5",

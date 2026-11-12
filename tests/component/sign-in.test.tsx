@@ -15,6 +15,7 @@ import type { AuthConfig } from "@/lib/api/types";
 import { renderWithIntl } from "../helpers/intl";
 import { authConfigFixture } from "../msw/handlers";
 import { server } from "../msw/server";
+import { brand } from "@/config/brand";
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -66,7 +67,10 @@ describe("SignInForm", () => {
   it("FE-1 shows only the methods the config enables", () => {
     renderSignIn({ ...authConfigFixture, registration: false });
     expect(
-      screen.getByRole("heading", { level: 1, name: "Sign in to Acme Portal" }),
+      screen.getByRole("heading", {
+        level: 1,
+        name: `Sign in to ${brand.appName}`,
+      }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(
@@ -186,7 +190,7 @@ describe("SignInForm", () => {
         name: "You can’t sign in right now",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent("support@acme.com");
+    expect(screen.getByRole("alert")).toHaveTextContent(brand.supportEmail);
     await user.click(screen.getByRole("button", { name: "Back to sign in" }));
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
   });

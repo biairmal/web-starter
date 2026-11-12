@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect, expectNoA11yViolations, test } from "../fixtures";
 import { signIn } from "../session";
+import { brand } from "@/config/brand";
 
 // Error pages (DESIGN_BRIEF 7.11): each shows the brand and a way back.
 
@@ -31,7 +32,7 @@ test.describe("error pages", () => {
       }),
     ).toBeVisible();
     await expect(
-      page.getByRole("img", { name: "Acme Portal" }).first(),
+      page.getByRole("img", { name: brand.appName }).first(),
     ).toBeVisible();
     await page.getByRole("link", { name: "Go to home" }).click();
     await expect(page).toHaveURL("/");
@@ -50,13 +51,13 @@ test.describe("error pages", () => {
       }),
     ).toBeVisible();
     await expect(
-      page.getByRole("img", { name: "Acme Portal" }).first(),
+      page.getByRole("img", { name: brand.appName }).first(),
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Go to home" }),
     ).toHaveAttribute("href", "/");
     await expect(
-      page.getByRole("link", { name: /support@acme\.com/ }),
+      page.getByRole("link", { name: new RegExp(brand.supportEmail) }),
     ).toBeVisible();
     await expectNoA11yViolations(page);
   });
@@ -76,7 +77,7 @@ test.describe("error pages", () => {
     await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Go to home" })).toBeVisible();
     await expect(
-      page.getByRole("img", { name: "Acme Portal" }).first(),
+      page.getByRole("img", { name: brand.appName }).first(),
     ).toBeVisible();
   });
 });

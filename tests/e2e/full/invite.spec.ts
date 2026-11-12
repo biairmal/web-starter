@@ -25,8 +25,13 @@ test("FE-41 FE-9 an admin invites a user, who accepts from the mailed link and i
   const name = uniqueName("Bima");
 
   await signInWithPassword(page, admin, "/admin/users");
-  await page.getByRole("button", { name: "Invite user" }).click();
   const dialog = page.getByRole("dialog", { name: "Invite a user" });
+  // The button is server-rendered: a click before the page hydrates does
+  // nothing, so click until the dialog opens.
+  await expect(async () => {
+    await page.getByRole("button", { name: "Invite user" }).click();
+    await expect(dialog).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
   await dialog.getByRole("textbox", { name: /Email/ }).fill(email);
   await dialog.getByRole("textbox", { name: /Name/ }).fill(name);
   await dialog.getByRole("button", { name: "Send invitation" }).click();

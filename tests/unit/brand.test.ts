@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { brand, brandSchema } from "@/config/brand";
+import { brand } from "@/config/brand";
+import { brandSchema } from "@/config/brand-schema";
 
 describe("brand config", () => {
   it("FE-60 the one brand file matches the brand schema", () => {

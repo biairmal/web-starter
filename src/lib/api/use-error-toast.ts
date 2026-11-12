@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useCallback } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { type ErrorText, useErrorText } from "@/lib/api/use-error-text";
 
 /**

@@ -1,13 +1,12 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { FormErrorSummary, FormField } from "@/components/forms/form-field";
+import { lazyResolver } from "@/components/forms/lazy-resolver";
 import { PasswordInput } from "@/components/forms/password-input";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Button } from "@/components/ui/button";
@@ -33,6 +32,7 @@ import {
   setPendingSignIn,
 } from "@/features/auth/pending-sign-in";
 import { GoogleButton } from "@/features/auth/google-button";
+import type { SignInValues } from "@/features/auth/sign-in-schema";
 import { ReasonBanner } from "@/features/auth/reason-banner";
 import { ResendButton } from "@/features/auth/resend-button";
 import { useAuthConfig } from "@/features/auth/use-auth-config";
@@ -43,7 +43,7 @@ import { useCountdown } from "@/features/auth/use-countdown";
 
 export const TENANT_PICKER_PATH = "/sign-in/tenant";
 
-type Values = { email: string; password: string };
+type Values = SignInValues;
 const FIELDS = ["email", "password"] as const;
 
 /** Treatments the form shows itself, after a failed sign-in. */
@@ -72,15 +72,21 @@ export function SignInForm({
   const wait = useCountdown();
   const [failure, setFailure] = useState<Failure | null>(null);
 
-  const schema = z.object({
-    email: z
-      .string()
-      .trim()
-      .pipe(z.email({ error: t("emailInvalid") })),
-    password: z.string().min(1, { error: t("passwordRequired") }),
-  });
+  // Zod loads on the first validation, not with the page (TRD 12).
+  const resolver = useMemo(
+    () =>
+      lazyResolver(() =>
+        import("@/features/auth/sign-in-schema").then((module) =>
+          module.signInResolver({
+            emailInvalid: t("emailInvalid"),
+            passwordRequired: t("passwordRequired"),
+          }),
+        ),
+      ),
+    [t],
+  );
   const form = useForm<Values>({
-    resolver: zodResolver(schema),
+    resolver,
     mode: "onTouched",
     defaultValues: { email: "", password: "" },
   });

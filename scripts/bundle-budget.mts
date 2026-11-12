@@ -3,7 +3,9 @@ import { join, resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 
 // TRD 12 bundle budget: the JavaScript a browser downloads for /sign-in,
-// gzipped, after `pnpm build`. Legacy polyfills (loaded only by browsers
+// gzipped, after `pnpm build`. That is the page and every layout and
+// boundary (error, not-found, forbidden…) of the segments above it, which the
+// App Router loads with the page. Legacy polyfills (loaded only by browsers
 // without ES modules) are left out. Exits 1 over budget.
 //
 //   pnpm build && pnpm budget
@@ -11,6 +13,30 @@ import { gzipSync } from "node:zlib";
 const BUDGETS_KB: Record<string, number> = {
   "/(public)/sign-in/page": 120,
 };
+
+/** Files a segment may have that load with every page below it. */
+const SEGMENT_FILES = [
+  "layout",
+  "template",
+  "error",
+  "loading",
+  "not-found",
+  "forbidden",
+  "unauthorized",
+];
+
+/** "/(public)/sign-in/page" → its own entry plus those of "", "/(public)", "/(public)/sign-in". */
+function routeEntries(route: string): string[] {
+  const parts = route.split("/").slice(1, -1);
+  const segments = parts.map((_, index) => parts.slice(0, index + 1).join("/"));
+  return [
+    "/global-error",
+    ...["", ...segments.map((segment) => `/${segment}`)].flatMap((segment) =>
+      SEGMENT_FILES.map((file) => `${segment}/${file}`),
+    ),
+    route,
+  ];
+}
 
 const root = resolve(import.meta.dirname, "..");
 const next = join(root, ".next");
@@ -38,7 +64,10 @@ function gzipKb(file: string): number {
 let over = false;
 for (const [route, budget] of Object.entries(BUDGETS_KB)) {
   const files = [
-    ...new Set([...(app.pages[route] ?? []), ...(build.rootMainFiles ?? [])]),
+    ...new Set([
+      ...routeEntries(route).flatMap((entry) => app.pages[entry] ?? []),
+      ...(build.rootMainFiles ?? []),
+    ]),
   ].filter((file) => file.endsWith(".js") && !polyfills.has(file));
   const sizes = files
     .map((file) => ({ file, kb: gzipKb(file) }))

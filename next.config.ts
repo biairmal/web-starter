@@ -46,8 +46,14 @@ const nextConfig: NextConfig = {
     ],
   },
   poweredByHeader: false,
-  // forbidden() renders forbidden.tsx with status 403 (requirePermission).
-  experimental: { authInterrupts: true },
+  experimental: {
+    // forbidden() renders forbidden.tsx with status 403 (requirePermission).
+    authInterrupts: true,
+    // `radix-ui` is one barrel over every primitive; without this the whole
+    // library (menubar, slider, toast…) ships with any page that uses one
+    // (TRD 12 budget).
+    optimizePackageImports: ["radix-ui"],
+  },
   // The dev indicator would sit on the sidebar's user row (bottom left).
   devIndicators: { position: "bottom-right" },
   headers() {

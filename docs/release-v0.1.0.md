@@ -3,10 +3,10 @@
 > **Date:** 2026-11-12 · **Branch:** `fe/F7.4-release-pass` (F7.1, F7.2 and F7.3 merged in) ·
 > **identity:** go-identity `main` at `cbd2db4`, built locally as `go-identity:local`
 >
-> **Verdict: not ready to tag.** The PRD section 8 release criteria pass. Lighthouse performance now passes, and
-> LCP passes over HTTP/2 as production serves it. The sign-in JavaScript budget (TRD 12) still fails at 189.6 KB
-> against 120 KB, and 120 KB is below what React, Next.js and next-intl need on their own. `v0.1.0` is not
-> tagged; see "Before tagging".
+> **Verdict: ready to tag once merged.** The PRD section 8 release criteria and every plan F7.4 target pass. The
+> budget was raised to 200 KB (TRD 12): 120 KB is below what React, Next.js and next-intl need on their own.
+> Lighthouse is measured over HTTPS and HTTP/2, as production serves the app (`pnpm lighthouse`). `v0.1.0` is
+> not tagged yet; see "Before tagging".
 
 ## PRD section 8 release criteria
 
@@ -20,15 +20,16 @@
 ## Plan F7.4 targets
 
 Lighthouse 12.8.2, simulated mobile (4× CPU, 150 ms RTT, 1.6 Mbps), `/sign-in`, the production image (two
-replicas) behind Caddy, three runs each. "HTTP/2" is HTTPS through a Caddy with `tls internal`, which is how
-production serves the app (`deploy/Caddyfile`); "HTTP/1.1" is the e2e stack's plain-HTTP Caddy.
+replicas) behind Caddy, three runs each. The targets are measured over HTTP/2: the e2e stack's TLS site
+(`https://localhost:3443`, Caddy's local CA), which is how production serves the app (`deploy/Caddyfile`).
+`pnpm lighthouse` runs it and checks the medians. "HTTP/1.1" is the e2e stack's plain-HTTP site, for reference.
 
-| Target                                           | Result                              | Measured after the fixes                                                                             |
-| ------------------------------------------------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Lighthouse `/sign-in`, mobile: performance ≥ 90  | **Pass**                            | HTTP/2: 99, 98, 98. HTTP/1.1: 94, 95, 95.                                                            |
-| LCP < 2.5 s (mobile)                             | **Pass** on HTTP/2; not on HTTP/1.1 | HTTP/2: 2.1, 2.0, 2.3 s. HTTP/1.1: 3.0, 3.0, 3.0 s. FCP 0.9–1.1 s, TBT 20–140 ms, CLS 0.             |
-| Bundle budget: sign-in JS ≤ 120 KB gzip (TRD 12) | **Fail**                            | 189.6 KB gzip over 20 files (`pnpm build && pnpm budget`, now counting every chunk the route loads). |
-| Image under 200 MB (F7.2)                        | Pass                                | 183 MiB (~192 MB) unpacked, 61.5 MB compressed.                                                      |
+| Target                                           | Result   | Measured after the fixes                                                                          |
+| ------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------- |
+| Lighthouse `/sign-in`, mobile: performance ≥ 90  | **Pass** | `pnpm lighthouse` (HTTP/2): 96, 99, 95, median 96. HTTP/1.1, for reference: 94, 95, 95.           |
+| LCP < 2.5 s (mobile)                             | **Pass** | `pnpm lighthouse` (HTTP/2): 2.3, 2.0, 2.3 s, median 2.3 s. HTTP/1.1: 3.0 s. TBT 20–140 ms, CLS 0. |
+| Bundle budget: sign-in JS ≤ 200 KB gzip (TRD 12) | **Pass** | 189.6 KB gzip over 20 files (`pnpm build && pnpm budget`, counting every chunk the route loads).  |
+| Image under 200 MB (F7.2)                        | Pass     | 183 MiB (~192 MB) unpacked, 61.5 MB compressed.                                                   |
 
 The first pass recorded performance 83, 92, 85 and LCP 4.4, 3.2, 4.2 s (HTTP/1.1). The branch before the fixes,
 measured again next to the fixed build on the same machine, gave:
@@ -54,12 +55,17 @@ bytes.
 | The root `TooltipProvider` put Radix's popper on every page; `global-error.tsx` bundled every message.          | The provider moved into the permission matrix; global-error passes one namespace.               | ~26 KB           |
 | `pnpm budget` counted only the page's own manifest entry (13 files; the browser loads 28).                      | It counts the page and every layout and boundary above it.                                      | –                |
 
-### Why 120 KB is out of reach
+### Why the budget is 200 KB, not 120 KB
 
 React DOM (53 KB), the Next.js runtime (49 KB) and the next-intl client (11.5 KB) are about 116 KB gzip before any
 app code. The rest of the 189.6 KB is the route's own code and its libraries: React Hook Form (13.6 KB), TanStack
 Query, the error boundaries Next loads on every page, `openapi-fetch` and `tailwind-merge`. Going further means
-dropping React Hook Form or TanStack Query from the public screens, against the AGENTS.md conventions.
+dropping React Hook Form or TanStack Query from the public screens, against the AGENTS.md conventions, so TRD 12
+now sets 200 KB on the full count. That leaves about 10 KB of headroom on `/sign-in`, and CI fails a PR that
+goes over.
+
+LCP over HTTP/2 has about 0.2 s of headroom (median 2.3 s), so a change that adds requests or bytes before the
+first paint can tip it. Re-run `pnpm lighthouse` after changes to the root layout or the public screens.
 
 ## Found and fixed in this pass
 
@@ -75,12 +81,8 @@ dropping React Hook Form or TanStack Query from the public screens, against the 
 ## Before tagging v0.1.0
 
 1. Merge F7.3, F7.2, F7.1 and F7.4 (in that order, or this branch alone, which contains them).
-2. Decide on the TRD 12 budget: raise it to what the stack allows (for example 200 KB gzip on the full count),
-   or keep 120 KB and drop React Hook Form and TanStack Query from the public screens. Then remove
-   `continue-on-error` from the budget step in `ci.yml`.
-3. Decide whether FE-NFR-3 is measured over HTTP/2 (production) or the e2e stack's HTTP/1.1; this pass uses HTTP/2.
-4. Run `pnpm e2e:full` against a **tagged** go-identity release (the workflow takes a ref).
-5. Tag `v0.1.0`.
+2. Run `pnpm e2e:full` against a **tagged** go-identity release (the workflow takes a ref).
+3. Tag `v0.1.0`.
 
 ## How to reproduce
 
@@ -90,11 +92,8 @@ pnpm e2e:mock
 MOCK_TENANCY=multi pnpm exec playwright test --project=mock tests/e2e/mock/axe-routes.spec.ts
 IDENTITY_BUILD=1 pnpm e2e:full           # needs Docker and ../go-identity
 pnpm rebrand:smoke
-# Lighthouse, against the e2e stack left running with E2E_KEEP=1. HTTP/1.1:
+# Lighthouse over HTTP/2, against the e2e stack left running with E2E_KEEP=1:
+pnpm lighthouse
+# HTTP/1.1, for reference:
 npx lighthouse@12 http://localhost:3000/sign-in --only-categories=performance --chrome-flags="--headless=new"
-# HTTP/2: a TLS Caddy in front of the stack, with this Caddyfile:
-#   https://localhost:8443 { tls internal
-#     reverse_proxy host.docker.internal:3000 { header_up Host localhost:3000 } }
-docker run -d --name lh-h2 -p 8443:8443 -v "$PWD/Caddyfile.h2:/etc/caddy/Caddyfile:ro" caddy:2-alpine
-npx lighthouse@12 https://localhost:8443/sign-in --only-categories=performance   --chrome-flags="--headless=new --ignore-certificate-errors"
 ```

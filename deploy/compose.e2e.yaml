@@ -123,6 +123,7 @@ services:
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
     ports:
       - "3000:80"
+      - "3443:3443"
     volumes:
       - ./e2e/Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:

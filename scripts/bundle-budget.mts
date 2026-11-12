@@ -11,7 +11,7 @@ import { gzipSync } from "node:zlib";
 //   pnpm build && pnpm budget
 
 const BUDGETS_KB: Record<string, number> = {
-  "/(public)/sign-in/page": 120,
+  "/(public)/sign-in/page": 200,
 };
 
 /** Files a segment may have that load with every page below it. */

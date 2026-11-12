@@ -27,6 +27,7 @@
     "e2e:full": "tsx scripts/e2e-full.mts",
     "e2e:full:run": "playwright test --project=full",
     "budget": "tsx scripts/bundle-budget.mts",
+    "lighthouse": "tsx scripts/lighthouse.mts",
     "rebrand:smoke": "tsx scripts/rebrand-smoke.mts"
   },
   "dependencies": {

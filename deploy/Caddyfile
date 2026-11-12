@@ -1,0 +1,25 @@
+# Two sites, as TRD 4.1 expects: the app and identity's public origin (the
+# browser goes there only for Google sign-in). Real domains get certificates
+# from Let's Encrypt; *.localhost gets Caddy's local CA.
+
+{$APP_DOMAIN:app.localhost} {
+	# Every web replica, found through Compose DNS and refreshed as replicas
+	# come and go, in turn.
+	reverse_proxy {
+		dynamic a web 3000 {
+			refresh 5s
+		}
+		lb_policy round_robin
+		lb_try_duration 5s
+		fail_duration 10s
+	}
+}
+
+{$IDENTITY_DOMAIN:id.localhost} {
+	# identity's /v1/internal is for services on the Compose network only.
+	route {
+		@internal path /v1/internal*
+		respond @internal 404
+		reverse_proxy identity:8080
+	}
+}

@@ -29,6 +29,18 @@ const securityHeaders = [
 const fragmentTokenPages = ["/verify-email", "/reset-password", "/invite"];
 
 const nextConfig: NextConfig = {
+  // A self-contained server in .next/standalone for the Docker image (TRD 14).
+  output: "standalone",
+  // Traced into the standalone output but never loaded by the server: the
+  // app uses no next/image (sharp) and the config is compiled in (typescript).
+  // Keeps the image under its size budget.
+  outputFileTracingExcludes: {
+    "*": [
+      "**/node_modules/sharp/**",
+      "**/node_modules/@img/**",
+      "**/node_modules/typescript/**",
+    ],
+  },
   poweredByHeader: false,
   // forbidden() renders forbidden.tsx with status 403 (requirePermission).
   experimental: { authInterrupts: true },

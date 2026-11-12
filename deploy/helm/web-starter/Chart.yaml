@@ -1,0 +1,6 @@
+apiVersion: v2
+name: web-starter
+description: web-starter frontend and BFF, next to go-identity (TRD 14)
+type: application
+version: 0.1.0
+appVersion: "dev"

@@ -1,0 +1,106 @@
+# VPS deploy example (TRD 14, FE-NFR-7): web-starter next to go-identity,
+# behind Caddy, which terminates TLS. docs/deploy.md walks through it.
+#
+#   cp deploy/web.env.example deploy/web.env            # then fill it in
+#   cp deploy/identity.env.example deploy/identity.env  # then fill it in
+#   bash ../go-identity/scripts/gen-dev-keys.sh deploy/keys   # or mount real keys
+#   docker compose -f deploy/compose.yaml up -d
+#
+# Images: IMAGE/IMAGE_TAG for this app, IDENTITY_IMAGE/IDENTITY_TAG for
+# identity. `--build` builds this app from the repo instead of pulling.
+name: web-starter
+
+x-identity: &identity
+  image: ${IDENTITY_IMAGE:-ghcr.io/biairmal/go-identity}:${IDENTITY_TAG:-latest}
+  env_file: identity.env
+  environment:
+    DB_HOST: postgres
+    SIGNING_KEYS_DIR: /etc/identity/keys
+  volumes:
+    - ./keys:/etc/identity/keys:ro
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      # Must match DB_PASSWORD in identity.env.
+      IDENTITY_DB_PASSWORD: ${IDENTITY_DB_PASSWORD:-identity}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./identity/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d app"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  identity-migrate:
+    <<: *identity
+    command: ["migrate", "up"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  identity:
+    <<: *identity
+    command: ["serve"]
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+
+  identity-worker:
+    <<: *identity
+    command: ["worker"]
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+
+  web:
+    image: ${IMAGE:-ghcr.io/biairmal/web-starter}:${IMAGE_TAG:-latest}
+    build:
+      context: ..
+    env_file: web.env
+    environment:
+      # Server-side calls stay on the Compose network.
+      IDENTITY_INTERNAL_URL: http://identity:8080
+      # Caddy is the one proxy in front.
+      TRUSTED_PROXY_HOPS: "1"
+    # Any number of replicas works: the refresh lock is per process and
+    # identity's refresh_reuse_grace covers two replicas refreshing at once
+    # (TRD 5.3, decision 3).
+    deploy:
+      replicas: ${WEB_REPLICAS:-2}
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      - identity
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-app.localhost}
+      IDENTITY_DOMAIN: ${IDENTITY_DOMAIN:-id.localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - web
+      - identity
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  caddy_data:

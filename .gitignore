@@ -47,3 +47,7 @@ next-env.d.ts
 /playwright-report
 /test-results
 /blob-report
+
+# deploy/: filled-in env files and local signing keys
+/deploy/*.env
+/deploy/keys/

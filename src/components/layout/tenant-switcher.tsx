@@ -72,9 +72,12 @@ export function TenantSwitcher({ tenancy }: { tenancy: Tenancy }) {
         <DropdownMenuTrigger
           disabled={switching !== null}
           aria-busy={switching !== null || undefined}
-          className="flex h-nav-row w-full items-center gap-2 rounded-md px-2 text-start hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-wait"
+          className="flex h-nav-row w-full items-center gap-2 rounded-md border border-border bg-background px-2 text-start hover:border-faint focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-wait"
         >
-          <span className="min-w-0 flex-1 truncate text-body font-medium">
+          <span
+            title={me.tenant.name}
+            className="min-w-0 flex-1 truncate text-body font-medium"
+          >
             {me.tenant.name}
           </span>
           <span className="sr-only">{t("open")}</span>

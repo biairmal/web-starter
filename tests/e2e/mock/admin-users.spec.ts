@@ -56,14 +56,20 @@ test.describe("admin users", () => {
     await page.getByRole("button", { name: "All" }).click();
     await page.getByRole("button", { name: "Add filter" }).click();
     await page.getByRole("button", { name: "Role", exact: true }).click();
-    await page.getByRole("option", { name: "Sales" }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Sales", exact: true })
+      .click();
     await expect(page).toHaveURL(`/admin/users?role=${SALES_ROLE}`);
 
     await page.getByRole("button", { name: "Add filter" }).click();
     await page
       .getByRole("button", { name: "Account status", exact: true })
       .click();
-    await page.getByRole("option", { name: "Account active" }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Account active", exact: true })
+      .click();
     await page.getByRole("button", { name: "Name" }).click();
     await page
       .getByRole("searchbox", { name: "Search by name or exact email" })

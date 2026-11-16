@@ -80,7 +80,10 @@ test.describe("audit log", () => {
 
     await page.getByRole("button", { name: "Add filter" }).click();
     await page.getByRole("button", { name: "Action", exact: true }).click();
-    await page.getByRole("option", { name: "Roles" }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Roles", exact: true })
+      .click();
     await expect(table.getByRole("row")).toHaveCount(2);
 
     await page.getByRole("button", { name: "Add filter" }).click();
@@ -89,12 +92,20 @@ test.describe("audit log", () => {
       .getByRole("dialog")
       .getByLabel("From", { exact: true })
       .fill("2026-11-10");
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Apply" })
+      .click();
     await page.getByRole("button", { name: "Add filter" }).click();
     await page.getByRole("button", { name: "To", exact: true }).click();
     await page
       .getByRole("dialog")
       .getByLabel("To", { exact: true })
       .fill("2026-11-10");
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Apply" })
+      .click();
     await expect(page).toHaveURL(
       `/admin/audit?actor=${DINA}&action=role.&from=2026-11-10&to=2026-11-10`,
     );
@@ -112,6 +123,32 @@ test.describe("audit log", () => {
 
     await page.getByRole("button", { name: "Clear filters" }).first().click();
     await expect(page).toHaveURL("/admin/audit");
+  });
+
+  test("a date typed by hand is applied with Apply, not after the first digits", async ({
+    page,
+    context,
+  }) => {
+    await signIn(context, { perms: AUDITOR });
+    await page.goto("/admin/audit");
+    await page.getByRole("button", { name: "Add filter" }).click();
+    await page.getByRole("button", { name: "From", exact: true }).click();
+    const input = page.getByRole("dialog").getByLabel("From", { exact: true });
+    await input.focus();
+    // en-US order: month, day, year, typed digit by digit.
+    await page.keyboard.type("11102026");
+    await expect(input).toHaveValue("2026-11-10");
+    // The panel is still open and nothing is applied until Apply.
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page).toHaveURL("/admin/audit");
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Apply" })
+      .click();
+    await expect(page).toHaveURL("/admin/audit?from=2026-11-10");
+    await expect(
+      page.getByRole("button", { name: "From: Nov 10, 2026" }),
+    ).toBeVisible();
   });
 
   test("FE-46 Refresh reloads the log by hand", async ({ page, context }) => {

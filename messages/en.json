@@ -585,6 +585,7 @@
   "filterBar": {
     "addFilter": "Add filter",
     "clearFilters": "Clear filters",
+    "apply": "Apply",
     "remove": "Remove filter {label}"
   },
   "feedback": {

@@ -31,6 +31,25 @@ export type FilterDef = FilterBase &
 
 export type FilterValues = Readonly<Record<string, string>>;
 
+const EARLIEST_DATE = "1900-01-01";
+
+/**
+ * Whether a typed date (yyyy-mm-dd) is complete, not absurdly early (typing a
+ * year digit by digit passes through 0002), and inside the limits.
+ */
+export function isUsableDate(
+  value: string,
+  min?: string,
+  max?: string,
+): boolean {
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    value >= EARLIEST_DATE &&
+    (min === undefined || value >= min) &&
+    (max === undefined || value <= max)
+  );
+}
+
 /** The filters that have a value, in definition order. */
 export function activeFilters(
   defs: readonly FilterDef[],

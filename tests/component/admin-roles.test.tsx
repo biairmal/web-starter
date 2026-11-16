@@ -110,6 +110,15 @@ beforeEach(() => {
 });
 
 describe("RolesTable", () => {
+  it("search uses the shared filter bar", async () => {
+    serveRoles();
+    renderSignedIn(<RolesTable />, admin, "/admin/roles");
+    const search = await screen.findByRole("searchbox", {
+      name: "Search roles",
+    });
+    expect(search.closest('[data-slot="filter-bar"]')).not.toBeNull();
+  });
+
   it("FE-43 lists roles with counts and the System chip", async () => {
     serveRoles();
     renderSignedIn(<RolesTable />, admin, "/admin/roles");

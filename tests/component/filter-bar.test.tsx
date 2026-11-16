@@ -127,4 +127,21 @@ describe("FilterBar: search, pills, clear", () => {
       screen.queryByRole("button", { name: "Add filter" }),
     ).not.toBeInTheDocument();
   });
+
+  it("offers Clear filters while a search is typed, with no filter applied", async () => {
+    const onClear = vi.fn();
+    renderWithIntl(
+      <FilterBar
+        search={{ value: "dina", onChange: vi.fn(), label: "Search by name" }}
+        filters={[role]}
+        values={{}}
+        onChange={vi.fn()}
+        onClear={onClear}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Clear filters" }),
+    );
+    expect(onClear).toHaveBeenCalledTimes(1);
+  });
 });

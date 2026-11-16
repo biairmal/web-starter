@@ -54,11 +54,15 @@ test.describe("admin users", () => {
     ).toBeVisible();
 
     await page.getByRole("button", { name: "All" }).click();
-    await page.getByRole("combobox", { name: "Role" }).click();
+    await page.getByRole("button", { name: "Add filter" }).click();
+    await page.getByRole("button", { name: "Role", exact: true }).click();
     await page.getByRole("option", { name: "Sales" }).click();
     await expect(page).toHaveURL(`/admin/users?role=${SALES_ROLE}`);
 
-    await page.getByRole("combobox", { name: "Account status" }).click();
+    await page.getByRole("button", { name: "Add filter" }).click();
+    await page
+      .getByRole("button", { name: "Account status", exact: true })
+      .click();
     await page.getByRole("option", { name: "Account active" }).click();
     await page.getByRole("button", { name: "Name" }).click();
     await page
@@ -79,11 +83,11 @@ test.describe("admin users", () => {
       page.getByRole("searchbox", { name: "Search by name or exact email" }),
     ).toHaveValue("citra");
     await expect(
-      page.getByRole("combobox", { name: "Account status" }),
-    ).toHaveText("Account active");
-    await expect(page.getByRole("combobox", { name: "Role" })).toHaveText(
-      "Sales",
-    );
+      page.getByRole("button", { name: "Account status: Account active" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Role: Sales" }),
+    ).toBeVisible();
     await expect(
       page.getByRole("columnheader", { name: "Name" }),
     ).toHaveAttribute("aria-sort", "ascending");
@@ -171,10 +175,31 @@ test.describe("admin users", () => {
     await expect(page.getByRole("button", { name: "Invite user" })).toHaveCount(
       0,
     );
-    await expect(page.getByRole("combobox", { name: "Role" })).toHaveCount(0);
+    await page.getByRole("button", { name: "Add filter" }).click();
     await expect(
-      page.getByRole("combobox", { name: "Account status" }),
+      page.getByRole("button", { name: "Account status", exact: true }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Role", exact: true }),
+    ).toHaveCount(0);
+  });
+
+  test("the membership tabs have no vertical scrollbar", async ({
+    page,
+    context,
+  }) => {
+    await signIn(context, { sid: sid(8), perms: ADMIN });
+    await page.goto("/admin/users");
+    const tabs = page.getByRole("group", { name: "Membership" });
+    await expect(tabs).toBeVisible();
+    const overflow = await tabs.evaluate((el) => ({
+      scroll: el.scrollHeight,
+      client: el.clientHeight,
+      y: getComputedStyle(el).overflowY,
+    }));
+    // Content taller than the box with overflow auto shows a scrollbar.
+    expect(overflow.scroll).toBeLessThanOrEqual(overflow.client);
+    expect(overflow.y).toBe("hidden");
   });
 });
 

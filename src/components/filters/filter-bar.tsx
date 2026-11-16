@@ -254,7 +254,7 @@ export function FilterBar({
           )}
         </FilterOverlay>
       )}
-      {applied.length > 0 && (
+      {(applied.length > 0 || (search?.value ?? "") !== "") && (
         <Button type="button" variant="ghost" size="sm" onClick={onClear}>
           {t("clearFilters")}
         </Button>

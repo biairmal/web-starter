@@ -67,6 +67,8 @@ test.describe("audit log", () => {
   }) => {
     await signIn(context, { perms: AUDITOR });
     await page.goto("/admin/audit");
+    await page.getByRole("button", { name: "Add filter" }).click();
+    await page.getByRole("button", { name: "By", exact: true }).click();
     await page.getByRole("searchbox", { name: "By" }).fill("dina");
     await page
       .getByRole("list", { name: "Matching people" })
@@ -76,12 +78,23 @@ test.describe("audit log", () => {
     const table = page.getByRole("table", { name: "Audit log" });
     await expect(table.getByRole("row")).toHaveCount(3);
 
-    await page.getByRole("combobox", { name: "Action" }).click();
+    await page.getByRole("button", { name: "Add filter" }).click();
+    await page.getByRole("button", { name: "Action", exact: true }).click();
     await page.getByRole("option", { name: "Roles" }).click();
     await expect(table.getByRole("row")).toHaveCount(2);
 
-    await page.getByLabel("From", { exact: true }).fill("2026-11-10");
-    await page.getByLabel("To", { exact: true }).fill("2026-11-10");
+    await page.getByRole("button", { name: "Add filter" }).click();
+    await page.getByRole("button", { name: "From", exact: true }).click();
+    await page
+      .getByRole("dialog")
+      .getByLabel("From", { exact: true })
+      .fill("2026-11-10");
+    await page.getByRole("button", { name: "Add filter" }).click();
+    await page.getByRole("button", { name: "To", exact: true }).click();
+    await page
+      .getByRole("dialog")
+      .getByLabel("To", { exact: true })
+      .fill("2026-11-10");
     await expect(page).toHaveURL(
       `/admin/audit?actor=${DINA}&action=role.&from=2026-11-10&to=2026-11-10`,
     );
@@ -89,10 +102,12 @@ test.describe("audit log", () => {
 
     await page.reload();
     await expect(table.getByText("Changed a role’s permissions")).toBeVisible();
-    await expect(page.getByRole("combobox", { name: "Action" })).toHaveText(
-      "Roles",
-    );
-    await expect(page.getByText("Dina Pratama").first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Action: Roles" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "By: Dina Pratama" }),
+    ).toBeVisible();
     await expectNoA11yViolations(page);
 
     await page.getByRole("button", { name: "Clear filters" }).first().click();

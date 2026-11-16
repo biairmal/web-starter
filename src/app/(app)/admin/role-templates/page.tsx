@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/layout/page-header";
 import { brand } from "@/config/brand";
 import { requireSuperAdmin } from "@/lib/session/require-permission";
 import { TemplateNotice } from "@/features/admin-roles/role-editor";
@@ -23,18 +24,18 @@ export default async function RoleTemplatesPage() {
   const t = await getTranslations("adminRoles.templates");
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-title font-semibold">{t("title")}</h1>
-          <p className="text-body text-muted-foreground">{t("body")}</p>
-        </div>
-        <Button asChild>
-          <Link href={NEW_TEMPLATE_PATH}>
-            <Plus aria-hidden="true" />
-            {t("new")}
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("body")}
+        action={
+          <Button asChild>
+            <Link href={NEW_TEMPLATE_PATH}>
+              <Plus aria-hidden="true" />
+              {t("new")}
+            </Link>
+          </Button>
+        }
+      />
       <TemplateNotice />
       <RoleTemplatesTable />
     </div>

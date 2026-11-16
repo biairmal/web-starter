@@ -4,6 +4,7 @@ import { brand } from "@/config/brand";
 import { requireSuperAdmin } from "@/lib/session/require-permission";
 import { CreateTenantDialog } from "@/features/tenants/create-tenant-dialog";
 import { TenantsTable } from "@/features/tenants/tenants-table";
+import { PageHeader } from "@/components/layout/page-header";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("tenants");
@@ -17,13 +18,11 @@ export default async function TenantsPage() {
   const t = await getTranslations("tenants");
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-title font-semibold">{t("title")}</h1>
-          <p className="text-body text-muted-foreground">{t("body")}</p>
-        </div>
-        <CreateTenantDialog />
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("body")}
+        action={<CreateTenantDialog />}
+      />
       <TenantsTable />
     </div>
   );

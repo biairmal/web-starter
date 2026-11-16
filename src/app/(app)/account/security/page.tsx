@@ -7,6 +7,7 @@ import {
 } from "@/features/account/sessions-list";
 import { SignInMethods } from "@/features/account/sign-in-methods";
 import { getAuthConfig } from "@/lib/session/me";
+import { PageHeader } from "@/components/layout/page-header";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("account.security");
@@ -32,10 +33,7 @@ export default async function SecurityPage({
   ]);
   return (
     <div className="flex max-w-xl flex-col gap-10">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-title font-semibold">{t("title")}</h1>
-        <p className="text-body text-muted-foreground">{t("body")}</p>
-      </div>
+      <PageHeader title={t("title")} description={t("body")} />
       <SessionsList />
       <div className="border-t border-rule" />
       <SignInMethods

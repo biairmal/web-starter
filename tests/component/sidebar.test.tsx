@@ -39,6 +39,42 @@ function renderWith(me: Me, children: React.ReactNode) {
 
 const reader: Me = { ...meFixture, permissions: ["users:read"] };
 
+describe("SidebarContent states", () => {
+  it("tints the active item's icon with the accent and keeps the others quiet", () => {
+    renderWith(
+      { ...meFixture, is_super_admin: true },
+      <SidebarContent tenancy="single" />,
+    );
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    const links = within(nav).getAllByRole("link");
+    const active = links.find(
+      (link) => link.getAttribute("aria-current") === "page",
+    );
+    const inactive = links.filter((link) => link !== active);
+    expect(active?.querySelector("svg")?.getAttribute("class")).toContain(
+      "text-brand-accent",
+    );
+    expect(inactive.length).toBeGreaterThan(0);
+    for (const link of inactive) {
+      const icon = link.querySelector("svg")?.getAttribute("class") ?? "";
+      expect(icon).toContain("text-faint");
+      expect(icon).toContain("group-hover:text-foreground");
+      expect(link.className).toContain("group");
+    }
+  });
+
+  it("keeps each link's accessible name and the Admin group heading", () => {
+    renderWith(reader, <SidebarContent tenancy="single" />);
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(
+      within(nav).getByRole("link", { name: "Users" }),
+    ).toBeInTheDocument();
+    expect(
+      within(nav).getByRole("heading", { level: 2, name: "Admin" }),
+    ).toHaveClass("text-faint");
+  });
+});
+
 describe("SidebarContent", () => {
   it("shows the Users link under Admin for a user with users:read, marked active on a sub-path", () => {
     renderWith(reader, <SidebarContent tenancy="single" />);

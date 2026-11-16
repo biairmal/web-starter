@@ -74,6 +74,41 @@ test.describe("base interaction layer in a browser", () => {
   });
 });
 
+// The wordmark renders a light and a dark logo and shows one by theme. In
+// each theme exactly one must be displayed, loaded and non-empty, so a logo
+// is never missing against its background.
+for (const colorScheme of ["light", "dark"] as const) {
+  test.describe(`logo in the ${colorScheme} theme`, () => {
+    test.use({ colorScheme });
+
+    test("exactly one logo is shown, loaded and sized", async ({ page }) => {
+      await page.goto("/sign-in");
+      const shown = await page
+        .locator("main a[href='/'] img")
+        .evaluateAll((images) =>
+          images
+            .map((img) => {
+              const el = img as HTMLImageElement;
+              const box = el.getBoundingClientRect();
+              return {
+                display: getComputedStyle(el).display,
+                loaded: el.complete && el.naturalWidth > 0,
+                width: box.width,
+                src: el.getAttribute("src"),
+              };
+            })
+            .filter((image) => image.display !== "none"),
+        );
+      expect(shown).toHaveLength(1);
+      expect(shown[0]?.loaded).toBe(true);
+      expect(shown[0]?.width ?? 0).toBeGreaterThan(0);
+      expect(shown[0]?.src).toBe(
+        colorScheme === "dark" ? "/brand/logo-dark.svg" : "/brand/logo.svg",
+      );
+    });
+  });
+}
+
 const snapshotDir = process.env.UI_SNAPSHOTS
   ? (process.env.UI_SNAPSHOT_DIR ?? ".ui-review/after")
   : undefined;

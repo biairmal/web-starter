@@ -45,7 +45,7 @@ export default function GlobalError({
             <button
               type="button"
               onClick={reset}
-              className="h-9 rounded-md bg-primary px-4 text-body font-medium text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="h-9 rounded-md bg-primary px-4 text-body font-medium text-primary-foreground hover:bg-primary-hover active:bg-primary-press focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               {t("retry")}
             </button>

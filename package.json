@@ -23,6 +23,7 @@
     "api:check": "tsx scripts/api-check.mts",
     "mock": "prism mock openapi/identity.yaml --port 4010 --dynamic",
     "mock:notes": "prism mock openapi/notes.json --port 4012 --dynamic",
+    "ui:inspect": "tsx scripts/ui-inspect.mts",
     "e2e:mock": "playwright test --project=mock",
     "e2e:full": "tsx scripts/e2e-full.mts",
     "e2e:full:run": "playwright test --project=full",

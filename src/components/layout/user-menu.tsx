@@ -72,7 +72,10 @@ export function UserMenu() {
           {initials(me.display_name)}
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-body font-medium">
+          <span
+            title={me.display_name}
+            className="truncate text-body font-medium"
+          >
             {me.display_name}
           </span>
           {me.roles[0] !== undefined && (

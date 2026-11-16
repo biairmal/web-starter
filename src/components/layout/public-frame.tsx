@@ -2,10 +2,10 @@ import { useTranslations } from "next-intl";
 import { Wordmark } from "@/components/layout/wordmark";
 import { brand } from "@/config/brand";
 
-// The composition shared by every public screen and the error pages
-// (DESIGN_BRIEF 5.1): the frame tint, a 400px column placed a little above
-// centre, the wordmark, then the content; a support and legal footer at the
-// bottom. No card, no shadow.
+// The composition shared by every public screen and the error pages: the
+// frame tint, a 400px column placed a little above centre holding one white
+// card (hairline border, no shadow) with the wordmark and then the content; a
+// support and legal footer at the bottom, outside the card.
 
 /** A legal link is shown only when brand.ts has a URL for it. */
 const legal: { termsUrl: string; privacyUrl: string } = brand.legal;
@@ -16,10 +16,15 @@ export function PublicFrame({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-dvh flex-col bg-frame px-4">
       <div aria-hidden="true" className="min-h-6 grow-38" />
       <main className="mx-auto flex w-full max-w-100 flex-col">
-        <div className="mb-8">
-          <Wordmark />
+        <div
+          data-slot="public-card"
+          className="rounded-xl border border-border bg-background p-6 sm:p-8"
+        >
+          <div className="mb-8">
+            <Wordmark />
+          </div>
+          {children}
         </div>
-        {children}
       </main>
       <div aria-hidden="true" className="min-h-8 grow-62" />
       <footer className="mx-auto flex w-full max-w-100 flex-wrap gap-x-4 gap-y-1 pb-8 text-small text-faint">

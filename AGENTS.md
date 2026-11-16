@@ -37,3 +37,14 @@ Read this before changing code. The task list is `project-files/phase2/frontend/
 | `bun run check`  | Lint, typecheck, format check, tests |
 | `bun run build`  | Production build (must pass in CI)   |
 | `bun run format` | Prettier write                       |
+
+## UI work
+
+Applies to any change a user can see (new or reworked screens and components, visual identity, motion). Skip it for copy, spacing or token-value tweaks: do the browser check and nothing more.
+
+- **Read first:** `DESIGN.md` (the visual contract) and `UI_REVIEW_WORKFLOW.md` (the process, which skill to use for which change, and the PR checklist). Do not copy their rules here or into code comments.
+- **Precedence:** product requirements and the rules in this file, then `DESIGN.md`, then skill advice. Where `DESIGN.md` is blank (art direction, type, palette), propose a direction and wait for the owner; do not decide it silently or record it in `DESIGN.md` yourself.
+- **Skills are optional helpers** (Frontend Design, Impeccable, Taste, Emil Kowalski, Web Interface Guidelines, UI UX Pro Max). Pick the one that fits the change; do not run them all. Their advice never overrides the conventions above: translate a suggested hex colour or text literal into a token or `t("…")`.
+- **Never let a skill overwrite `DESIGN.md`.** Impeccable `init` and `document` write design files; have them write elsewhere and merge by hand.
+- **Verify in a real browser** with `bun run ui:inspect <url>` (screenshots at desktop, tablet and two mobile widths, overflow, console errors, Tab order) and `bun run e2e:mock` for interactions and axe. Look at the screenshots.
+- **Report honestly:** say which viewports, interactions and checks were actually run, with which tool, and what was not verified. Never claim browser verification or passing checks that did not happen.

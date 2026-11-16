@@ -39,4 +39,17 @@ if (typeof window !== "undefined") {
       return undefined;
     }
   };
+  // jsdom has no matchMedia. Tests get a wide viewport; one of the narrow
+  // layout stubs its own.
+  if (typeof window.matchMedia !== "function") {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: (query: string) => ({
+        matches: true,
+        media: query,
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+      }),
+    });
+  }
 }

@@ -84,6 +84,22 @@ describe("TenantsTable", () => {
     fakeRouter.reset("/admin/tenants");
   });
 
+  it("search and status tabs use the shared filter components", async () => {
+    server.use(
+      http.get("*/api/id/admin/tenants", () =>
+        HttpResponse.json(page([acme, globex])),
+      ),
+    );
+    renderSignedIn(<TenantsTable />, superAdmin, "/admin/tenants");
+    const search = await screen.findByRole("searchbox", {
+      name: "Search by name or slug",
+    });
+    expect(search.closest('[data-slot="filter-bar"]')).not.toBeNull();
+    const tabs = screen.getByRole("group", { name: "Status" });
+    expect(tabs.className).toContain("overflow-y-hidden");
+    expect(tabs.className).toContain("shadow-rule-inset");
+  });
+
   it("FE-50 lists tenants with slug, status, users and a link to each", async () => {
     server.use(
       http.get("*/api/id/admin/tenants", () =>

@@ -1,14 +1,8 @@
 "use client";
 
-import {
-  MoreHorizontal,
-  NotebookPen,
-  Pin,
-  Search,
-  SearchX,
-} from "lucide-react";
+import { MoreHorizontal, NotebookPen, Pin, SearchX } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useCan } from "@/components/auth/can";
 import {
@@ -18,6 +12,8 @@ import {
 import { useListParams } from "@/components/data-table/use-list-params";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { FilterBar } from "@/components/filters/filter-bar";
+import { FilterTabs } from "@/components/filters/filter-tabs";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,7 +22,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { isApiError } from "@/lib/api/errors";
 import { useErrorToast } from "@/lib/api/use-error-toast";
 import { NOTES_WRITE } from "@/lib/authz/permissions";
@@ -142,7 +137,6 @@ export function NotesTable() {
   const t = useTranslations("notes.table");
   const tFilters = useTranslations("notes.filters");
   const format = useFormatter();
-  const searchId = useId();
   const canWrite = useCan(NOTES_WRITE);
   const list = useListParams(LIST_CONFIG);
   const notes = useNotes(list.params);
@@ -196,6 +190,7 @@ export function NotesTable() {
             id: "actions",
             header: <span className="sr-only">{t("actionsHeader")}</span>,
             align: "end" as const,
+            rowActions: true,
             cell: (note: Note) => (
               <RowMenu note={note} onChange={change} onDelete={setDeleting} />
             ),
@@ -217,61 +212,30 @@ export function NotesTable() {
         </p>
         {canWrite && <CreateNoteDialog />}
       </div>
-      <div
-        role="group"
-        aria-label={tFilters("status")}
-        className="flex gap-4 overflow-x-auto border-b border-rule"
-      >
-        {(["", ...NOTE_STATUSES] as const).map((value) => {
-          const active = status === value;
-          return (
-            <button
-              key={value || "all"}
-              type="button"
-              aria-pressed={active}
-              onClick={() => {
-                list.setFilter("status", value);
-              }}
-              className={cn(
-                "-mb-px h-9 shrink-0 border-b-2 text-body focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                active
-                  ? "border-foreground font-medium text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {tFilters(`tabs.${value || "all"}`)}
-            </button>
-          );
-        })}
-      </div>
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="relative w-full sm:w-72">
-          <label htmlFor={searchId} className="sr-only">
-            {tFilters("search")}
-          </label>
-          <Search
-            aria-hidden="true"
-            className="pointer-events-none absolute start-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            id={searchId}
-            type="search"
-            value={list.search.value}
-            placeholder={tFilters("search")}
-            autoComplete="off"
-            spellCheck={false}
-            className="ps-8"
-            onChange={(event) => {
-              list.search.onChange(event.target.value);
-            }}
-          />
-        </div>
-        {list.hasFilters && (
-          <Button type="button" variant="ghost" onClick={list.clearFilters}>
-            {tFilters("clear")}
-          </Button>
-        )}
-      </div>
+      <FilterTabs
+        label={tFilters("status")}
+        value={status}
+        options={(["", ...NOTE_STATUSES] as const).map((value) => ({
+          value,
+          label: tFilters(`tabs.${value || "all"}`),
+        }))}
+        onChange={(value) => {
+          list.setFilter("status", value);
+        }}
+      />
+      <FilterBar
+        search={{
+          value: list.search.value,
+          onChange: list.search.onChange,
+          label: tFilters("search"),
+        }}
+        filters={[]}
+        values={list.params.filters}
+        onChange={(key, value) => {
+          list.setFilter(key, value);
+        }}
+        onClear={list.clearFilters}
+      />
       <DataTable
         columns={columns}
         query={notes}

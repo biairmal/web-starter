@@ -43,6 +43,9 @@ next-env.d.ts
 # example env file is committed
 !.env.example
 
+# UI inspection screenshots (bun run ui:inspect)
+/.ui-review
+
 # Playwright
 /playwright-report
 /test-results
@@ -54,3 +57,6 @@ next-env.d.ts
 
 # Full e2e stack: generated keys and identity config
 /deploy/e2e/.generated/
+
+# Executing-plans workspace (ledger, briefs)
+/.superpowers/

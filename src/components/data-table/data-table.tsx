@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import {
@@ -33,6 +33,8 @@ export type DataTableColumn<T> = {
   sortField?: string;
   /** Numbers are right-aligned (end-aligned) with their header. */
   align?: "start" | "end";
+  /** The actions column: shown on row hover or focus, and always on touch. */
+  rowActions?: boolean;
   /** The identity column gets a third of the width and never truncates. */
   identity?: boolean;
 };
@@ -61,6 +63,7 @@ export function DataTable<T>({
   onSortChange,
   onPageChange,
   onSizeChange,
+  density = "comfortable",
 }: {
   columns: readonly DataTableColumn<T>[];
   query: PageQuery<T>;
@@ -76,6 +79,8 @@ export function DataTable<T>({
   onSortChange?: (sort: string | undefined) => void;
   onPageChange: (page: number) => void;
   onSizeChange: (size: number) => void;
+  /** Row height: comfortable (the default) or compact. */
+  density?: "comfortable" | "compact";
 }) {
   const t = useTranslations("dataTable");
   const rows = useMemo(() => query.data?.items ?? [], [query.data]);
@@ -114,6 +119,7 @@ export function DataTable<T>({
 
   const loading = query.isPending;
   const hasRows = rows.length > 0;
+  const rowHeight = density === "compact" ? "h-9" : "h-12";
 
   return (
     <div className="flex flex-col">
@@ -123,7 +129,7 @@ export function DataTable<T>({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-body">
             <caption className="sr-only">{caption}</caption>
-            <thead className="sticky top-0 bg-background">
+            <thead className="sticky top-0 z-10 border-b border-rule bg-background">
               {table.getHeaderGroups().map((group) => (
                 <tr key={group.id}>
                   {group.headers.map((header) => {
@@ -159,7 +165,7 @@ export function DataTable<T>({
                         {column?.sortField !== undefined && onSortChange ? (
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1 rounded-sm hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            className="group/sort inline-flex items-center gap-1 rounded-sm hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             onClick={() => {
                               onSortChange(
                                 nextSort(sort, column.sortField ?? ""),
@@ -176,6 +182,12 @@ export function DataTable<T>({
                                 className="size-3"
                               />
                             )}
+                            {sorted === undefined && (
+                              <ChevronsUpDown
+                                aria-hidden="true"
+                                className="size-3 text-faint group-hover/sort:text-foreground"
+                              />
+                            )}
                           </button>
                         ) : (
                           label
@@ -189,7 +201,10 @@ export function DataTable<T>({
             <tbody aria-busy={loading || undefined}>
               {loading
                 ? Array.from({ length: SKELETON_ROWS }, (_, index) => (
-                    <tr key={index} className="h-12 border-t border-rule">
+                    <tr
+                      key={index}
+                      className={cn(rowHeight, "border-t border-rule")}
+                    >
                       {columns.map((column) => (
                         <td
                           key={column.id}
@@ -208,7 +223,10 @@ export function DataTable<T>({
                 : table.getRowModel().rows.map((row) => (
                     <tr
                       key={row.id}
-                      className="h-12 border-t border-rule hover:bg-raised"
+                      className={cn(
+                        rowHeight,
+                        "group/row border-t border-rule hover:bg-raised",
+                      )}
                     >
                       {row.getVisibleCells().map((cell) => {
                         const column = byId.get(cell.column.id);
@@ -219,6 +237,10 @@ export function DataTable<T>({
                               "px-3 first:ps-0 last:pe-0",
                               column?.align === "end" &&
                                 "text-end tabular-nums",
+                              // Hidden until the row is hovered or focused, but
+                              // never on touch, and never while its menu is open.
+                              column?.rowActions &&
+                                "opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 pointer-coarse:opacity-100 has-data-[state=open]:opacity-100",
                             )}
                           >
                             {flexRender(

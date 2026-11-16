@@ -83,13 +83,21 @@ export function SidebarContent({
                       aria-current={active ? "page" : undefined}
                       onClick={onNavigate}
                       className={cn(
-                        "relative flex h-nav-row items-center gap-2.5 rounded-md px-2 text-body transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                        "group relative flex h-nav-row items-center gap-2.5 rounded-md px-2 text-body transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                         active
                           ? "bg-active text-foreground before:absolute before:inset-y-2 before:start-0 before:w-0.5 before:rounded-full before:bg-brand-accent"
                           : "text-muted-foreground hover:bg-raised hover:text-foreground",
                       )}
                     >
-                      <Icon aria-hidden="true" className="size-4 shrink-0" />
+                      <Icon
+                        aria-hidden="true"
+                        className={cn(
+                          "size-4 shrink-0 transition-colors",
+                          active
+                            ? "text-brand-accent"
+                            : "text-faint group-hover:text-foreground",
+                        )}
+                      />
                       <span className="truncate">
                         {t(`items.${item.labelKey}`)}
                       </span>

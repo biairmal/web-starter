@@ -4,6 +4,7 @@ import { brand } from "@/config/brand";
 import { NOTES_READ } from "@/lib/authz/permissions";
 import { requirePermission } from "@/lib/session/require-permission";
 import { NotesTable } from "@/features/notes/notes-table";
+import { PageHeader } from "@/components/layout/page-header";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("notes");
@@ -17,10 +18,7 @@ export default async function NotesPage() {
   const t = await getTranslations("notes");
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-title font-semibold">{t("title")}</h1>
-        <p className="text-body text-muted-foreground">{t("body")}</p>
-      </div>
+      <PageHeader title={t("title")} description={t("body")} />
       <NotesTable />
     </div>
   );

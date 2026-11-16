@@ -101,11 +101,11 @@ Rules:
 
 ### Spacing, shape, and elevation
 
-- Spacing scale: TBD
-- Corner radius scale: TBD
-- Shadow/elevation scale: TBD
-- Content max-width: TBD
-- Grid/breakpoints: TBD
+- Spacing scale: the tokens in `tokens.css`: `--gap` and `--pad` 24px, `--card-pad` 20px, `--section-gap` 32px; row heights 48px (72px for two-line rows), nav row 34px, control 32px, field 40px.
+- Corner radius scale: chip 4px, control 6px, card 8px, sheet 16px.
+- Shadow/elevation scale: none at rest; only floating surfaces (menu, popover, dialog, sheet, toast) use `shadow-float`, always with a hairline ring.
+- Content max-width: `screen-xl` (1280px).
+- Grid/breakpoints: `sm` 640px (the sheet is inset, tables replace cards) and `lg` 1024px (the sidebar replaces the drawer).
 
 Rules:
 
@@ -115,10 +115,13 @@ Rules:
 
 ## 5. Layout and components
 
-- Navigation pattern:
-- Page shell:
-- Content width:
-- Responsive navigation behavior:
+- Navigation pattern: a 228px sidebar from 1024px up: the logo, the tenant switcher (only with several tenants), grouped links with the current one marked by a 2px accent bar, a tinted row and an accent icon, and the user menu at the bottom.
+- Page shell: the sidebar and top bar sit on the tinted frame; the content is a white sheet with a hairline border, 16px corners and an 8px inset from the window (from 640px). Below 640px the sheet is the screen, with no inset and no corners.
+- Page header: every list and account page starts with `PageHeader`: one `h1`, a sentence under it, and the page's primary action at the end; it wraps on narrow screens. Detail screens keep their own headers (back link, status).
+- Content width: the content column is at most `screen-xl` (1280px).
+- Responsive navigation behavior: below 1024px the sidebar becomes a drawer from the start edge, opened from a 48px top bar that holds the menu button and the logo; following a link closes it.
+- Sign-in and other public screens: one white card (hairline border, no shadow) holding the logo and the form, in a 400px column on the tinted frame, with the support and legal footer below it.
+- Logo: `public/brand/logo.svg` and `logo-dark.svg` (shown by theme) and `mark.svg`, with explicit colours because an SVG in an `<img>` cannot use `currentColor`. A client replaces the three files.
 - Form conventions:
 - Table/list conventions: every list uses `DataTable` (server-paged, sorted and filtered through the URL) with a `FilterBar` above it. Filters are removable pills beside the search box; "Add filter" lists the ones not yet applied, and "Clear filters" resets all of them and the search. A filter that is always visible and has a few exclusive values (a status, a membership) is `FilterTabs` instead, underlined in the accent. The header stays in view while the page scrolls; sortable headers show an arrow (a faint double arrow when unsorted). A row's actions menu appears on hover or focus and is always visible on touch. Rows are comfortable (48px) by default, compact (36px) on request. Below 640px a table becomes a two-line card list.
 - Filter editors: a popover from 640px up and a bottom sheet below, the same on every list. Filter types are `select`, `date` and `custom` (a feature's own picker, such as the audit log's person search); each holds one string in the URL.

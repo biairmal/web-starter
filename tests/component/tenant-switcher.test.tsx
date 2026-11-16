@@ -74,6 +74,29 @@ describe("TenantSwitcher", () => {
     expect(screen.queryByRole("button", { name: /Switch tenant/ })).toBeNull();
   });
 
+  it("is a bordered control, not plain text, and sets no cursor of its own", async () => {
+    serveTenants([{ ...DEFAULT, status: "active" }, ACME]);
+    renderSignedIn(<TenantSwitcher tenancy="multi" />, me);
+    const trigger = await screen.findByRole("button", {
+      name: /Default.*Switch tenant/,
+    });
+    expect(trigger.className).toContain("border");
+    expect(trigger.className).toContain("bg-background");
+    expect(trigger.className).toContain("focus-visible:ring-2");
+    expect(trigger.className).not.toContain("cursor-pointer");
+  });
+
+  it("truncates a 60-character tenant name and keeps the full name in a title", async () => {
+    const long = "A very long tenant name that goes on and on forever ok";
+    serveTenants([{ ...DEFAULT, status: "active" }, ACME]);
+    renderSignedIn(<TenantSwitcher tenancy="multi" />, {
+      ...me,
+      tenant: { ...me.tenant, name: long },
+    });
+    const name = await screen.findByText(long, { selector: "span.truncate" });
+    expect(name).toHaveAttribute("title", long);
+  });
+
   it("FE-31 switches, tells the other tabs and reloads to /", async () => {
     serveTenants([{ ...DEFAULT, status: "active" }, ACME]);
     let sent: unknown;

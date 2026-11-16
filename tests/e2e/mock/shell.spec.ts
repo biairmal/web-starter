@@ -124,6 +124,13 @@ test.describe("at 375px", () => {
     await page.getByRole("button", { name: "Open menu" }).click();
     const drawer = page.getByRole("dialog", { name: "Menu" });
     await expect(drawer).toBeVisible();
+    // The drawer slides and fades in; axe reads colours blended with the page
+    // behind it until that ends, so wait for the animations to finish.
+    await page.evaluate(() =>
+      Promise.all(document.getAnimations().map((a) => a.finished)).then(
+        () => undefined,
+      ),
+    );
     await expectNoA11yViolations(page);
     await drawer.getByRole("link", { name: "Users" }).click();
     await expect(page).toHaveURL("/admin/users");
@@ -140,5 +147,41 @@ test.describe("at 375px", () => {
       () => document.documentElement.scrollWidth - window.innerWidth,
     );
     expect(overflow).toBeLessThanOrEqual(0);
+  });
+});
+
+test.describe("at 320px", () => {
+  test.use({ viewport: { width: 320, height: 640 } });
+
+  test("a very long person name truncates in the drawer and nothing scrolls sideways", async ({
+    page,
+    context,
+  }) => {
+    const long = "x".repeat(80);
+    await signIn(context, { name: long });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const drawer = page.getByRole("dialog", { name: "Menu" });
+    await expect(drawer).toBeVisible();
+    const widths = await page.evaluate(() => ({
+      page: document.documentElement.scrollWidth,
+      view: document.documentElement.clientWidth,
+    }));
+    expect(widths.page).toBeLessThanOrEqual(widths.view);
+    // The name is cut with an ellipsis inside the drawer. A fixed drawer clips
+    // overflow without changing the page width, so check the style itself.
+    const style = await drawer.getByTitle(long).evaluate((el) => {
+      const computed = getComputedStyle(el);
+      return {
+        overflowX: computed.overflowX,
+        textOverflow: computed.textOverflow,
+        whiteSpace: computed.whiteSpace,
+      };
+    });
+    expect(style).toEqual({
+      overflowX: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    });
   });
 });

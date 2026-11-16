@@ -224,3 +224,26 @@ test.describe("admin users at 375px", () => {
     await expectNoA11yViolations(page);
   });
 });
+
+test.describe("admin users at 320px", () => {
+  test.use({ viewport: { width: 320, height: 640 } });
+
+  test("a very long applied filter value truncates and the page does not scroll sideways", async ({
+    page,
+    context,
+  }) => {
+    await signIn(context, { sid: sid(9), perms: ADMIN });
+    // A role id nobody has: shown as it is, so the pill is as long as the value.
+    const long = "x".repeat(80);
+    await page.goto(`/admin/users?role=${long}`);
+    const pill = page.getByRole("button", { name: `Role: ${long}` });
+    await expect(pill).toBeVisible();
+    const widths = await page.evaluate(() => ({
+      page: document.documentElement.scrollWidth,
+      view: document.documentElement.clientWidth,
+    }));
+    expect(widths.page).toBeLessThanOrEqual(widths.view);
+    const box = await pill.boundingBox();
+    expect(box?.width ?? 0).toBeLessThan(320);
+  });
+});

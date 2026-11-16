@@ -156,6 +156,54 @@ for (const colorScheme of ["light", "dark"] as const) {
   });
 }
 
+// The shell at the widths where its layout changes (sidebar from 1024px, the
+// sheet inset from 640px), what the layout review looks at. Viewport-sized
+// shots, so the frame, sidebar or top bar and the page header are in view.
+const shellWidths = [
+  { name: "1440", width: 1440, height: 900 },
+  { name: "1024", width: 1024, height: 768 },
+  { name: "768", width: 768, height: 1024 },
+  { name: "390", width: 390, height: 844 },
+  { name: "320", width: 320, height: 640 },
+] as const;
+
+for (const colorScheme of ["light", "dark"] as const) {
+  test.describe(`UI snapshot: shell widths ${colorScheme}`, () => {
+    test.use({ colorScheme });
+    test.skip(
+      !snapshotDir || !process.env.UI_SNAPSHOT_WIDTHS,
+      "set UI_SNAPSHOTS=1 and UI_SNAPSHOT_WIDTHS=1 to capture the shell at every width",
+    );
+
+    for (const viewport of shellWidths) {
+      for (const [name, path] of [
+        ["home", "/"],
+        ["users", "/admin/users"],
+        ["account", "/account"],
+      ] as const) {
+        test(`UI snapshot: shell ${name} ${viewport.name} ${colorScheme}`, async ({
+          page,
+          context,
+        }) => {
+          await signIn(context, { name: "Ada Admin", sa: true });
+          await page.setViewportSize(viewport);
+          await page.goto(path);
+          await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+          await page.waitForTimeout(700);
+          const dir = snapshotDir ?? ".ui-review/after";
+          mkdirSync(dir, { recursive: true });
+          await page.screenshot({
+            path: join(
+              dir,
+              `shell-${name}-${viewport.name}-${colorScheme}.png`,
+            ),
+          });
+        });
+      }
+    }
+  });
+}
+
 // The open "Add filter" panel (a popover on desktop, a sheet on mobile). It
 // has no counterpart before the filter bar existed, so it is opt-in as well.
 test.describe("UI snapshot: filter menus", () => {

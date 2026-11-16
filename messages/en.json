@@ -582,6 +582,11 @@
       "next": "Next page"
     }
   },
+  "filterBar": {
+    "addFilter": "Add filter",
+    "clearFilters": "Clear filters",
+    "remove": "Remove filter {label}"
+  },
   "feedback": {
     "loading": "Loading",
     "error": {

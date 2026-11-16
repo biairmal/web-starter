@@ -582,6 +582,11 @@
       "next": "Halaman berikutnya"
     }
   },
+  "filterBar": {
+    "addFilter": "Tambah filter",
+    "clearFilters": "Hapus filter",
+    "remove": "Hapus filter {label}"
+  },
   "feedback": {
     "loading": "Memuat",
     "error": {

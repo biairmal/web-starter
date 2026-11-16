@@ -50,8 +50,8 @@ export function listSpecs(): Spec[] {
 
 function header(spec: Spec): string {
   return [
-    `// Generated from ${spec.file} by \`pnpm api:gen\`. Do not edit by hand.`,
-    "// Regenerate after the spec changes; `pnpm api:check` fails when this file is stale.",
+    `// Generated from ${spec.file} by \`bun run api:gen\`. Do not edit by hand.`,
+    "// Regenerate after the spec changes; `bun run api:check` fails when this file is stale.",
     "",
   ].join("\n");
 }

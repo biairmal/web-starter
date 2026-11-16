@@ -5,7 +5,7 @@ import { signIn } from "../session";
 // The super admin's role templates (FE-52; DESIGN_BRIEF 7.10): the role
 // editor on the templates. The mock stack runs in single mode, where these
 // pages do not exist. The multi-mode tests run with
-//   MOCK_TENANCY=multi pnpm e2e:mock tests/e2e/mock/role-templates.spec.ts
+//   MOCK_TENANCY=multi bun run e2e:mock tests/e2e/mock/role-templates.spec.ts
 // (stop a dev server started without it first, and clear .next/cache, which
 // keeps identity's config for 5 minutes).
 

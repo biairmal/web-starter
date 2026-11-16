@@ -15,8 +15,8 @@ import { dirname, join, resolve } from "node:path";
 // the mock e2e suite there. Tests read the brand from brand.ts, so they must
 // pass under any brand.
 //
-//   pnpm rebrand:smoke            # copies to a temp folder
-//   pnpm rebrand:smoke -- <dir>   # or into <dir> (must not exist)
+//   bun run rebrand:smoke            # copies to a temp folder
+//   bun run rebrand:smoke -- <dir>   # or into <dir> (must not exist)
 //
 // Ports 3000, 4010, 4011 and 4012 must be free.
 
@@ -104,8 +104,8 @@ function run(command: string, args: string[]): number {
 }
 
 const status =
-  run("pnpm", ["install", "--frozen-lockfile", "--prefer-offline"]) ||
-  run("pnpm", ["exec", "playwright", "test", "--project=mock"]);
+  run("bun", ["install", "--frozen-lockfile"]) ||
+  run("bun", ["x", "playwright", "test", "--project=mock"]);
 
 console.log(
   status === 0

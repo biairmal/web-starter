@@ -11,14 +11,14 @@ import { openapiDir, root } from "./api-schema.mts";
 //
 // The path is relative to this repo. A Swagger 2.0 file (what swag generates
 // for go-service-template) is converted to OpenAPI 3, which is what
-// openapi-typescript reads. Run `pnpm api:gen` afterwards.
+// openapi-typescript reads. Run `bun run api:gen` afterwards.
 
 const [name, source] = process.argv.slice(2);
 
 if (!name || !/^[a-z0-9-]+$/.test(name) || name === "identity" || !source) {
   console.error(
     "usage: tsx scripts/api-sync-service.mts <name> <spec file>\n" +
-      "  <name>: lowercase letters, digits and hyphens (identity uses `pnpm api:sync`)",
+      "  <name>: lowercase letters, digits and hyphens (identity uses `bun run api:sync`)",
   );
   process.exit(1);
 }

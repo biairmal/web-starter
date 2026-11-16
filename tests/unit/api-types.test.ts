@@ -4,7 +4,7 @@ import type { ProxiedPaths } from "@/lib/api/client";
 import { generateSchema, listSpecs } from "../../scripts/api-schema.mts";
 
 // FE-61: the API client is generated from identity's OpenAPI file, so a
-// backend change shows up as a type error (`pnpm api:check` in CI).
+// backend change shows up as a type error (`bun run api:check` in CI).
 
 describe("generated API types", () => {
   it("FE-61 the committed types match every pinned spec", async () => {

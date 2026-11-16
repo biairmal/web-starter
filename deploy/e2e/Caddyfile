@@ -16,7 +16,7 @@
 }
 
 # The same replicas over HTTPS and HTTP/2, as production serves them
-# (deploy/Caddyfile), with Caddy's local CA. `pnpm lighthouse` measures here
+# (deploy/Caddyfile), with Caddy's local CA. `bun run lighthouse` measures here
 # (FE-NFR-3, PRD 3). The app still sees its own origin, APP_URL.
 https://localhost:3443 {
 	tls internal

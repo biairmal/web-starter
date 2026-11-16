@@ -11,40 +11,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        # Reads the version from package.json `packageManager`.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+      - run: bun install --frozen-lockfile
 
-      - run: pnpm run check
+      - run: bun run check
 
-      - run: pnpm run build
+      - run: bun run build
 
       # TRD 12: sign-in JS <= 200 KB gzip, counting every chunk the route loads.
-      - run: pnpm run budget
+      - run: bun run budget
 
   e2e-mock:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+      - run: bun install --frozen-lockfile
 
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: bun x playwright install --with-deps chromium
 
-      - run: pnpm run e2e:mock
+      - run: bun run e2e:mock
 
       - uses: actions/upload-artifact@v4
         if: failure()

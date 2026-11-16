@@ -51,6 +51,27 @@ test.describe("base interaction layer in a browser", () => {
       .evaluate((el) => getComputedStyle(el).cursor);
     expect(cursor).toBe("pointer");
   });
+
+  test("a focused field keeps the accent border while the mouse is over it", async ({
+    page,
+  }) => {
+    await page.goto("/sign-in");
+    const email = page.getByLabel("Email");
+    await email.focus();
+    await email.hover();
+    const accent = await email.evaluate((_, name) => {
+      const probe = document.createElement("span");
+      probe.style.color = `var(${name})`;
+      document.body.append(probe);
+      const colour = getComputedStyle(probe).color;
+      probe.remove();
+      return colour;
+    }, "--brand-accent");
+    // The border animates (transition-colors), so wait for it to settle.
+    await expect
+      .poll(() => email.evaluate((el) => getComputedStyle(el).borderTopColor))
+      .toBe(accent);
+  });
 });
 
 const snapshotDir = process.env.UI_SNAPSHOTS

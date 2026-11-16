@@ -31,8 +31,27 @@ describe("contrast helper", () => {
     expect(contrast("#000000", "#ffffff")).toBeCloseTo(21, 5);
   });
 
-  it("reads the default accent from tokens.css", () => {
-    expect(readTokens("light")["brand-accent"]).toBe("#4f46e5");
+  // Not the exact colour: DESIGN.md tells a client to change the accent and
+  // run this file, so it must stay green for any accent that keeps contrast.
+  it("reads the accent from tokens.css as a resolved colour", () => {
+    expect(readTokens("light")["brand-accent"]).toMatch(/^#[0-9a-f]{6}$/);
+  });
+
+  it("derives hover from the accent with color-mix, not a copy of it", () => {
+    for (const theme of ["light", "dark"] as const) {
+      const tokens = readTokens(theme);
+      expect(tokens["primary-hover"]).toMatch(/^#[0-9a-f]{6}$/);
+      expect(tokens["primary-hover"]).not.toBe(tokens["brand-accent"]);
+    }
+  });
+
+  it("reads a different dark theme than light", () => {
+    expect(readTokens("dark").surface).not.toBe(readTokens("light").surface);
+  });
+
+  it("refuses CSS whose dark block it cannot find, instead of reusing light", () => {
+    const lightOnly = ":root { --surface: #ffffff; }";
+    expect(() => readTokens("dark", lightOnly)).toThrow(/dark/);
   });
 });
 

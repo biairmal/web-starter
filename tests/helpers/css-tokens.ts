@@ -100,14 +100,21 @@ function resolve(
 }
 
 /** Every colour token of a theme, without the leading `--`, as `#rrggbb`. */
-export function readTokens(theme: Theme): Record<string, string> {
-  const css = readFileSync(
-    join(process.cwd(), "src/app/tokens.css"),
-    "utf8",
+export function readTokens(
+  theme: Theme,
+  source?: string,
+): Record<string, string> {
+  const css = (
+    source ?? readFileSync(join(process.cwd(), "src/app/tokens.css"), "utf8")
   ).replace(/\/\*[\s\S]*?\*\//g, "");
   const raw = new Map<string, string>(declarations(css, ":root"));
   if (theme === "dark") {
-    for (const [name, value] of declarations(css, ':root[data-theme="dark"]')) {
+    const dark = declarations(css, ':root[data-theme="dark"]');
+    // A rewritten selector must not silently fall back to the light values.
+    if (dark.length === 0) {
+      throw new Error('no dark theme block (:root[data-theme="dark"]) found');
+    }
+    for (const [name, value] of dark) {
       raw.set(name, value);
     }
   }

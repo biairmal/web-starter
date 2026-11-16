@@ -257,7 +257,6 @@ export function AuditTable() {
             list.setFilter(key, value);
           }}
           onClear={list.clearFilters}
-          hasFilters={list.hasFilters}
         />
         <div className="flex items-center gap-3">
           <p aria-live="polite" className="text-small text-muted-foreground">

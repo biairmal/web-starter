@@ -182,18 +182,27 @@ describe("AuditTable", () => {
     expect(query?.get("to")).toBe(
       new Date(2026, 10, 10, 23, 59, 59, 999).toISOString(),
     );
-    // The actor restored from the URL shows by name.
+    // Each applied filter is a pill; the actor restored from the URL shows by name.
     expect(
-      await screen.findByText("Dina Pratama", { selector: "span" }),
+      await screen.findByRole("button", { name: "By: Dina Pratama" }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("From")).toHaveValue("2026-11-01");
-    expect(screen.getByLabelText("To")).toHaveValue("2026-11-10");
+    expect(
+      screen.getByRole("button", { name: "Action: Roles" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "From: Nov 1, 2026" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "To: Nov 10, 2026" }),
+    ).toBeInTheDocument();
   });
 
   it("FE-46 picks the actor from a user search", async () => {
     serve();
     render();
     const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "Add filter" }));
+    await user.click(screen.getByRole("button", { name: "By" }));
     await user.type(
       await screen.findByRole("searchbox", { name: "By" }),
       "dina",
@@ -206,7 +215,7 @@ describe("AuditTable", () => {
     );
     expect(fakeRouter.search.get("actor")).toBe(DINA);
     await user.click(
-      await screen.findByRole("button", { name: "Clear the person filter" }),
+      await screen.findByRole("button", { name: "Remove filter By" }),
     );
     expect(fakeRouter.search.has("actor")).toBe(false);
   });
@@ -215,18 +224,36 @@ describe("AuditTable", () => {
     serve();
     render();
     const user = userEvent.setup();
-    const from = await screen.findByLabelText("From");
+    await user.click(await screen.findByRole("button", { name: "Add filter" }));
+    await user.click(screen.getByRole("button", { name: "From" }));
+    const from = await screen.findByLabelText("From", { selector: "input" });
     await user.type(from, "2026-11-01");
     await waitFor(() => {
       expect(fakeRouter.search.get("from")).toBe("2026-11-01");
     });
   });
 
+  it("keeps the To date from going before From", async () => {
+    serve();
+    fakeRouter.reset("/admin/audit?from=2026-11-05");
+    render();
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "Add filter" }));
+    await user.click(screen.getByRole("button", { name: "To" }));
+    expect(
+      await screen.findByLabelText("To", { selector: "input" }),
+    ).toHaveAttribute("min", "2026-11-05");
+  });
+
   it("hides the person search without users:read", async () => {
     serve();
     render({ ...meFixture, permissions: ["audit:read"] });
     await screen.findByRole("table", { name: "Audit log" });
-    expect(screen.queryByRole("searchbox", { name: "By" })).toBeNull();
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Add filter" }));
+    expect(screen.getByRole("button", { name: "Action" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "By" })).toBeNull();
   });
 
   it("FE-46 Refresh refetches; nothing polls", async () => {

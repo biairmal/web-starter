@@ -5,6 +5,7 @@ import { ROLES_MANAGE } from "@/lib/authz/permissions";
 import { requirePermission } from "@/lib/session/require-permission";
 import { CreateRoleDialog } from "@/features/admin-roles/create-role-dialog";
 import { RolesTable } from "@/features/admin-roles/roles-table";
+import { PageHeader } from "@/components/layout/page-header";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("adminRoles");
@@ -18,13 +19,11 @@ export default async function RolesPage() {
   const t = await getTranslations("adminRoles");
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-title font-semibold">{t("title")}</h1>
-          <p className="text-body text-muted-foreground">{t("body")}</p>
-        </div>
-        <CreateRoleDialog />
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("body")}
+        action={<CreateRoleDialog />}
+      />
       <RolesTable />
     </div>
   );

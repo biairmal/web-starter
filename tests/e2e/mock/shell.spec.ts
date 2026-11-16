@@ -124,6 +124,13 @@ test.describe("at 375px", () => {
     await page.getByRole("button", { name: "Open menu" }).click();
     const drawer = page.getByRole("dialog", { name: "Menu" });
     await expect(drawer).toBeVisible();
+    // The drawer slides and fades in; axe reads colours blended with the page
+    // behind it until that ends, so wait for the animations to finish.
+    await page.evaluate(() =>
+      Promise.all(document.getAnimations().map((a) => a.finished)).then(
+        () => undefined,
+      ),
+    );
     await expectNoA11yViolations(page);
     await drawer.getByRole("link", { name: "Users" }).click();
     await expect(page).toHaveURL("/admin/users");

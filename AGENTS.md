@@ -19,11 +19,11 @@ Read this before changing code. The task list is `project-files/phase2/frontend/
    - Files `kebab-case.ts(x)`, components `PascalCase`, hooks `useCamelCase`.
    - Never log or render tokens, cookies, passwords or emails; never put tokens in URLs (TRD 6.3, 11.1).
    - Comments describe the code, not its history (no task IDs in comments).
-   - Package manager is pnpm only. Do not commit `package-lock.json` or `yarn.lock`.
+   - Package manager is bun only (`bun run <script>`, never `bun test`: that is Bun's own runner, not Vitest). Do not commit `pnpm-lock.yaml`, `package-lock.json` or `yarn.lock`.
 5. **Definition of Done (every task):**
    - [ ] All "Acceptance" items pass.
-   - [ ] `pnpm check` is green (lint, type check, format check, API types check, i18n key check, unit and component tests).
-   - [ ] `pnpm e2e:mock` is green if the task adds or changes a screen (from F0.4).
+   - [ ] `bun run check` is green (lint, type check, format check, API types check, i18n key check, unit and component tests).
+   - [ ] `bun run e2e:mock` is green if the task adds or changes a screen (from F0.4).
    - [ ] New screens have axe checks with no critical violations (from F0.4).
    - [ ] The task's row in the **Status** table of `IMPLEMENTATION_PLAN.md` is set to ✅ in the same PR.
 6. **When the TRD is unclear:** choose the simplest option consistent with the TRD, implement it, and add one line to `docs/DECISIONS.md` (`date · task · decision · reason`). Do not stop and wait.
@@ -31,12 +31,12 @@ Read this before changing code. The task list is `project-files/phase2/frontend/
 
 ## Commands
 
-| Command       | What it does                         |
-| ------------- | ------------------------------------ |
-| `pnpm dev`    | Dev server                           |
-| `pnpm check`  | Lint, typecheck, format check, tests |
-| `pnpm build`  | Production build (must pass in CI)   |
-| `pnpm format` | Prettier write                       |
+| Command          | What it does                         |
+| ---------------- | ------------------------------------ |
+| `bun run dev`    | Dev server                           |
+| `bun run check`  | Lint, typecheck, format check, tests |
+| `bun run build`  | Production build (must pass in CI)   |
+| `bun run format` | Prettier write                       |
 
 ## UI work
 
@@ -46,5 +46,5 @@ Applies to any change a user can see (new or reworked screens and components, vi
 - **Precedence:** product requirements and the rules in this file, then `DESIGN.md`, then skill advice. Where `DESIGN.md` is blank (art direction, type, palette), propose a direction and wait for the owner; do not decide it silently or record it in `DESIGN.md` yourself.
 - **Skills are optional helpers** (Frontend Design, Impeccable, Taste, Emil Kowalski, Web Interface Guidelines, UI UX Pro Max). Pick the one that fits the change; do not run them all. Their advice never overrides the conventions above: translate a suggested hex colour or text literal into a token or `t("…")`.
 - **Never let a skill overwrite `DESIGN.md`.** Impeccable `init` and `document` write design files; have them write elsewhere and merge by hand.
-- **Verify in a real browser** with `pnpm ui:inspect <url>` (screenshots at desktop, tablet and two mobile widths, overflow, console errors, Tab order) and `pnpm e2e:mock` for interactions and axe. Look at the screenshots.
+- **Verify in a real browser** with `bun run ui:inspect <url>` (screenshots at desktop, tablet and two mobile widths, overflow, console errors, Tab order) and `bun run e2e:mock` for interactions and axe. Look at the screenshots.
 - **Report honestly:** say which viewports, interactions and checks were actually run, with which tool, and what was not verified. Never claim browser verification or passing checks that did not happen.

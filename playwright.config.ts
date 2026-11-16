@@ -26,7 +26,7 @@ export default defineConfig({
       testDir: "tests/e2e/mock",
       use: { ...devices["Desktop Chrome"] },
     },
-    // The full suite against a real identity stack (`pnpm e2e:full`). The
+    // The full suite against a real identity stack (`bun run e2e:full`). The
     // setup project finishes the super admin's first sign-in first.
     {
       name: "full-setup",
@@ -48,7 +48,7 @@ export default defineConfig({
     ? undefined
     : [
         {
-          command: "pnpm run mock",
+          command: "bun run mock",
           url: "http://localhost:4010/v1/auth/config",
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
@@ -57,19 +57,19 @@ export default defineConfig({
           // The example notes module's service (docs/adding-a-module.md).
           // Prism answers 401 without a bearer token, which is enough to know
           // it is up.
-          command: "pnpm run mock:notes",
+          command: "bun run mock:notes",
           url: `${NOTES_MOCK_ORIGIN}/v1/notes`,
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
         },
         {
-          command: "pnpm exec tsx tests/e2e/mock-identity.mts",
+          command: "bun x tsx tests/e2e/mock-identity.mts",
           url: `${MOCK_IDENTITY_ORIGIN}/healthz`,
           reuseExistingServer: !process.env.CI,
           timeout: 60_000,
         },
         {
-          command: "pnpm run dev",
+          command: "bun run dev",
           // A static file: every page redirects until the visitor signs in.
           url: "http://localhost:3000/brand/mark.svg",
           reuseExistingServer: !process.env.CI,

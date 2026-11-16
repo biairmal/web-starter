@@ -27,19 +27,20 @@ jobs:
           ref: ${{ inputs.identity_ref || 'main' }}
           path: go-identity
 
-      - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+      - run: bun install --frozen-lockfile
 
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: bun x playwright install --with-deps chromium
 
       - name: Full suite, single then multi mode
-        run: pnpm run e2e:full
+        run: bun run e2e:full
         env:
           IDENTITY_BUILD: "1"
           IDENTITY_REPO_PATH: go-identity

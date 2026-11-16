@@ -5,7 +5,7 @@ The reusable web app every client project starts from. Phase 2 adds the identity
 ## Requirements
 
 - Node.js 22 (`engines` allows 22 and newer; CI runs 22)
-- pnpm (version pinned in `package.json` `packageManager`)
+- bun (version pinned in `package.json` `packageManager`)
 
 ## Configuration
 
@@ -20,12 +20,12 @@ Branding lives in `src/config/brand.ts`, colours and spacing in `src/app/tokens.
 ## Commands
 
 ```bash
-pnpm install
-pnpm dev        # Next.js dev server with Turbopack, http://localhost:3000
-pnpm build      # production build
-pnpm start      # serve the production build
-pnpm check      # lint, typecheck, format, API types, i18n keys, tests (run before every PR)
-pnpm format     # Prettier, writes files
+bun install
+bun run dev        # Next.js dev server with Turbopack, http://localhost:3000
+bun run build      # production build
+bun run start      # serve the production build
+bun run check      # lint, typecheck, format, API types, i18n keys, tests (run before every PR)
+bun run format     # Prettier, writes files
 ```
 
 ## API contract
@@ -33,10 +33,10 @@ pnpm format     # Prettier, writes files
 The identity API is described by `openapi/identity.yaml`, a copy of go-identity's `api/openapi.yaml`. `openapi/identity.source.json` records which commit it came from.
 
 ```bash
-pnpm api:sync   # copy the spec from IDENTITY_REPO_PATH (default ../go-identity)
-pnpm api:gen    # regenerate src/lib/api/schema.d.ts
-pnpm api:check  # fails when the generated types are stale (part of pnpm check)
-pnpm mock       # Prism mock of identity on http://localhost:4010 (dynamic responses)
+bun run api:sync   # copy the spec from IDENTITY_REPO_PATH (default ../go-identity)
+bun run api:gen    # regenerate src/lib/api/schema.d.ts
+bun run api:check  # fails when the generated types are stale (part of bun run check)
+bun run mock       # Prism mock of identity on http://localhost:4010 (dynamic responses)
 ```
 
 Import types from `src/lib/api/types.ts`, never from `schema.d.ts`.
@@ -46,7 +46,7 @@ Import types from `src/lib/api/types.ts`, never from `schema.d.ts`.
 Every user-facing string is in `messages/en.json` (the source) and `messages/id.json`, keyed by feature (`auth.signIn.title`). Keys passed to `t()` are type-checked against `en.json`.
 
 ```bash
-pnpm i18n:check # fails when a key is in one locale but not the other (part of pnpm check)
+bun run i18n:check # fails when a key is in one locale but not the other (part of bun run check)
 ```
 
 The locale comes from the `{prefix}_locale` cookie, then `Accept-Language`, then `NEXT_PUBLIC_DEFAULT_LOCALE`. There is no locale in the URL.
@@ -64,7 +64,7 @@ Planned layout (TRD 3) fills in task by task. See `AGENTS.md` for the convention
 ## Adding shadcn/ui components
 
 ```bash
-pnpm exec shadcn add <component>
+bun x shadcn add <component>
 ```
 
 The config is in `components.json` (Radix base, Vega preset).
@@ -72,11 +72,11 @@ The config is in `components.json` (Radix base, Vega preset).
 ## Testing
 
 ```bash
-pnpm test       # unit and component tests (Vitest; jsdom for component tests)
-pnpm e2e:mock   # Playwright against the Prism mock and next dev (starts both)
-pnpm e2e:full   # Playwright against a real identity stack (set E2E_BASE_URL); no specs until F7.1
+bun run test       # unit and component tests (Vitest; jsdom for component tests)
+bun run e2e:mock   # Playwright against the Prism mock and next dev (starts both)
+bun run e2e:full   # Playwright against a real identity stack (set E2E_BASE_URL); no specs until F7.1
 ```
 
 The mock suite talks to `tests/e2e/mock-identity.mts`, which answers `GET /v1/me` from the test token's claims and passes everything else to Prism. Sign a test in with `signIn(context, { perms: ["users:read"] })` from `tests/e2e/session.ts`.
 
-Unit tests and component tests use MSW fixtures from `tests/msw/handlers.ts`. Accessibility checks use `expectNoA11yViolations` from `tests/e2e/fixtures.ts`, which fails on critical and serious axe violations. `pnpm check` runs the unit and component tests; `pnpm e2e:mock` is a separate job in CI, because it needs a browser.
+Unit tests and component tests use MSW fixtures from `tests/msw/handlers.ts`. Accessibility checks use `expectNoA11yViolations` from `tests/e2e/fixtures.ts`, which fails on critical and serious axe violations. `bun run check` runs the unit and component tests; `bun run e2e:mock` is a separate job in CI, because it needs a browser.

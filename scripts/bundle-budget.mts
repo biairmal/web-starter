@@ -3,12 +3,12 @@ import { join, resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 
 // TRD 12 bundle budget: the JavaScript a browser downloads for /sign-in,
-// gzipped, after `pnpm build`. That is the page and every layout and
+// gzipped, after `bun run build`. That is the page and every layout and
 // boundary (error, not-found, forbidden…) of the segments above it, which the
 // App Router loads with the page. Legacy polyfills (loaded only by browsers
 // without ES modules) are left out. Exits 1 over budget.
 //
-//   pnpm build && pnpm budget
+//   bun run build && bun run budget
 
 const BUDGETS_KB: Record<string, number> = {
   "/(public)/sign-in/page": 200,
@@ -47,7 +47,7 @@ type BuildManifest = { rootMainFiles?: string[]; polyfillFiles?: string[] };
 function readJson(file: string): unknown {
   const path = join(next, file);
   if (!existsSync(path)) {
-    console.error(`budget: ${path} not found. Run \`pnpm build\` first.`);
+    console.error(`budget: ${path} not found. Run \`bun run build\` first.`);
     process.exit(1);
   }
   return JSON.parse(readFileSync(path, "utf8"));

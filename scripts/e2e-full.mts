@@ -5,14 +5,14 @@ import { join, resolve } from "node:path";
 
 // Runs the full e2e suite (TRD 13; plan F7.1) against a real identity:
 //
-//   pnpm e2e:full                      # single mode, then multi mode
-//   E2E_TENANCY=multi pnpm e2e:full    # one mode only
-//   pnpm e2e:full -- --grep FE-21      # extra arguments go to Playwright
+//   bun run e2e:full                      # single mode, then multi mode
+//   E2E_TENANCY=multi bun run e2e:full    # one mode only
+//   bun run e2e:full -- --grep FE-21      # extra arguments go to Playwright
 //
 // Environment:
 //   IDENTITY_IMAGE   identity image (default ghcr.io/biairmal/go-identity:latest)
 //   IDENTITY_BUILD=1 build it first from IDENTITY_REPO_PATH (default ../go-identity)
-//   E2E_KEEP=1       leave the stack running afterwards (`pnpm e2e:full:run` reuses it)
+//   E2E_KEEP=1       leave the stack running afterwards (`bun run e2e:full:run` reuses it)
 //
 // Each mode starts deploy/compose.e2e.yaml from an empty database, so a run
 // never depends on the one before it.
@@ -43,7 +43,6 @@ function run(
     cwd: root,
     stdio: "inherit",
     env: { ...process.env, ...env },
-    shell: process.platform === "win32" && command === "pnpm",
   });
   return result.status ?? 1;
 }
@@ -171,8 +170,8 @@ for (const [index, mode] of modes.entries()) {
     failed = true;
   } else {
     const status = run(
-      "pnpm",
-      ["exec", "playwright", "test", "--project=full", ...playwrightArgs],
+      "bun",
+      ["x", "playwright", "test", "--project=full", ...playwrightArgs],
       {
         E2E_BASE_URL: baseUrl,
         E2E_TENANCY: mode,

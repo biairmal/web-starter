@@ -16,7 +16,7 @@ for (const spec of listSpecs()) {
 }
 
 if (stale > 0) {
-  console.error("Run `pnpm api:gen` and commit the result.");
+  console.error("Run `bun run api:gen` and commit the result.");
   process.exit(1);
 }
 console.log("api:check: generated types match every spec in openapi/.");

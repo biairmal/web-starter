@@ -4,7 +4,7 @@ import { signIn } from "../session";
 // The super admin's tenant screens (FE-50, FE-51; APP_FLOW 5.15). The mock
 // stack runs in single mode, where these pages do not exist. The multi-mode
 // tests run with the mock identity in multi mode:
-//   MOCK_TENANCY=multi pnpm e2e:mock tests/e2e/mock/tenants.spec.ts
+//   MOCK_TENANCY=multi bun run e2e:mock tests/e2e/mock/tenants.spec.ts
 // (stop a dev server started without it first, and clear .next/cache, which
 // keeps identity's config for 5 minutes).
 

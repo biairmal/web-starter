@@ -35,7 +35,7 @@ Do not run every reviewer on every change. Pick by scope:
 | Visual identity or shared foundation change         | Frontend Design, Taste Skill if needed, UI UX Pro Max for references; owner approves before code |
 | Motion, transitions, hover/press feedback           | Emil Kowalski skills                                                                             |
 | Dense data, long text, empty or error states        | `break-ui` (Emil Kowalski)                                                                       |
-| Accessibility or release audit                      | Web Interface Guidelines plus axe (`pnpm e2e:mock`)                                              |
+| Accessibility or release audit                      | Web Interface Guidelines plus axe (`bun run e2e:mock`)                                           |
 
 ## Workflow by phase
 
@@ -43,7 +43,7 @@ Do not run every reviewer on every change. Pick by scope:
 
 1. Read `AGENTS.md`, `DESIGN.md`, the relevant PRD, and existing components.
 2. Identify the primary user task and the key screen states.
-3. Capture the current screen (`pnpm ui:inspect`, see Phase C) or locate relevant design references.
+3. Capture the current screen (`bun run ui:inspect`, see Phase C) or locate relevant design references.
 4. Write a short design brief:
    - User and task
    - Information hierarchy
@@ -77,11 +77,11 @@ Tooling (the repo already has Playwright, its Chromium, and axe):
 
 | Need                                                                                                                 | Command                                                                                                            |
 | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Screenshots at 1440×900, 768×1024, 390×844 and 320×640, plus horizontal-overflow, console-error and Tab-order report | `pnpm ui:inspect <url-or-path>...` (writes to `.ui-review/`, git-ignored)                                          |
-| Interaction, keyboard and axe checks as tests                                                                        | `pnpm e2e:mock` (add a spec under `tests/e2e/mock`)                                                                |
+| Screenshots at 1440×900, 768×1024, 390×844 and 320×640, plus horizontal-overflow, console-error and Tab-order report | `bun run ui:inspect <url-or-path>...` (writes to `.ui-review/`, git-ignored)                                       |
+| Interaction, keyboard and axe checks as tests                                                                        | `bun run e2e:mock` (add a spec under `tests/e2e/mock`)                                                             |
 | Pattern scan of source or a running page                                                                             | `npx impeccable detect src/` or `npx impeccable detect http://localhost:3000` (needs the Impeccable CLI; optional) |
 
-Start the app first (`pnpm dev`, with the mock stack from `pnpm e2e:mock` if the screen needs a session). Look at the screenshots; the script reports facts, it does not judge hierarchy. Only say "inspected in a browser" when one of these actually ran, and name which one.
+Start the app first (`bun run dev`, with the mock stack from `bun run e2e:mock` if the screen needs a session). Look at the screenshots; the script reports facts, it does not judge hierarchy. Only say "inspected in a browser" when one of these actually ran, and name which one.
 
 Review checklist:
 
@@ -129,8 +129,8 @@ Fix P0 and P1 before merging. Fix P2 when proportionate to the change. Do not sp
 
 ### Phase E — Final verification
 
-1. Re-run the relevant tests, lint, and type checks (`pnpm check`).
-2. Revisit the browser after fixes (re-run `pnpm ui:inspect` and compare against the first pass).
+1. Re-run the relevant tests, lint, and type checks (`bun run check`).
+2. Revisit the browser after fixes (re-run `bun run ui:inspect` and compare against the first pass).
 3. Compare the final screen against the design brief and `DESIGN.md`.
 4. Record any known limitations.
 5. Include evidence in the pull request: screenshots or a short recording for meaningful visual changes.

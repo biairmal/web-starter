@@ -43,7 +43,7 @@ next-env.d.ts
 # example env file is committed
 !.env.example
 
-# UI inspection screenshots (pnpm ui:inspect)
+# UI inspection screenshots (bun run ui:inspect)
 /.ui-review
 
 # Playwright

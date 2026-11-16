@@ -7,8 +7,8 @@ import { chromium } from "@playwright/test";
 // It reports facts; judging hierarchy and polish is still a human's (or a
 // reviewer skill's) job. Screenshots go to .ui-review/ (git-ignored).
 //
-//   pnpm dev                                     # app must be running
-//   pnpm ui:inspect /sign-in /forgot-password    # paths or full URLs
+//   bun run dev                                     # app must be running
+//   bun run ui:inspect /sign-in /forgot-password    # paths or full URLs
 //
 // UI_BASE_URL sets the origin for paths (default http://localhost:3000).
 // UI_STORAGE_STATE points at a Playwright storage-state file to inspect
@@ -101,7 +101,7 @@ try {
               return {
                 tag: el.tagName.toLowerCase(),
                 role: el.getAttribute("role") ?? "",
-                name: (name ?? "").trim().replace(/\s+/g, " ").slice(0, 40),
+                name: name.trim().replace(/\s+/g, " ").slice(0, 40),
                 ring,
               };
             });
@@ -115,7 +115,7 @@ try {
       } catch (err) {
         problems++;
         console.log(
-          `  ${vp.name.padEnd(7)} FAILED: ${err instanceof Error ? err.message.split("\n")[0] : "unknown error"}`,
+          `  ${vp.name.padEnd(7)} FAILED: ${err instanceof Error ? err.message.slice(0, 160) : "unknown error"}`,
         );
       } finally {
         await context.close();

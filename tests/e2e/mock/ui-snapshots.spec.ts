@@ -83,6 +83,8 @@ const screens = [
   ["users", "/admin/users"],
   ["roles", "/admin/roles"],
   ["audit", "/admin/audit"],
+  ["users-filtered", "/admin/users?status=active"],
+  ["audit-filtered", "/admin/audit?action=role.&from=2026-11-10&to=2026-11-10"],
 ] as const;
 
 const viewports = [
@@ -118,3 +120,32 @@ for (const colorScheme of ["light", "dark"] as const) {
     }
   });
 }
+
+// The open "Add filter" panel (a popover on desktop, a sheet on mobile). It
+// has no counterpart before the filter bar existed, so it is opt-in as well.
+test.describe("UI snapshot: filter menus", () => {
+  test.skip(
+    !snapshotDir || !process.env.UI_SNAPSHOT_MENUS,
+    "set UI_SNAPSHOTS=1 and UI_SNAPSHOT_MENUS=1 to capture the filter menus",
+  );
+
+  for (const viewport of viewports) {
+    test(`UI snapshot: users add-filter menu ${viewport.name}`, async ({
+      page,
+      context,
+    }) => {
+      await signIn(context, { name: "Ada Admin", sa: true });
+      await page.setViewportSize(viewport);
+      await page.goto("/admin/users");
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await page.getByRole("button", { name: "Add filter" }).click();
+      await expect(page.getByRole("dialog")).toBeVisible();
+      await page.waitForTimeout(400);
+      const dir = snapshotDir ?? ".ui-review/after";
+      mkdirSync(dir, { recursive: true });
+      await page.screenshot({
+        path: join(dir, `users-add-filter-menu-${viewport.name}.png`),
+      });
+    });
+  }
+});

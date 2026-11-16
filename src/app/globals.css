@@ -81,6 +81,12 @@
   box-shadow: var(--shadow-float);
 }
 
+/* A 1px rule along the bottom edge that takes no space and cannot overflow,
+   for a row of tabs that scrolls sideways. */
+@utility shadow-rule-inset {
+  box-shadow: inset 0 -1px 0 0 var(--rule);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

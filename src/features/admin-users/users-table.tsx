@@ -138,7 +138,6 @@ export function UsersTable() {
           list.setFilter(key, value);
         }}
         onClear={list.clearFilters}
-        hasFilters={list.hasFilters}
         roles={canListRoles ? roles.data?.items : undefined}
       />
       <DataTable

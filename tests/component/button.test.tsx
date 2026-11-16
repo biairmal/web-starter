@@ -52,4 +52,33 @@ describe("Button", () => {
     // pointer-events-none would hide the base layer's not-allowed cursor.
     expect(button.className).not.toContain("disabled:pointer-events-none");
   });
+
+  // Without pointer-events-none a disabled button still matches :hover and
+  // :active, so every hover and pressed style must be scoped to enabled ones
+  // (not-disabled, not enabled, so a button rendered as a link keeps them).
+  it.each([
+    "default",
+    "outline",
+    "secondary",
+    "ghost",
+    "destructive",
+    "link",
+  ] as const)(
+    "the %s variant scopes hover and pressed styles to enabled buttons",
+    (variant) => {
+      render(
+        <Button variant={variant} disabled>
+          {"Save"}
+        </Button>,
+      );
+      const unscoped = screen
+        .getByRole("button", { name: "Save" })
+        .className.split(/\s+/)
+        .filter((token) => /(^|:)(hover|active):/.test(token))
+        .filter((token) => !token.includes("not-disabled:"))
+        // The reduced-motion reset only removes a style, so it needs no guard.
+        .filter((token) => !token.startsWith("motion-reduce:"));
+      expect(unscoped).toEqual([]);
+    },
+  );
 });

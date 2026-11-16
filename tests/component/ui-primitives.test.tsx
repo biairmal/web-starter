@@ -28,7 +28,10 @@ describe("form controls", () => {
   it("Input shows a hover border and the accent focus ring", () => {
     render(<Input aria-label="Email" />);
     const { className } = screen.getByRole("textbox", { name: "Email" });
-    expect(className).toContain("enabled:hover:border-faint");
+    expect(className).toContain("hover:border-faint");
+    // `enabled:hover:` has higher specificity than the focus and invalid
+    // borders and would hide them while the mouse is over the field.
+    expect(className).not.toContain("enabled:hover");
     expect(className).toContain("focus-visible:ring-3");
   });
 
@@ -48,7 +51,7 @@ describe("form controls", () => {
       </Select>,
     );
     expect(screen.getByRole("combobox", { name: "Role" }).className).toContain(
-      "enabled:hover:border-faint",
+      "hover:border-faint",
     );
   });
 

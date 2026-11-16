@@ -66,7 +66,13 @@ function resolve(
   depth = 0,
 ): string | undefined {
   if (depth > 10) return undefined;
-  const v = value.trim();
+  // Prettier wraps long values over several lines.
+  const v = value
+    .replace(/\s+/g, " ")
+    .replace(/\(\s+/g, "(")
+    .replace(/\s+\)/g, ")")
+    .replace(/,\s*\)/g, ")")
+    .trim();
   if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(v)) {
     return rgbToHex(hexToRgb(v.toLowerCase()));
   }

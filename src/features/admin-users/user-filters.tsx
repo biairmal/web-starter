@@ -2,9 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { FilterBar } from "@/components/filters/filter-bar";
+import { FilterTabs } from "@/components/filters/filter-tabs";
 import type { FilterDef } from "@/components/filters/filters";
 import type { RoleSummary } from "@/lib/api/types";
-import { cn } from "@/lib/utils";
 import {
   ACCOUNT_STATUSES,
   MEMBERSHIP_STATUSES,
@@ -63,36 +63,17 @@ export function UserFilters({
 
   return (
     <div className="flex flex-col gap-3">
-      <div
-        role="group"
-        aria-label={t("membership")}
-        // overflow-x-auto makes the other axis auto too, so nothing may stick
-        // out of the box: the rule below the tabs is an inset shadow, not a
-        // border the tabs overlap, which showed a vertical scrollbar.
-        className="flex gap-4 overflow-x-auto overflow-y-hidden shadow-rule-inset"
-      >
-        {(["", ...MEMBERSHIP_STATUSES] as const).map((value) => {
-          const active = membership === value;
-          return (
-            <button
-              key={value || "all"}
-              type="button"
-              aria-pressed={active}
-              onClick={() => {
-                onFilterChange("membership_status", value);
-              }}
-              className={cn(
-                "h-9 shrink-0 border-b-2 text-body focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset",
-                active
-                  ? "border-brand-accent font-medium text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t(`tabs.${value || "all"}`)}
-            </button>
-          );
-        })}
-      </div>
+      <FilterTabs
+        label={t("membership")}
+        value={membership}
+        options={(["", ...MEMBERSHIP_STATUSES] as const).map((value) => ({
+          value,
+          label: t(`tabs.${value || "all"}`),
+        }))}
+        onChange={(value) => {
+          onFilterChange("membership_status", value);
+        }}
+      />
       <FilterBar
         search={{
           value: search,

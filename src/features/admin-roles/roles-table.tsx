@@ -3,13 +3,14 @@
 import { MoreHorizontal, SearchX, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import { useId, useState } from "react";
+import { useState } from "react";
 import {
   DataTable,
   type DataTableColumn,
 } from "@/components/data-table/data-table";
 import { useListParams } from "@/components/data-table/use-list-params";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { FilterBar } from "@/components/filters/filter-bar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,7 +19,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import type { RoleSummary } from "@/lib/api/types";
 import { DeleteRoleDialog } from "@/features/admin-roles/delete-role-dialog";
 import { ROLE_FILTERS, useRoles } from "@/features/admin-roles/use-roles";
@@ -88,7 +88,6 @@ function RowMenu({
 export function RolesTable() {
   const t = useTranslations("adminRoles.table");
   const format = useFormatter();
-  const searchId = useId();
   const list = useListParams(LIST_CONFIG);
   const roles = useRoles(list.params);
   const [deleting, setDeleting] = useState<RoleSummary | undefined>();
@@ -135,27 +134,26 @@ export function RolesTable() {
       id: "menu",
       header: <span className="sr-only">{t("actionsHeader")}</span>,
       align: "end",
+      rowActions: true,
       cell: (role) => <RowMenu role={role} onDelete={setDeleting} />,
     },
   ];
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative w-full sm:w-72">
-        <label htmlFor={searchId} className="sr-only">
-          {t("search")}
-        </label>
-        <Input
-          id={searchId}
-          type="search"
-          value={list.search.value}
-          placeholder={t("search")}
-          autoComplete="off"
-          onChange={(event) => {
-            list.search.onChange(event.target.value);
-          }}
-        />
-      </div>
+      <FilterBar
+        search={{
+          value: list.search.value,
+          onChange: list.search.onChange,
+          label: t("search"),
+        }}
+        filters={[]}
+        values={list.params.filters}
+        onChange={(key, value) => {
+          list.setFilter(key, value);
+        }}
+        onClear={list.clearFilters}
+      />
       <DataTable
         columns={columns}
         query={roles}

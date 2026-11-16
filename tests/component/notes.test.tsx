@@ -71,6 +71,18 @@ describe("NotesTable", () => {
     fakeRouter.reset("/notes");
   });
 
+  it("search and status tabs use the shared filter components", async () => {
+    serveList();
+    renderSignedIn(<NotesTable />, reader, "/notes");
+    const search = await screen.findByRole("searchbox", {
+      name: "Search title or text",
+    });
+    expect(search.closest('[data-slot="filter-bar"]')).not.toBeNull();
+    const tabs = screen.getByRole("group", { name: "Status" });
+    expect(tabs.className).toContain("overflow-y-hidden");
+    expect(tabs.className).toContain("shadow-rule-inset");
+  });
+
   it("FE-62 lists notes through /api/notes with status, pin and total", async () => {
     serveList();
     renderSignedIn(<NotesTable />, reader, "/notes");

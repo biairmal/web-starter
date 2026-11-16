@@ -19,6 +19,8 @@
   --color-popover-foreground: var(--text);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-ink);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-press: var(--primary-press);
   --color-secondary: var(--raised);
   --color-secondary-foreground: var(--text);
   --color-muted: var(--raised);
@@ -82,6 +84,32 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  /* Tailwind v4 resets buttons to the default cursor. Clickable things get a
+     pointer, disabled ones not-allowed; components must not set a cursor of
+     their own. An anchor without href is not clickable, so it is left alone. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  summary,
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  [role="menuitem"]:not([data-disabled]),
+  [role="menuitemcheckbox"]:not([data-disabled]),
+  [role="menuitemradio"]:not([data-disabled]),
+  [role="tab"],
+  [role="option"]:not([data-disabled]),
+  [role="switch"],
+  [role="checkbox"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :disabled,
+  [aria-disabled="true"],
+  [data-disabled] {
+    cursor: not-allowed;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;

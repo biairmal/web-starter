@@ -2,7 +2,7 @@
 
 > Project design contract. Replace the example values below with the product's real decisions. Do not treat examples as approved brand choices.
 
-> **Status:** the visual direction is not yet decided. The UI that ships today follows the earlier brief linked in section 4 ("Sources in code"); the owner has said they do not like it, so do not treat it as approved art direction. Agents must not invent the missing decisions: propose a direction, then wait for the owner to record it here.
+> **Status:** the colour and interaction direction was approved on 2026-11-16 (see `docs/superpowers/specs/2026-11-16-ui-refresh-design.md`). Typography, spacing and the table, filter and shell patterns are still being redesigned in PRs 2 and 3: leave their rows as TBD until those land. Agents must not invent missing decisions: propose, then wait for the owner to record them here.
 
 ## 1. Product and audience
 
@@ -11,17 +11,17 @@
 - Primary user problem:
 - Most important user task:
 - Brand attributes (3–5): e.g. calm, precise, playful, trustworthy
-- What this product should NOT feel like:
+- What this product should NOT feel like: gloomy, unpolished, or too colourful (owner's words: it should have "some accent colour" so it does not feel gloomy, but "not too colorful").
 
 ## 2. Art direction
 
 Describe the intended visual identity in a few sentences.
 
-- Overall direction: Stripe-like polish with a restrained palette: mostly neutral, colour used sparingly. (Owner input; details below are proposals until the owner confirms.)
+- Overall direction: Stripe-like polish with a restrained palette. A soft blue-grey ground, a white sheet with a hairline border, and one indigo accent used only on things you can act on (primary button, active nav, selected filter, links, focus ring). Status colours (green, amber, red) are kept for status only. Approved 2026-11-16 ("direction A, tinted ground, indigo accent").
 - Reference products or screenshots: Stripe (owner's stated favourite). Screenshots still to be added.
-- What to borrow from each reference: Stripe: precise typography and type scale, generous but purposeful spacing, clear information hierarchy, crisp data tables and forms, subtle and fast interaction feedback. (Proposed.)
-- What not to copy: Stripe's multi-colour gradients and bright accent palette (owner: "not too colorful"), its brand wordmark and illustration style. (Proposed.)
-- Distinctive product-specific visual motif, if any:
+- What to borrow from each reference: Stripe: precise typography and type scale, purposeful spacing, clear information hierarchy, crisp data tables and forms, subtle and fast interaction feedback.
+- What not to copy: Stripe's multi-colour gradients and bright accent palette (owner: "not too colorful"), its brand wordmark and illustration style.
+- Distinctive product-specific visual motif, if any: none. Distinctiveness comes from restraint and finish, not decoration.
 
 References are evidence and inspiration, not instructions to clone another product.
 
@@ -70,19 +70,27 @@ Rules:
 
 ### Color
 
-| Role       | Token / value | Usage                      |
-| ---------- | ------------- | -------------------------- |
-| Primary    | TBD           | Main brand/action          |
-| Accent     | TBD           | Limited emphasis           |
-| Background | TBD           | Main canvas                |
-| Surface    | TBD           | Raised/content surfaces    |
-| Text       | TBD           | Primary content            |
-| Muted text | TBD           | Secondary content          |
-| Border     | TBD           | Separation where needed    |
-| Success    | TBD           | Positive status            |
-| Warning    | TBD           | Caution                    |
-| Danger     | TBD           | Errors/destructive actions |
-| Focus      | TBD           | Keyboard focus             |
+Values live in `src/app/tokens.css` (light `:root`, dark `:root[data-theme="dark"]`); this table names the tokens and their role.
+
+| Role       | Token                                   | Usage                                                    |
+| ---------- | --------------------------------------- | -------------------------------------------------------- |
+| Primary    | `--primary` (= `--brand-accent`)        | The one filled action per screen; label `--primary-ink`  |
+| Accent     | `--brand-accent`, `--brand-accent-dark` | Links, focus ring, active nav marker, chart-1            |
+| Hover      | `--primary-hover`, `--primary-press`    | Derived from the accent with `color-mix`; never hand-set |
+| Selection  | `--active`                              | Accent tint: active nav, selected row, selected filter   |
+| Background | `--frame`                               | The tinted ground behind the sheet                       |
+| Surface    | `--surface`, `--raised`                 | The white sheet and cards; a well inside a card          |
+| Text       | `--text`                                | Primary content                                          |
+| Muted text | `--muted`, `--faint`                    | Secondary content; both keep 4.5:1                       |
+| Border     | `--border`, `--rule`, `--control`       | Hairlines, row rules, input borders                      |
+| Success    | `--positive`, `--pill-positive-*`       | Positive status                                          |
+| Warning    | `--warning`, `--pill-warning-*`         | Caution                                                  |
+| Danger     | `--negative`, `--pill-negative-*`       | Errors and destructive actions                           |
+| Focus      | `--ring` (= `--brand-accent`)           | Keyboard focus                                           |
+
+#### Rebranding the accent
+
+A client changes `--brand-accent` (light) and `--brand-accent-dark` (dark) in `tokens.css`. Hover, pressed and selected tints follow automatically. If the new accent is light (yellow, light green), also set `--primary-ink` to a dark colour, because the white button label will not be readable. Then run `bun x vitest run tests/unit/tokens-contrast.test.ts`: it checks text, accent, label and status pairs at 4.5:1 in both themes and fails if the new colours do not.
 
 Rules:
 
@@ -137,6 +145,13 @@ For each interactive component, define applicable states:
 - Loading
 - Success
 - Error
+
+How the shared components behave:
+
+- Cursors come from one base rule in `globals.css`: a pointer on everything clickable (buttons, links with `href`, menu items, tabs, options, switches), `not-allowed` on disabled controls. Components never set `cursor-*` themselves.
+- Buttons: the primary fill darkens on hover (`--primary-hover`) and again when pressed (`--primary-press`, with a 120 ms scale to 0.97). The pending state is `SubmitButton` (spinner, `aria-busy`, stable width), not a prop on `Button`.
+- Inputs and selects: a darker border on hover, the accent ring on focus-visible, red ring when invalid.
+- Floating surfaces (menu, popover, dialog, sheet, toast) use `shadow-float` and a hairline ring; nothing else has a shadow.
 
 Motion rules:
 

@@ -225,11 +225,48 @@ describe("UsersTable", () => {
       "/admin/users",
     );
     await screen.findByRole("table", { name: "Users" });
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Add filter" }));
     expect(
-      screen.getByRole("combobox", { name: "Account status" }),
+      screen.getByRole("button", { name: "Account status" }),
     ).toBeVisible();
-    expect(screen.queryByRole("combobox", { name: "Role" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Role" })).toBeNull();
     expect(rolesAsked).toBe(false);
+  });
+
+  it("adds the account status filter from Add filter and puts it in the URL", async () => {
+    serveUsers();
+    renderSignedIn(<UsersTable />, admin, "/admin/users");
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "Add filter" }));
+    await user.click(screen.getByRole("button", { name: "Account status" }));
+    await user.click(screen.getByRole("option", { name: "Account active" }));
+    expect(fakeRouter.search.get("status")).toBe("active");
+  });
+
+  it("shows an applied filter as a pill and removes it", async () => {
+    serveUsers();
+    fakeRouter.reset("/admin/users?status=disabled");
+    renderSignedIn(<UsersTable />, admin, "/admin/users");
+    const user = userEvent.setup();
+    expect(
+      await screen.findByRole("button", { name: /^Account status:/ }),
+    ).toBeVisible();
+    await user.click(
+      screen.getByRole("button", { name: "Remove filter Account status" }),
+    );
+    expect(fakeRouter.search.has("status")).toBe(false);
+  });
+
+  it("the membership tabs do not scroll vertically", async () => {
+    serveUsers();
+    renderSignedIn(<UsersTable />, admin, "/admin/users");
+    const tabs = await screen.findByRole("group", { name: "Membership" });
+    // overflow-x: auto turns the other axis into auto as well; the tabs' 1px
+    // overlap with the rule below then shows a vertical scrollbar.
+    expect(tabs.className).toContain("overflow-y-hidden");
+    expect(tabs.className).toContain("overflow-x-auto");
   });
 
   it("shows the first-run empty state without filters", async () => {

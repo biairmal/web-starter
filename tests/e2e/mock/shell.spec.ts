@@ -149,3 +149,39 @@ test.describe("at 375px", () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe("at 320px", () => {
+  test.use({ viewport: { width: 320, height: 640 } });
+
+  test("a very long person name truncates in the drawer and nothing scrolls sideways", async ({
+    page,
+    context,
+  }) => {
+    const long = "x".repeat(80);
+    await signIn(context, { name: long });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const drawer = page.getByRole("dialog", { name: "Menu" });
+    await expect(drawer).toBeVisible();
+    const widths = await page.evaluate(() => ({
+      page: document.documentElement.scrollWidth,
+      view: document.documentElement.clientWidth,
+    }));
+    expect(widths.page).toBeLessThanOrEqual(widths.view);
+    // The name is cut with an ellipsis inside the drawer. A fixed drawer clips
+    // overflow without changing the page width, so check the style itself.
+    const style = await drawer.getByTitle(long).evaluate((el) => {
+      const computed = getComputedStyle(el);
+      return {
+        overflowX: computed.overflowX,
+        textOverflow: computed.textOverflow,
+        whiteSpace: computed.whiteSpace,
+      };
+    });
+    expect(style).toEqual({
+      overflowX: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    });
+  });
+});

@@ -10,25 +10,42 @@
 
 :root {
   /* ground and surfaces: three levels, no fourth */
-  --frame: #f9fbfc; /* sidebar + top bar, one tint, no rule between them */
+  --frame: #f3f5fa; /* sidebar + top bar: a soft blue-grey ground, no rule between them */
   --surface: #ffffff; /* the work sheet and cards on it */
-  --raised: #f4f6f8; /* a well inside a card */
-  --active: #ebedee; /* the active nav pill, the selected table row */
+  --raised: #f5f6fa; /* a well inside a card */
+  --active: color-mix(
+    in srgb,
+    var(--brand-accent) 10%,
+    var(--surface)
+  ); /* active nav pill, selected row, selected filter: an accent tint */
 
   /* lines: three steps, and never a line plus a shadow */
-  --border: #e8eaec;
-  --rule: #f0f1f2;
-  --control: #cdced1;
+  --border: #e3e7ef;
+  --rule: #eef0f5;
+  --control: #c3c9d6;
 
   /* text: every tier that carries words clears 4.5:1 on surface and frame */
-  --text: #131416;
-  --muted: #5d5f60;
-  --faint: #6b6b6b;
+  --text: #161b26;
+  --muted: #5d6677;
+  --faint: #656d7c;
 
   /* actions */
-  --primary: #1d1f20; /* near-black fill, white label. One per screen */
+  --primary: var(
+    --brand-accent
+  ); /* the accent fill, white label. One per screen */
   --primary-ink: #ffffff;
-  --brand-accent: #2f70bb; /* links, focus ring, active nav marker, the one data hue */
+  --brand-accent: #4f46e5; /* the one brand colour: primary fill, links, focus ring, active nav marker, chart-1 */
+  --accent-shade: #000000; /* hover and pressed darken the accent toward this */
+  --primary-hover: color-mix(
+    in srgb,
+    var(--brand-accent) 88%,
+    var(--accent-shade)
+  );
+  --primary-press: color-mix(
+    in srgb,
+    var(--brand-accent) 76%,
+    var(--accent-shade)
+  );
 
   /* status */
   --positive: #1e7b4f;
@@ -46,7 +63,7 @@
   --pill-neutral-ink: #353736;
 
   /* chart: one hue per chart; the accent is chart-1 */
-  --chart-1: #2f70bb;
+  --chart-1: var(--brand-accent);
   --chart-2: #1b6c80;
   --chart-3: #a86f0c;
   --grid: #e5e5e5;
@@ -95,21 +112,21 @@
 }
 
 :root[data-theme="dark"] {
-  --frame: #0a0b0c;
-  --surface: #16181b;
-  --raised: #212428;
-  --active: #212428;
+  --frame: #0d0f14;
+  --surface: #161920;
+  --raised: #1e222b;
+  --active: color-mix(in srgb, var(--brand-accent) 18%, var(--surface));
 
-  --border: #2b2e32;
-  --rule: #212428;
-  --control: #484c52;
+  --border: #2a2f3a;
+  --rule: #222732;
+  --control: #4a5262;
 
-  --text: #f7f8f8;
-  --muted: #b4b4b4;
-  --faint: #949494;
+  --text: #f4f5f8;
+  --muted: #b0b6c3;
+  --faint: #9299a8;
 
-  --primary: #f7f8f8;
-  --primary-ink: #16181b;
+  --primary-ink: #0f1115;
+  --accent-shade: #ffffff; /* on dark, hover and pressed lighten the accent */
   --brand-accent: var(--brand-accent-dark);
 
   --positive: #3fc07a;
@@ -125,7 +142,6 @@
   --pill-neutral-bg: #2b2f34;
   --pill-neutral-ink: #b4b4b4;
 
-  --chart-1: #5aa2ff;
   --chart-2: #4fb3c6;
   --chart-3: #d2a03a;
   --grid: #2b2b2b;
@@ -134,5 +150,5 @@
 
 /* Client accent for dark mode (brief 3.1 item 6). Override per client. */
 :root {
-  --brand-accent-dark: #5aa2ff;
+  --brand-accent-dark: #818cf8;
 }

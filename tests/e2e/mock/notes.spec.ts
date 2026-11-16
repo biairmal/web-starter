@@ -2,7 +2,7 @@ import { expect, expectNoA11yViolations, test } from "../fixtures";
 import { signIn } from "../session";
 
 // The example business module (FE-62; docs/adding-a-module.md). Prism serves
-// go-service-template's notes API from openapi/notes.json (`pnpm mock:notes`),
+// go-service-template's notes API from openapi/notes.json (`bun run mock:notes`),
 // so the rows are random; these tests check the wiring, not the data.
 
 test.describe("notes module", () => {

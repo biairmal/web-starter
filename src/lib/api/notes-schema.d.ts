@@ -1,5 +1,5 @@
-// Generated from openapi/notes.json by `pnpm api:gen`. Do not edit by hand.
-// Regenerate after the spec changes; `pnpm api:check` fails when this file is stale.
+// Generated from openapi/notes.json by `bun run api:gen`. Do not edit by hand.
+// Regenerate after the spec changes; `bun run api:check` fails when this file is stale.
 export interface paths {
     "/v1/notes": {
         parameters: {

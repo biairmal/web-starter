@@ -1,6 +1,6 @@
 # The full e2e stack (TRD 13; plan F7.1): identity, Postgres, a fake Google
 # OIDC provider and two web-starter replicas behind Caddy, all on plain HTTP
-# at localhost. Run through `pnpm e2e:full` (scripts/e2e-full.mts), which
+# at localhost. Run through `bun run e2e:full` (scripts/e2e-full.mts), which
 # first writes deploy/e2e/.generated/ (signing keys and identity's config
 # with a short access_ttl), then runs the Playwright `full` project.
 #

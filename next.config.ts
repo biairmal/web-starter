@@ -31,7 +31,7 @@ const fragmentTokenPages = ["/verify-email", "/reset-password", "/invite"];
 const nextConfig: NextConfig = {
   // A self-contained server in .next/standalone for the Docker image (TRD 14).
   // Only when the Dockerfile asks: copying it makes symlinks, which Windows
-  // refuses without Developer Mode, so a local `pnpm build` would fail.
+  // refuses without Developer Mode, so a local `bun run build` would fail.
   ...(process.env.NEXT_OUTPUT === "standalone"
     ? { output: "standalone" as const }
     : {}),

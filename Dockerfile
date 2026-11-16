@@ -13,19 +13,19 @@ FROM ${NODE_IMAGE} AS node
 # --- dependencies -----------------------------------------------------------
 FROM node AS deps
 WORKDIR /app
-# The version in package.json "packageManager". Installed with npm because
-# the corepack bundled with Node 22 cannot verify every pnpm release.
-RUN npm install -g pnpm@12.18.0
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+# The version in package.json "packageManager". Bun only installs packages;
+# `bun run build` still runs Next.js under Node (the bin's shebang).
+RUN npm install -g bun@1.4.4
+COPY package.json bun.lock ./
+RUN --mount=type=cache,id=bun-cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
 
 # --- build ------------------------------------------------------------------
 FROM deps AS build
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NEXT_OUTPUT=standalone
-RUN pnpm run build
+RUN bun run build
 
 # --- runtime ----------------------------------------------------------------
 # Plain Alpine plus the node binary: the Node image's npm, corepack and yarn

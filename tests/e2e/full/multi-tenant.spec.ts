@@ -17,7 +17,7 @@ import {
 
 // Multi mode against the real identity: APP_FLOW 5.2 (the tenant picker),
 // 5.10 (switch tenant) and 5.15 (the super admin's tenants) (FE-8, FE-31,
-// FE-50, FE-51). Runs in the multi pass of `pnpm e2e:full`.
+// FE-50, FE-51). Runs in the multi pass of `bun run e2e:full`.
 
 test.skip(tenancy !== "multi", "multi-mode journey");
 

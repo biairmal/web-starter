@@ -48,7 +48,7 @@ export function mailLinks(email: string, template: MailTemplate): string[] {
   const file = process.env.E2E_COMPOSE_FILE;
   const project = process.env.E2E_COMPOSE_PROJECT;
   if (!file || !project) {
-    throw new Error("Run the full suite through `pnpm e2e:full`.");
+    throw new Error("Run the full suite through `bun run e2e:full`.");
   }
   const log = execFileSync(
     "docker",

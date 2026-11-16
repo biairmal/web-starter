@@ -1,4 +1,4 @@
-# Only what `pnpm build` needs goes into the build context.
+# Only what `bun run build` needs goes into the build context.
 .git
 .github
 .claude

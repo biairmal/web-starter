@@ -8,8 +8,8 @@ import { join } from "node:path";
 // HTTP/2, as production serves the app, through the e2e stack's TLS site
 // (deploy/e2e/Caddyfile). Three runs; the median of each metric must pass.
 //
-//   E2E_KEEP=1 pnpm e2e:full     # leaves the stack running
-//   pnpm lighthouse              # LIGHTHOUSE_URL overrides the address
+//   E2E_KEEP=1 bun run e2e:full     # leaves the stack running
+//   bun run lighthouse              # LIGHTHOUSE_URL overrides the address
 
 const url = process.env.LIGHTHOUSE_URL ?? "https://localhost:3443/sign-in";
 const RUNS = 3;

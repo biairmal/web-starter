@@ -14,8 +14,8 @@ the file the notes module uses, so you can copy it. Replace `notes` with your mo
 ### 1. Pin the service's API description
 
 ```sh
-pnpm api:sync:notes      # = tsx scripts/api-sync-service.mts notes ../go-service-template/api/swagger/swagger.json
-pnpm api:gen
+bun run api:sync:notes      # = tsx scripts/api-sync-service.mts notes ../go-service-template/api/swagger/swagger.json
+bun run api:gen
 ```
 
 `scripts/api-sync-service.mts <name> <spec file>` copies the service's `swagger.json` (Swagger
@@ -23,8 +23,8 @@ pnpm api:gen
 Swagger 2.0 to OpenAPI 3, and records the commit in `openapi/<name>.source.json`. Add a
 `api:sync:<name>` script to `package.json` with your service's path.
 
-`pnpm api:gen` generates `src/lib/api/<name>-schema.d.ts` for every `openapi/<name>.json`. No
-registration needed: `pnpm api:check` (part of `pnpm check`) then fails whenever the spec changes
+`bun run api:gen` generates `src/lib/api/<name>-schema.d.ts` for every `openapi/<name>.json`. No
+registration needed: `bun run api:check` (part of `bun run check`) then fails whenever the spec changes
 without regenerated types.
 
 ### 2. Types
@@ -100,14 +100,14 @@ shows it only to users who hold the permission.
 ### 9. Messages
 
 `messages/en.json` and `messages/id.json`: a `notes` namespace for the module's text, and the nav
-label under `nav.items.notes`. `pnpm i18n:check` fails when a key is in `en` but not in `id`.
+label under `nav.items.notes`. `bun run i18n:check` fails when a key is in `en` but not in `id`.
 
 ### 10. Tests
 
 - Component tests: `tests/component/notes.test.tsx` (MSW answers `*/api/notes/*`).
 - Proxy route test: `tests/unit/notes-proxy.test.ts`, with `NOTES_INTERNAL_URL` set to a host
   only MSW answers in `vitest.config.mts` (`testEnv`).
-- Mock e2e: `tests/e2e/mock/notes.spec.ts`. `pnpm mock:notes` serves the spec with Prism on
+- Mock e2e: `tests/e2e/mock/notes.spec.ts`. `bun run mock:notes` serves the spec with Prism on
   port 4012, started by `playwright.config.ts`; `tests/e2e/env.ts` points `NOTES_INTERNAL_URL` at
   it. Add a `mock:<name>` script and a `webServer` entry for your service the same way.
 

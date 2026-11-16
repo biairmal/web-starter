@@ -24,4 +24,16 @@ describe("token mapping", () => {
     const missing = referenced.filter((name) => !defined.has(name));
     expect(missing).toEqual([]);
   });
+
+  it("gives no type role the name of a colour (text-X would be ambiguous)", () => {
+    const names = (prefix: string) =>
+      new Set(
+        [...theme.matchAll(new RegExp(`${prefix}([\\w-]+?)\\s*:`, "g"))]
+          .map((m) => m[1])
+          .filter((name) => !name?.includes("--")),
+      );
+    const colors = names("--color-");
+    const clashes = [...names("--text-")].filter((name) => colors.has(name));
+    expect(clashes).toEqual([]);
+  });
 });

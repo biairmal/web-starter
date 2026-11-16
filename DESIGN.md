@@ -51,16 +51,16 @@ Project rules that apply to every visual decision (see `AGENTS.md`): tokens only
 
 ### Typography
 
-| Role          | Token / value                         | Notes                        |
-| ------------- | ------------------------------------- | ---------------------------- |
-| Display       | `text-stat` 28/36 semibold            | Stat numbers only            |
-| Page title    | `text-title` 22/28 semibold           | One `h1` per page            |
-| Section title | `text-section` 16/24 semibold         | Card and section headings    |
-| Body          | `text-body` 14/20 regular             | Default text                 |
-| Label         | `text-body` 14/20 medium              | Form labels, table headers   |
-| Secondary     | `text-secondary` 13/18 regular, muted | Descriptions, metadata       |
-| Caption       | `text-small` 12/16 regular, muted     | Hints, counters, timestamps  |
-| Monospace     | `text-mono` 13/20, `font-mono`        | Ids, codes, technical values |
+| Role          | Token / value                     | Notes                        |
+| ------------- | --------------------------------- | ---------------------------- |
+| Display       | `text-stat` 28/36 semibold        | Stat numbers only            |
+| Page title    | `text-title` 22/28 semibold       | One `h1` per page            |
+| Section title | `text-section` 16/24 semibold     | Card and section headings    |
+| Body          | `text-body` 14/20 regular         | Default text                 |
+| Label         | `text-body` 14/20 medium          | Form labels, table headers   |
+| Secondary     | `text-meta` 13/18 regular, muted  | Descriptions, metadata       |
+| Caption       | `text-small` 12/16 regular, muted | Hints, counters, timestamps  |
+| Monospace     | `text-mono` 13/20, `font-mono`    | Ids, codes, technical values |
 
 Sizes, line heights and weights are tokens (`--fs-*`, `--lh-*`, `--fw-*`) in `tokens.css`. Each `text-*` class includes its line height.
 

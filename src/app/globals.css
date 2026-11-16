@@ -94,7 +94,8 @@
   --spacing-table-head: var(--table-head-h);
 
   /* Type roles (DESIGN.md 4): text-stat, text-title, text-section, text-body,
-     text-secondary, text-small, text-mono. Each carries its line height. */
+     text-meta, text-small, text-mono. Each carries its line height. "meta", not
+     "secondary": text-secondary is already the shadcn secondary colour. */
   --text-stat: var(--fs-stat);
   --text-stat--line-height: var(--lh-stat);
   --text-stat--font-weight: var(--fw-semibold);
@@ -104,8 +105,8 @@
   --text-section--line-height: var(--lh-section);
   --text-body: var(--fs-body);
   --text-body--line-height: var(--lh-body);
-  --text-secondary: var(--fs-secondary);
-  --text-secondary--line-height: var(--lh-secondary);
+  --text-meta: var(--fs-secondary);
+  --text-meta--line-height: var(--lh-secondary);
   --text-small: var(--fs-small);
   --text-small--line-height: var(--lh-small);
   --text-mono: var(--fs-mono);

@@ -41,24 +41,24 @@
 
 **Files:**
 
-- Create: `tests/helpers/tokens.ts`
+- Create: `tests/helpers/css-tokens.ts`
 - Create: `tests/unit/tokens-contrast.test.ts`
 - Modify: `src/app/tokens.css`
 
 **Interfaces:**
 
-- Produces (`tests/helpers/tokens.ts`):
+- Produces (`tests/helpers/css-tokens.ts`):
   - `readTokens(theme: "light" | "dark"): Record<string, string>`: parses `src/app/tokens.css`, applies the `:root` declarations, then (for `"dark"`) the `:root[data-theme="dark"]` ones over them, then the late `:root { --brand-accent-dark }`. Returns each token as a resolved `#rrggbb`, resolving `var(--x)` and `color-mix(in srgb, A P%, B)` (A and B are `var()` or hex; result is the sRGB blend). Tokens that are not colours (px, ms, fonts, shadows) are omitted.
   - `contrast(fg: string, bg: string): number`: WCAG 2.x contrast ratio of two `#rrggbb` colours.
 - Produces tokens used by later tasks: `--primary-hover`, `--primary-press`, `--accent-shade` (new); `--primary` now `var(--brand-accent)`.
 
 - [ ] **Step 1: Write the failing test** `tests/unit/tokens-contrast.test.ts`. One `describe.each(["light", "dark"])` block asserting `contrast(...) >= 4.5` for these pairs: `text`/`surface`, `text`/`frame`, `muted`/`surface`, `muted`/`frame`, `faint`/`surface`, `faint`/`frame`, `brand-accent`/`surface`, `brand-accent`/`frame`, `primary-ink`/`primary`, `primary-ink`/`primary-hover`, `primary-ink`/`primary-press`, `text`/`active`, plus each `pill-*-ink`/`pill-*-bg` pair. Add a unit test of `contrast("#000000", "#ffffff")` equal to 21 and of `readTokens("light")["brand-accent"]` equal to `"#4f46e5"`.
 - [ ] **Step 2: Run** `bun x vitest run tests/unit/tokens-contrast.test.ts`. Expected: FAIL (helper missing).
-- [ ] **Step 3: Implement** `readTokens` and `contrast` in `tests/helpers/tokens.ts` (read the CSS with `node:fs`; no new dependency).
+- [ ] **Step 3: Implement** `readTokens` and `contrast` in `tests/helpers/css-tokens.ts` (read the CSS with `node:fs`; no new dependency).
 - [ ] **Step 4: Run again.** Expected: FAIL on `brand-accent` equal to `#4f46e5` and on the missing `primary-hover` token (the helper works; the CSS has not changed).
 - [ ] **Step 5: Edit `src/app/tokens.css`.** Light `:root`: `--frame #f3f5fa`, `--surface #ffffff`, `--raised #f5f6fa`, `--active color-mix(in srgb, var(--brand-accent) 10%, var(--surface))`, `--border #e3e7ef`, `--rule #eef0f5`, `--control #c3c9d6`, `--text #161b26`, `--muted #5d6677`, `--faint #656d7c`, `--primary var(--brand-accent)`, `--primary-ink #ffffff`, `--brand-accent #4f46e5`, `--accent-shade #000000`, `--primary-hover color-mix(in srgb, var(--brand-accent) 88%, var(--accent-shade))`, `--primary-press color-mix(in srgb, var(--brand-accent) 76%, var(--accent-shade))`, `--chart-1 var(--brand-accent)`. Dark block: `--frame #0d0f14`, `--surface #161920`, `--raised #1e222b`, `--active color-mix(in srgb, var(--brand-accent) 18%, var(--surface))`, `--border #2a2f3a`, `--rule #222732`, `--control #4a5262`, `--text #f4f5f8`, `--muted #b0b6c3`, `--faint #9299a8`, `--primary-ink #0f1115`, `--accent-shade #ffffff`; delete its `--primary` and `--chart-1` overrides; `--brand-accent-dark #818cf8`. Keep status, pill, layout, radius and motion tokens. If a pair fails, nudge that token's lightness only, keep its hue, and note the final value in the commit message.
 - [ ] **Step 6: Run** the test. Expected: PASS.
-- [ ] **Step 7: Commit** `tests/helpers/tokens.ts tests/unit/tokens-contrast.test.ts src/app/tokens.css` ("Re-skin tokens: tinted ground, indigo accent").
+- [ ] **Step 7: Commit** `tests/helpers/css-tokens.ts tests/unit/tokens-contrast.test.ts src/app/tokens.css` ("Re-skin tokens: tinted ground, indigo accent").
 
 ### Task 2: Tailwind token mapping and the base interaction layer
 

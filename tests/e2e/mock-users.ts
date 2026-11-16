@@ -14,10 +14,13 @@ export type MockUser = {
   multi?: boolean;
   /** Signs in with a restricted token (forced password change). */
   mustChange?: boolean;
+  /** Signs in as the super admin: passes every permission check. */
+  superAdmin?: boolean;
 };
 
 export const MOCK_USERS: readonly MockUser[] = [
   { email: "dina@example.test", name: "Dina Pratama" },
+  { email: "admin@example.test", name: "Ada Admin", superAdmin: true },
   { email: "locked@example.test", name: "Locked User", locked: true },
   { email: "new@example.test", name: "New User", unverified: true },
   { email: "multi@example.test", name: "Multi Tenant", multi: true },

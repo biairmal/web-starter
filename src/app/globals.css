@@ -63,12 +63,56 @@
   --spacing-nav-row: var(--nav-row);
   --spacing-field: var(--field-height);
   --spacing-pad: var(--pad);
+  --spacing-gap: var(--gap);
+  --spacing-card-pad: var(--card-pad);
+  --spacing-section: var(--section-gap);
+  --spacing-row: var(--row-height);
+  --spacing-row-md: var(--row-height-md);
+  --spacing-control: var(--control-height);
 
-  /* Type scale (DESIGN_BRIEF 4.2): text-title, text-section, text-body, text-small. */
+  /* Semantic spacing: p-inset-md, gap-stack-sm, gap-inline-xs, mt-stack-lg… */
+  --spacing-inset-xs: var(--space-inset-xs);
+  --spacing-inset-sm: var(--space-inset-sm);
+  --spacing-inset-md: var(--space-inset-md);
+  --spacing-inset-lg: var(--space-inset-lg);
+  --spacing-stack-xs: var(--space-stack-xs);
+  --spacing-stack-sm: var(--space-stack-sm);
+  --spacing-stack-md: var(--space-stack-md);
+  --spacing-stack-lg: var(--space-stack-lg);
+  --spacing-stack-xl: var(--space-stack-xl);
+  --spacing-inline-xs: var(--space-inline-xs);
+  --spacing-inline-sm: var(--space-inline-sm);
+  --spacing-inline-md: var(--space-inline-md);
+  --spacing-inline-lg: var(--space-inline-lg);
+
+  /* Component sizes: h-button-md, h-input, h-table-head… */
+  --spacing-button-xs: var(--button-h-xs);
+  --spacing-button-sm: var(--button-h-sm);
+  --spacing-button-md: var(--button-h-md);
+  --spacing-button-lg: var(--button-h-lg);
+  --spacing-input: var(--input-h);
+  --spacing-table-head: var(--table-head-h);
+
+  /* Type roles (DESIGN.md 4): text-stat, text-title, text-section, text-body,
+     text-secondary, text-small, text-mono. Each carries its line height. */
+  --text-stat: var(--fs-stat);
+  --text-stat--line-height: var(--lh-stat);
+  --text-stat--font-weight: var(--fw-semibold);
   --text-title: var(--fs-title);
+  --text-title--line-height: var(--lh-title);
   --text-section: var(--fs-section);
+  --text-section--line-height: var(--lh-section);
   --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+  --text-secondary: var(--fs-secondary);
+  --text-secondary--line-height: var(--lh-secondary);
   --text-small: var(--fs-small);
+  --text-small--line-height: var(--lh-small);
+  --text-mono: var(--fs-mono);
+  --text-mono--line-height: var(--lh-mono);
+  --font-weight-regular: var(--fw-regular);
+  --font-weight-medium: var(--fw-medium);
+  --font-weight-semibold: var(--fw-semibold);
 
   --radius-sm: var(--radius-chip);
   --radius-md: var(--radius-control);

@@ -74,11 +74,49 @@
     var(--font-inter-variable), "InterVariable", system-ui, -apple-system,
     "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
-  --fs-title: 22px;
-  --fs-section: 16px;
-  --fs-stat: 28px;
-  --fs-body: 14px;
-  --fs-small: 12px;
+  /* type roles (DESIGN.md 4): size / line height, weight set per role in globals.css */
+  --fs-stat: 28px; /* display: stat numbers */
+  --lh-stat: 36px;
+  --fs-title: 22px; /* page title */
+  --lh-title: 28px;
+  --fs-section: 16px; /* section title */
+  --lh-section: 24px;
+  --fs-body: 14px; /* body and label */
+  --lh-body: 20px;
+  --fs-secondary: 13px; /* secondary text, muted */
+  --lh-secondary: 18px;
+  --fs-small: 12px; /* caption, muted */
+  --lh-small: 16px;
+  --fs-mono: 13px; /* ids, codes */
+  --lh-mono: 20px;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* semantic spacing on the 4px grid (DESIGN.md 4): inset is padding inside a
+     box, stack is vertical rhythm between blocks, inline is the gap between
+     things in a row. Change a value here to respace every component using it. */
+  --space-inset-xs: 8px;
+  --space-inset-sm: 12px;
+  --space-inset-md: 16px;
+  --space-inset-lg: 24px;
+  --space-stack-xs: 4px;
+  --space-stack-sm: 8px;
+  --space-stack-md: 16px;
+  --space-stack-lg: 24px;
+  --space-stack-xl: 32px;
+  --space-inline-xs: 4px;
+  --space-inline-sm: 8px;
+  --space-inline-md: 12px;
+  --space-inline-lg: 16px;
+
+  /* component sizes: the primitives in src/components/ui read these */
+  --button-h-xs: 24px;
+  --button-h-sm: 32px;
+  --button-h-md: 36px;
+  --button-h-lg: 40px;
+  --input-h: 36px;
+  --table-head-h: 40px;
 
   /* spacing, radius, layout (4.3) */
   --gap: 24px;

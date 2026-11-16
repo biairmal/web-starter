@@ -2,7 +2,7 @@
 
 > Project design contract. Replace the example values below with the product's real decisions. Do not treat examples as approved brand choices.
 
-> **Status:** the colour and interaction direction was approved on 2026-11-16 (see `docs/superpowers/specs/2026-11-16-ui-refresh-design.md`). Typography, spacing and the table, filter and shell patterns are still being redesigned in PRs 2 and 3: leave their rows as TBD until those land. Agents must not invent missing decisions: propose, then wait for the owner to record them here.
+> **Status:** the colour and interaction direction was approved on 2026-11-16 (see `docs/superpowers/specs/2026-11-16-ui-refresh-design.md`). Typography, spacing, the edit-screen header and toasts were approved on 2026-11-16 too (see the decisions log). Agents must not invent missing decisions: propose, then wait for the owner to record them here.
 
 ## 1. Product and audience
 
@@ -51,15 +51,18 @@ Project rules that apply to every visual decision (see `AGENTS.md`): tokens only
 
 ### Typography
 
-| Role          | Token / value | Notes                     |
-| ------------- | ------------- | ------------------------- |
-| Display       | TBD           | Use sparingly             |
-| Page title    | TBD           |                           |
-| Section title | TBD           |                           |
-| Body          | TBD           | Prioritize readability    |
-| Secondary     | TBD           | Must remain legible       |
-| Label         | TBD           | Forms and metadata        |
-| Monospace     | TBD           | Code and technical values |
+| Role          | Token / value                         | Notes                        |
+| ------------- | ------------------------------------- | ---------------------------- |
+| Display       | `text-stat` 28/36 semibold            | Stat numbers only            |
+| Page title    | `text-title` 22/28 semibold           | One `h1` per page            |
+| Section title | `text-section` 16/24 semibold         | Card and section headings    |
+| Body          | `text-body` 14/20 regular             | Default text                 |
+| Label         | `text-body` 14/20 medium              | Form labels, table headers   |
+| Secondary     | `text-secondary` 13/18 regular, muted | Descriptions, metadata       |
+| Caption       | `text-small` 12/16 regular, muted     | Hints, counters, timestamps  |
+| Monospace     | `text-mono` 13/20, `font-mono`        | Ids, codes, technical values |
+
+Sizes, line heights and weights are tokens (`--fs-*`, `--lh-*`, `--fw-*`) in `tokens.css`. Each `text-*` class includes its line height.
 
 Rules:
 
@@ -101,7 +104,18 @@ Rules:
 
 ### Spacing, shape, and elevation
 
-- Spacing scale: the tokens in `tokens.css`: `--gap` and `--pad` 24px, `--card-pad` 20px, `--section-gap` 32px; row heights 48px (72px for two-line rows), nav row 34px, control 32px, field 40px.
+- Semantic spacing on the 4px grid, for padding, margins and gaps inside components:
+
+  | Purpose                              | Classes                     | xs  | sm  | md  | lg  | xl  |
+  | ------------------------------------ | --------------------------- | --- | --- | --- | --- | --- |
+  | Inset (padding inside a box)         | `p-inset-*`, `px-inset-*`   | 8   | 12  | 16  | 24  |     |
+  | Stack (vertical gap between blocks)  | `gap-stack-*`, `mt-stack-*` | 4   | 8   | 16  | 24  | 32  |
+  | Inline (gap between things in a row) | `gap-inline-*`              | 4   | 8   | 12  | 16  |     |
+
+  Shared components use these rather than Tailwind's numbered steps, so editing one token respaces them all.
+
+- Component sizes are tokens too: `--button-h-{xs,sm,md,lg}` (24/32/36/40), `--input-h` (36) and `--table-head-h` (40), used as `h-button-md`, `h-input` and `h-table-head`.
+- Layout spacing: the tokens in `tokens.css`: `--gap` and `--pad` 24px, `--card-pad` 20px, `--section-gap` 32px; row heights 48px (72px for two-line rows), nav row 34px, control 32px, field 40px.
 - Corner radius scale: chip 4px, control 6px, card 8px, sheet 16px.
 - Shadow/elevation scale: none at rest; only floating surfaces (menu, popover, dialog, sheet, toast) use `shadow-float`, always with a hairline ring.
 - Content max-width: `screen-xl` (1280px).
@@ -117,7 +131,7 @@ Rules:
 
 - Navigation pattern: a 228px sidebar from 1024px up: the logo, the tenant switcher (only with several tenants), grouped links with the current one marked by a 2px accent bar, a tinted row and an accent icon, and the user menu at the bottom.
 - Page shell: the sidebar and top bar sit on the tinted frame; the content is a white sheet with a hairline border, 16px corners and an 8px inset from the window (from 640px). Below 640px the sheet is the screen, with no inset and no corners.
-- Page header: every list and account page starts with `PageHeader`: one `h1`, a sentence under it, and the page's primary action at the end; it wraps on narrow screens. Detail screens keep their own headers (back link, status).
+- Page header: every list and account page starts with `PageHeader`: one `h1`, a sentence under it, and the page's primary action at the end; it wraps on narrow screens. Detail and edit screens use it too, with a breadcrumb and a status. An editable screen pins the header to the top of the sheet with Cancel and Save at its end (Save is disabled until something changes), and repeats Cancel and Save at the end of the form. Save is never only at the bottom of the window.
 - Content width: the content column is at most `screen-xl` (1280px).
 - Responsive navigation behavior: below 1024px the sidebar becomes a drawer from the start edge, opened from a 48px top bar that holds the menu button and the logo; following a link closes it.
 - Sign-in and other public screens: one white card (hairline border, no shadow) holding the logo and the form, in a 400px column on the tinted frame, with the support and legal footer below it.
@@ -127,7 +141,7 @@ Rules:
 - Filter editors: a popover from 640px up and a bottom sheet below, the same on every list. Filter types are `select`, `date` and `custom` (a feature's own picker, such as the audit log's person search); each holds one string in the URL.
 - Dialog/drawer conventions:
 - Empty-state conventions:
-- Toast/notification conventions:
+- Toast/notification conventions: toasts stack at the top centre at every width. Success and info toasts close after 4s; error toasts stay until dismissed. A toast confirms an action that has already happened; a problem the user must fix is shown inline, next to it.
 
 Component rules:
 
@@ -220,6 +234,9 @@ Do not add visual novelty just to appear distinctive. Make the interface specifi
 
 Record durable design decisions here so future contributors and agents do not unknowingly reverse them.
 
-| Date       | Decision | Reason | Owner |
-| ---------- | -------- | ------ | ----- |
-| YYYY-MM-DD | TBD      | TBD    | TBD   |
+| Date       | Decision                                                                                                             | Reason                                                               | Owner |
+| ---------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----- |
+| 2026-11-16 | Type roles: stat 28/36, title 22/28, section 16/24, body and label 14/20, secondary 13/18, caption 12/16, mono 13/20 | The existing sizes are kept; the roles and line heights were missing | Bia   |
+| 2026-11-16 | Semantic spacing tokens (inset, stack, inline) and component size tokens                                             | Restyle components by editing tokens, not classes                    | Bia   |
+| 2026-11-16 | Edit screens: a sticky header with Cancel and Save, repeated at the end of the form                                  | Save at the bottom right was hard to find on large monitors          | Bia   |
+| 2026-11-16 | Toasts at the top centre; 4s for success and info, errors stay until dismissed                                       | Owner's choice                                                       | Bia   |

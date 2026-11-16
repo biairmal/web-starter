@@ -241,7 +241,7 @@ describe("UsersTable", () => {
     const user = userEvent.setup();
     await user.click(await screen.findByRole("button", { name: "Add filter" }));
     await user.click(screen.getByRole("button", { name: "Account status" }));
-    await user.click(screen.getByRole("option", { name: "Account active" }));
+    await user.click(screen.getByRole("button", { name: "Account active" }));
     expect(fakeRouter.search.get("status")).toBe("active");
   });
 

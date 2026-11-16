@@ -585,6 +585,7 @@
   "filterBar": {
     "addFilter": "Tambah filter",
     "clearFilters": "Hapus filter",
+    "apply": "Terapkan",
     "remove": "Hapus filter {label}"
   },
   "feedback": {

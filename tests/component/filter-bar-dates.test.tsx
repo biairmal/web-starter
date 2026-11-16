@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { FilterBar } from "@/components/filters/filter-bar";
@@ -58,5 +58,59 @@ describe("FilterBar date filters", () => {
     expect(
       screen.getByRole("button", { name: "From: Nov 10, 2026" }),
     ).toBeInTheDocument();
+  });
+});
+
+// A native date input fires change as soon as its value is a complete date, so
+// typing "2026" would apply year 0002 after the first digit. The editor holds a
+// draft and applies only on Apply or Enter, and only for a sensible date.
+describe("FilterBar date editor", () => {
+  async function openFrom(onChange: (key: string, value: string) => void) {
+    renderWithIntl(
+      <FilterBar
+        filters={[from, to]}
+        values={{}}
+        onChange={onChange}
+        onClear={vi.fn()}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Add filter" }));
+    await userEvent.click(screen.getByRole("button", { name: "From" }));
+    return screen.getByLabelText("From", { selector: "input" });
+  }
+
+  it("does not apply a date until Apply is pressed", async () => {
+    const onChange = vi.fn();
+    const input = await openFrom(onChange);
+    fireEvent.change(input, { target: { value: "2026-11-05" } });
+    expect(onChange).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: "Apply" }));
+    expect(onChange).toHaveBeenCalledWith("from", "2026-11-05");
+  });
+
+  it("applies with Enter", async () => {
+    const onChange = vi.fn();
+    const input = await openFrom(onChange);
+    fireEvent.change(input, { target: { value: "2026-11-05" } });
+    await userEvent.type(input, "{Enter}");
+    expect(onChange).toHaveBeenCalledWith("from", "2026-11-05");
+  });
+
+  it("will not apply a mistyped year", async () => {
+    const onChange = vi.fn();
+    const input = await openFrom(onChange);
+    fireEvent.change(input, { target: { value: "0002-11-05" } });
+    expect(screen.getByRole("button", { name: "Apply" })).toBeDisabled();
+    await userEvent.type(input, "{Enter}");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("will not apply a date past the limit typed by hand", async () => {
+    const onChange = vi.fn();
+    const input = await openFrom(onChange);
+    fireEvent.change(input, { target: { value: "2026-11-20" } });
+    expect(screen.getByRole("button", { name: "Apply" })).toBeDisabled();
+    await userEvent.type(input, "{Enter}");
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

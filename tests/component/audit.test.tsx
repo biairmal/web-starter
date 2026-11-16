@@ -228,6 +228,9 @@ describe("AuditTable", () => {
     await user.click(screen.getByRole("button", { name: "From" }));
     const from = await screen.findByLabelText("From", { selector: "input" });
     await user.type(from, "2026-11-01");
+    // Nothing is applied while the date is only typed.
+    expect(fakeRouter.search.has("from")).toBe(false);
+    await user.click(screen.getByRole("button", { name: "Apply" }));
     await waitFor(() => {
       expect(fakeRouter.search.get("from")).toBe("2026-11-01");
     });

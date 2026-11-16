@@ -98,6 +98,13 @@ export function FilterBar({
   }
 
   function apply(def: FilterDef, value: string) {
+    // An editor that empties its value removes the filter: its pill goes away,
+    // so focus has to be placed the way a removal places it.
+    if (value === "") {
+      close();
+      remove(def);
+      return;
+    }
     // A newly added filter gets a pill; focus it instead of the add button.
     if ((values[def.key] ?? "") === "") {
       setFocusTarget({ kind: "pill", key: def.key });

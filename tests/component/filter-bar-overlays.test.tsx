@@ -27,14 +27,16 @@ const status: FilterDef = {
 function Harness({
   initial,
   onChange,
+  filters = [role, status],
 }: {
   initial: Record<string, string>;
   onChange: (key: string, value: string) => void;
+  filters?: readonly FilterDef[];
 }) {
   const [values, setValues] = useState(initial);
   return (
     <FilterBar
-      filters={[role, status]}
+      filters={filters}
       values={values}
       onChange={(key, value) => {
         onChange(key, value);
@@ -73,7 +75,7 @@ describe("FilterBar overlays", () => {
     expect(screen.getByRole("button", { name: "Role" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Status" })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Role" }));
-    await userEvent.click(screen.getByRole("option", { name: "Sales" }));
+    await userEvent.click(screen.getByRole("button", { name: "Sales" }));
     expect(onChange).toHaveBeenCalledWith("role", "r1");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Role: Sales" })).toHaveFocus();
@@ -101,12 +103,12 @@ describe("FilterBar overlays", () => {
   it("opens a pill's editor with the current value selected", async () => {
     renderWithIntl(<Harness initial={{ role: "r1" }} onChange={vi.fn()} />);
     await userEvent.click(screen.getByRole("button", { name: "Role: Sales" }));
-    expect(screen.getByRole("option", { name: "Sales" })).toHaveAttribute(
-      "aria-selected",
+    expect(screen.getByRole("button", { name: "Sales" })).toHaveAttribute(
+      "aria-pressed",
       "true",
     );
-    expect(screen.getByRole("option", { name: "Manager" })).toHaveAttribute(
-      "aria-selected",
+    expect(screen.getByRole("button", { name: "Manager" })).toHaveAttribute(
+      "aria-pressed",
       "false",
     );
   });
@@ -115,7 +117,7 @@ describe("FilterBar overlays", () => {
     const onChange = vi.fn();
     renderWithIntl(<Harness initial={{ role: "r1" }} onChange={onChange} />);
     await userEvent.click(screen.getByRole("button", { name: "Role: Sales" }));
-    await userEvent.click(screen.getByRole("option", { name: "Manager" }));
+    await userEvent.click(screen.getByRole("button", { name: "Manager" }));
     expect(onChange).toHaveBeenCalledWith("role", "r2");
     expect(screen.getByRole("button", { name: "Role: Manager" })).toHaveFocus();
   });
@@ -152,5 +154,36 @@ describe("FilterBar overlays", () => {
       screen.getByRole("button", { name: "Remove filter Status" }),
     );
     expect(screen.getByRole("button", { name: "Add filter" })).toHaveFocus();
+  });
+
+  it("does not drop focus when an editor clears the value it is editing", async () => {
+    const custom: FilterDef = {
+      key: "who",
+      label: "Who",
+      type: "custom",
+      renderValue: (value) => value,
+      renderEditor: ({ onChange }) => (
+        <button
+          type="button"
+          onClick={() => {
+            onChange("");
+          }}
+        >
+          {"Clear who"}
+        </button>
+      ),
+    };
+    renderWithIntl(
+      <Harness
+        initial={{ who: "dina", status: "active" }}
+        onChange={vi.fn()}
+        filters={[custom, status]}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Who: dina" }));
+    await userEvent.click(screen.getByRole("button", { name: "Clear who" }));
+    expect(
+      screen.getByRole("button", { name: "Status: Active" }),
+    ).toHaveFocus();
   });
 });

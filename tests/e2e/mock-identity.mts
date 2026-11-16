@@ -257,9 +257,10 @@ function readBody(req: IncomingMessage): Promise<Record<string, unknown>> {
   });
 }
 
-function tokens(name: string, mustChange = false) {
+function tokens(name: string, mustChange = false, superAdmin = false) {
   const access = fakeAccessToken({
     ...(mustChange ? { scope: "password_change" } : {}),
+    ...(superAdmin ? { sa: true } : {}),
   });
   // The fake token carries the display name the mock /v1/me answers with.
   const [head, payload, signature] = access.split(".");
@@ -319,7 +320,7 @@ async function login(req: IncomingMessage, res: ServerResponse): Promise<void> {
     json(res, 200, envelope({ tenant_required: true, tenants: MOCK_TENANTS }));
     return;
   }
-  json(res, 200, envelope(tokens(user.name, user.mustChange)));
+  json(res, 200, envelope(tokens(user.name, user.mustChange, user.superAdmin)));
 }
 
 /** One-time tokens in email links: MOCK_GOOD_TOKEN works, anything else is used up. */

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 
 // The actions for one table row: the first `inline` as icon buttons, the
-// rest in an overflow menu. Put it in a column marked `rowActions`.
+// rest in an overflow menu. Shown on every row, not only on hover.
 
 export type RowAction = {
   id: string;

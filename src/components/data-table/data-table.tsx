@@ -49,8 +49,6 @@ export type DataTableColumn<T> = {
   sortField?: string;
   /** Numbers are right-aligned (end-aligned) with their header. */
   align?: "start" | "end";
-  /** The actions column: shown on row hover or focus, and always on touch. */
-  rowActions?: boolean;
   /** The identity column gets a third of the width and never truncates. */
   identity?: boolean;
   /** Keeps the column in view while the table scrolls sideways. */
@@ -560,18 +558,7 @@ export function DataTable<T>({
                                 pinned && pinnedBg,
                               )}
                             >
-                              {column?.rowActions ? (
-                                // Hidden until the row is hovered or focused, but
-                                // never on touch, and never while its menu is open.
-                                // The cell itself stays, so a pinned one keeps its
-                                // background and edge.
-                                <div className="opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 pointer-coarse:opacity-100 has-data-[state=open]:opacity-100">
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
-                                  )}
-                                </div>
-                              ) : cell.column.id === SELECT_ID ? (
+                              {cell.column.id === SELECT_ID ? (
                                 <Checkbox
                                   aria-label={t("selectRow", {
                                     name: label(row.original),

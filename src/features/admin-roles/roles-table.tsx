@@ -134,7 +134,6 @@ export function RolesTable() {
       id: "menu",
       header: <span className="sr-only">{t("actionsHeader")}</span>,
       align: "end",
-      rowActions: true,
       cell: (role) => <RowMenu role={role} onDelete={setDeleting} />,
     },
   ];

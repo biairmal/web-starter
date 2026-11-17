@@ -32,7 +32,6 @@ const columns: DataTableColumn<Person>[] = [
     id: "actions",
     header: "Actions",
     cell: () => <button type="button">{"Open menu"}</button>,
-    rowActions: true,
   },
 ];
 
@@ -63,19 +62,13 @@ function renderTable(density?: "comfortable" | "compact") {
 }
 
 describe("DataTable polish", () => {
-  it("reveals a row-actions cell on hover or focus, and always on touch", () => {
+  it("shows row actions on every row without hover or focus", () => {
     renderTable();
     const row = screen.getAllByRole("row")[1];
     const button = within(row as HTMLElement).getByRole("button", {
       name: "Open menu",
     });
-    // The content fades, not the cell, so a pinned cell keeps its background.
-    expect(button.closest("td")?.className).not.toContain("opacity-0");
-    const className = button.parentElement?.className ?? "";
-    expect(className).toContain("opacity-0");
-    expect(className).toContain("group-hover/row:opacity-100");
-    expect(className).toContain("group-focus-within/row:opacity-100");
-    expect(className).toContain("pointer-coarse:opacity-100");
+    expect(button.closest("td")?.outerHTML).not.toContain("opacity-0");
   });
 
   it("rows are comfortable by default and compact on request", () => {

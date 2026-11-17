@@ -94,7 +94,6 @@ function OrdersDemo() {
       id: "actions",
       header: <span className="sr-only">{"Actions"}</span>,
       align: "end",
-      rowActions: true,
       pin: "end",
       width: 88,
       cell: (order) => (

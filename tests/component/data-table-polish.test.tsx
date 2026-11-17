@@ -9,6 +9,11 @@ import {
 import type { Page } from "@/lib/api/types";
 import { renderWithIntl } from "../helpers/intl";
 
+vi.mock(
+  "next/navigation",
+  async () => (await import("../helpers/fake-router")).navigation,
+);
+
 type Person = { id: string; name: string };
 
 const page: Page<Person> = {
@@ -91,6 +96,7 @@ describe("DataTable polish", () => {
     renderTable();
     const head = screen.getAllByRole("rowgroup")[0];
     expect(head?.className).toContain("sticky");
-    expect(head?.className).toContain("border-b");
+    // The rule is drawn by each header cell, so it moves with the header.
+    expect(head?.querySelector("th")?.className).toContain("shadow-rule-inset");
   });
 });

@@ -6,6 +6,7 @@ import {
   type ListParamsConfig,
   SEARCH_DEBOUNCE_MS,
   listQuery,
+  nextMultiSort,
   nextSort,
   parseListParams,
   serializeListParams,
@@ -130,6 +131,29 @@ describe("parseListParams and serializeListParams", () => {
     expect(nextSort("created_at,DESC", "display_name")).toBe(
       "display_name,ASC",
     );
+  });
+
+  it("reads and writes a multi-column sort as repeated sort params", () => {
+    const params = parseListParams(
+      new URLSearchParams("sort=amount,DESC&sort=created_at,ASC"),
+      config,
+    );
+    expect(params.sort).toEqual(["amount,DESC", "created_at,ASC"]);
+    expect(serializeListParams(params, config)).toBe(
+      "sort=amount%2CDESC&sort=created_at%2CASC",
+    );
+  });
+
+  it("adds, flips and drops columns of a multi-column sort", () => {
+    expect(nextMultiSort(["a,ASC"], "b", true)).toEqual(["a,ASC", "b,ASC"]);
+    expect(nextMultiSort(["a,ASC", "b,ASC"], "a", true)).toEqual([
+      "a,DESC",
+      "b,ASC",
+    ]);
+    expect(nextMultiSort(["a,DESC", "b,ASC"], "a", true)).toEqual(["b,ASC"]);
+    expect(nextMultiSort(["a,ASC", "b,ASC"], "b", false)).toEqual(["b,ASC"]);
+    expect(nextMultiSort(["b,ASC"], "b", false)).toEqual(["b,DESC"]);
+    expect(nextMultiSort(["b,DESC"], "b", false)).toEqual([]);
   });
 });
 

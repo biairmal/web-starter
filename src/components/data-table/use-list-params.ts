@@ -7,7 +7,8 @@ import type { ListParams } from "@/lib/api/query-keys";
 // List state mirrored in the query string, so views can be shared and the
 // back button works (FE-40, APP_FLOW 7). Parameter names match the API
 // (`page`, `size`, `sort=field,ASC|DESC`, filters), and identity rejects
-// fields it does not allow.
+// fields it does not allow. A multi-column sort repeats `sort`, highest
+// priority first.
 
 export const PAGE_SIZES = [25, 50, 100] as const;
 export const DEFAULT_PAGE_SIZE = 25;
@@ -23,6 +24,8 @@ export type ListParamsConfig = {
 };
 
 export type SortDirection = "ASC" | "DESC";
+/** One `"field,ASC"`, or several for a multi-column sort. */
+export type SortValue = string | readonly string[] | undefined;
 
 function positiveInt(value: string | null, fallback: number, max?: number) {
   const parsed = Number(value);
@@ -45,7 +48,8 @@ export function parseListParams(
       filters[key] = value;
     }
   }
-  const sort = search.get("sort");
+  const sorts = search.getAll("sort").filter(Boolean);
+  const sort = sorts.length > 1 ? sorts : sorts[0];
   return {
     page: positiveInt(search.get("page"), 1),
     size: positiveInt(search.get("size"), defaultSize, 100),
@@ -66,8 +70,8 @@ export function serializeListParams(
   if (params.size !== (config.defaultSize ?? DEFAULT_PAGE_SIZE)) {
     query.set("size", String(params.size));
   }
-  if (params.sort) {
-    query.set("sort", params.sort);
+  for (const sort of sortList(params.sort)) {
+    query.append("sort", `${sort.field},${sort.direction}`);
   }
   for (const key of config.filters) {
     const value = params.filters[key];
@@ -79,7 +83,9 @@ export function serializeListParams(
 }
 
 /** The query object for the identity list call (`api.GET(…, { params: { query } })`). */
-export function listQuery(params: ListParams): Record<string, string | number> {
+export function listQuery(
+  params: ListParams,
+): Record<string, string | number | string[]> {
   return {
     page: params.page,
     size: params.size,
@@ -99,6 +105,45 @@ export function parseSort(
   return field
     ? { field, direction: direction.toUpperCase() === "DESC" ? "DESC" : "ASC" }
     : undefined;
+}
+
+/** Every sort in priority order; bad entries are dropped. */
+export function sortList(
+  sort: SortValue,
+): { field: string; direction: SortDirection }[] {
+  const entries = typeof sort === "string" ? [sort] : (sort ?? []);
+  return entries.flatMap((entry) => parseSort(entry) ?? []);
+}
+
+/**
+ * A click sorts by that column alone (none → ascending → descending → none).
+ * With `add` (shift-click) the column joins the others at the end, or steps
+ * through its own directions in place and drops out after descending.
+ */
+export function nextMultiSort(
+  current: SortValue,
+  field: string,
+  add: boolean,
+): string[] {
+  const list = sortList(current).map((s) => ({
+    ...s,
+    value: `${s.field},${s.direction}`,
+  }));
+  const own = list.find((s) => s.field === field);
+  if (!add) {
+    const next = nextSort(list.length === 1 ? own?.value : undefined, field);
+    return next ? [next] : [];
+  }
+  if (!own) {
+    return [...list.map((s) => s.value), `${field},ASC`];
+  }
+  return list.flatMap((s) =>
+    s.field !== field
+      ? [s.value]
+      : s.direction === "ASC"
+        ? [`${field},DESC`]
+        : [],
+  );
 }
 
 /** None → ascending → descending → none, for one column. */
@@ -167,13 +212,15 @@ export function useListParams(config: ListParamsConfig) {
   );
 
   const setSort = useCallback(
-    (sort: string | undefined) => {
+    (sort: SortValue) => {
+      const sorts = sortList(sort).map((s) => `${s.field},${s.direction}`);
+      const next = sorts.length > 1 ? sorts : sorts[0];
       navigate(
         {
           page: 1,
           size: latest.current.size,
           filters: latest.current.filters,
-          ...(sort ? { sort } : {}),
+          ...(next ? { sort: next } : {}),
         },
         "push",
       );

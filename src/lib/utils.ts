@@ -25,6 +25,7 @@ export const cn = createCn({
         "topbar",
         "input",
         "table-head",
+        "table-max",
         "dialog-h",
         "avatar-sm",
         "avatar-md",

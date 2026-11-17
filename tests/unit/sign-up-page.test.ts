@@ -18,6 +18,7 @@ const open: AuthConfig = {
   providers: { password: true, google: false },
   registration: true,
   tenancy: "single",
+  password: { min_length: 10, max_length: 128 },
 };
 
 describe("/sign-up", () => {

@@ -51,6 +51,7 @@ const dina: AdminUserDetail = {
   display_name: "Dina Pratama",
   status: "active",
   membership_status: "active",
+  is_super_admin: false,
   roles: [{ id: SALES_ROLE, name: "Sales" }],
   created_at: "2026-10-01T00:00:00Z",
   last_sign_in_at: "2026-11-10T00:00:00Z",

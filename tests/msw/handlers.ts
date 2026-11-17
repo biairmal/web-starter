@@ -8,6 +8,7 @@ export const authConfigFixture: AuthConfig = {
   providers: { password: true, google: false },
   registration: true,
   tenancy: "single",
+  password: { min_length: 10, max_length: 128 },
 };
 
 export const meFixture: Me = {

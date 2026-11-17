@@ -28,6 +28,7 @@ import {
   isThemePreference,
   readThemePreference,
 } from "@/lib/theme";
+import { Avatar } from "@/components/ui/avatar";
 import { initials } from "@/lib/initials";
 import { signOut } from "@/lib/sign-out";
 
@@ -67,12 +68,7 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
           compact && "justify-center",
         )}
       >
-        <span
-          aria-hidden="true"
-          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-active text-small font-medium"
-        >
-          {initials(me.display_name)}
-        </span>
+        <Avatar name={me.display_name} decorative />
         <span
           className={cn("flex min-w-0 flex-1 flex-col", compact && "sr-only")}
         >

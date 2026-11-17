@@ -62,7 +62,9 @@ export function RowActions({
                     aria-label={action.label}
                     disabled={action.disabled}
                     className={
-                      action.destructive ? "text-destructive" : undefined
+                      action.destructive
+                        ? "text-destructive not-disabled:hover:text-destructive"
+                        : undefined
                     }
                     onClick={action.onSelect}
                   >

@@ -11,6 +11,7 @@ import {
 import { useListParams } from "@/components/data-table/use-list-params";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { FilterBar } from "@/components/filters/filter-bar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -35,11 +36,7 @@ export function rolePath(role: Pick<RoleSummary, "id">): string {
 
 function SystemChip() {
   const t = useTranslations("adminRoles.table");
-  return (
-    <span className="inline-flex h-5 items-center rounded-sm bg-pill-neutral px-2 text-small font-medium text-pill-neutral-ink">
-      {t("system")}
-    </span>
-  );
+  return <Badge variant="neutral">{t("system")}</Badge>;
 }
 
 function RowMenu({

@@ -8,6 +8,8 @@ import { useCan } from "@/components/auth/can";
 import { ErrorState } from "@/components/feedback/error-state";
 import { SkeletonBar } from "@/components/feedback/page-skeleton";
 import { RuleDialog } from "@/components/feedback/rule-dialog";
+import { Card } from "@/components/ui/card";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { AdminUserDetail } from "@/lib/api/types";
 import { can } from "@/lib/authz/can";
@@ -15,7 +17,7 @@ import { ROLES_MANAGE, USERS_MANAGE } from "@/lib/authz/permissions";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { useErrorToast } from "@/lib/api/use-error-toast";
 import { RoleChecklist } from "@/features/admin-users/role-checklist";
-import { Pill } from "@/features/admin-users/user-status";
+import { Badge } from "@/components/ui/badge";
 import {
   useRoleOptions,
   useRolePermissions,
@@ -182,15 +184,12 @@ export function RolesEditor({
   };
 
   return (
-    <section
-      aria-labelledby="user-roles"
-      className="flex flex-col gap-3 rounded-lg border border-border p-5"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <h2 id="user-roles" className="text-section font-semibold">
-          {t("title")}
-        </h2>
-        {editable && canListRoles && !editing && (
+    <Card
+      title={t("title")}
+      action={
+        editable &&
+        canListRoles &&
+        !editing && (
           <Button
             type="button"
             variant="outline"
@@ -201,13 +200,10 @@ export function RolesEditor({
           >
             {t("edit")}
           </Button>
-        )}
-      </div>
-      {readOnlyReason && (
-        <p className="rounded-md bg-pill-neutral px-3 py-2 text-body text-pill-neutral-ink">
-          {readOnlyReason}
-        </p>
-      )}
+        )
+      }
+    >
+      {readOnlyReason && <Alert tone="info">{readOnlyReason}</Alert>}
       {editing ? (
         <RoleEditForm
           user={user}
@@ -224,7 +220,7 @@ export function RolesEditor({
             <ul className="flex flex-wrap gap-1.5">
               {user.roles.map((role) => (
                 <li key={role.id}>
-                  <Pill tone="neutral">{role.name}</Pill>
+                  <Badge variant="neutral">{role.name}</Badge>
                 </li>
               ))}
             </ul>
@@ -236,6 +232,6 @@ export function RolesEditor({
           )}
         </>
       )}
-    </section>
+    </Card>
   );
 }

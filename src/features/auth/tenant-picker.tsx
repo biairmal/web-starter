@@ -1,11 +1,12 @@
 "use client";
 
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FormErrorSummary } from "@/components/forms/form-field";
+import { Spinner } from "@/components/ui/spinner";
 import { bffPost } from "@/lib/api/bff-fetch";
 import type { LoginResult } from "@/lib/api/bff-types";
 import { useErrorText } from "@/lib/api/use-error-text";
@@ -92,10 +93,7 @@ export function TenantPicker() {
                 </span>
               </span>
               {chosen === tenant.slug ? (
-                <Loader2
-                  aria-hidden="true"
-                  className="size-4 shrink-0 animate-spin text-muted-foreground"
-                />
+                <Spinner decorative />
               ) : (
                 <ChevronRight
                   aria-hidden="true"

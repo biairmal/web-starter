@@ -1,16 +1,16 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "@/components/feedback/toast";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
+import { Card } from "@/components/ui/card";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { AdminUserDetail } from "@/lib/api/types";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { useErrorToast } from "@/lib/api/use-error-toast";
-import { cn } from "@/lib/utils";
 import {
   type UserAction,
   useUserAction,
@@ -84,18 +84,8 @@ export function UserActions({
   };
 
   return (
-    <section
-      aria-labelledby="user-danger"
-      className="flex flex-col gap-4 rounded-lg border border-border p-5"
-    >
-      <h2 id="user-danger" className="text-section font-semibold">
-        {t("title")}
-      </h2>
-      {blockedReason && (
-        <p className="rounded-md bg-pill-neutral px-3 py-2 text-body text-pill-neutral-ink">
-          {blockedReason}
-        </p>
-      )}
+    <Card title={t("title")}>
+      {blockedReason && <Alert tone="info">{blockedReason}</Alert>}
       <ul className="flex flex-col">
         {items.map(({ key, destructive }) => (
           <li
@@ -111,9 +101,8 @@ export function UserActions({
             <div>
               <Button
                 type="button"
-                variant="outline"
+                variant={destructive ? "destructive" : "outline"}
                 size="sm"
-                className={cn(destructive && "text-negative")}
                 disabled={blockedReason !== undefined}
                 onClick={() => {
                   setRule(undefined);
@@ -143,20 +132,9 @@ export function UserActions({
             confirm(open);
           }}
         >
-          {rule && (
-            <p
-              role="alert"
-              className="flex items-start gap-2 rounded-md bg-pill-negative px-3 py-2 text-body text-pill-negative-ink"
-            >
-              <AlertCircle
-                aria-hidden="true"
-                className="mt-0.5 size-4 shrink-0"
-              />
-              {rule}
-            </p>
-          )}
+          {rule && <Alert tone="negative">{rule}</Alert>}
         </ConfirmDialog>
       )}
-    </section>
+    </Card>
   );
 }

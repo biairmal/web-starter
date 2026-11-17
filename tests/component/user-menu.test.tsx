@@ -19,9 +19,9 @@ describe("UserMenu", () => {
     const trigger = screen.getByRole("button", { name: /Dina Pratama/ });
     expect(trigger.className).toContain("focus-visible:ring-2");
     expect(trigger.className).not.toContain("cursor-");
-    const avatar = screen.getByText("DP");
+    const avatar = screen.getByText("DP").closest('[data-slot="avatar"]');
     expect(avatar).toHaveAttribute("aria-hidden", "true");
-    expect(avatar.className).toContain("bg-active");
+    expect(avatar?.className).toContain("bg-active");
   });
 
   it("truncates a very long display name and keeps it whole in a title", () => {

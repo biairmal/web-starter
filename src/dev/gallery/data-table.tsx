@@ -235,9 +235,8 @@ function OrdersDemo() {
               {"Export"}
             </Button>
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
-              className="text-destructive"
               onClick={() => {
                 toast.success(`Deleted ${describe(chosen)}`);
                 setSelection(NO_SELECTION);

@@ -1,11 +1,10 @@
 "use client";
 
-import { AlertTriangle, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { ErrorText } from "@/lib/api/use-error-text";
-import { cn } from "@/lib/utils";
 
 // Pieces every public auth screen shares (DESIGN_BRIEF 5.1, 6.5).
 
@@ -40,24 +39,13 @@ export function InlineNotice({
   action?: React.ReactNode;
   className?: string;
 }) {
-  const Icon = tone === "warning" ? AlertTriangle : Info;
   return (
-    <div
-      role="status"
-      className={cn(
-        "flex items-start gap-2 rounded-md border px-3 py-2 text-body",
-        tone === "warning"
-          ? "border-pill-warning-ink/15 bg-pill-warning text-pill-warning-ink"
-          : "border-pill-neutral-ink/15 bg-pill-neutral text-pill-neutral-ink",
-        className,
-      )}
-    >
-      <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-      <div className="flex flex-1 flex-col gap-1">
-        <span>{children}</span>
+    <Alert tone={tone === "warning" ? "warning" : "info"} className={className}>
+      <span className="flex flex-col gap-stack-xs">
+        {children}
         {action}
-      </div>
-    </div>
+      </span>
+    </Alert>
   );
 }
 

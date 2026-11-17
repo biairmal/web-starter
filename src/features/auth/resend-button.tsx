@@ -1,9 +1,9 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "@/lib/toast";
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { bffPost } from "@/lib/api/bff-fetch";
 import { isApiError } from "@/lib/api/errors";
@@ -79,9 +79,7 @@ export function ResendButton({
       }}
       className={className}
     >
-      {pending ? (
-        <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-      ) : null}
+      {pending ? <Spinner decorative className="text-current" /> : null}
       {t("action")}
     </Button>
   );

@@ -7,6 +7,7 @@ import { toast } from "@/components/feedback/toast";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { ErrorState } from "@/components/feedback/error-state";
 import { SkeletonBar } from "@/components/feedback/page-skeleton";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isApiError } from "@/lib/api/errors";
 import type { Session } from "@/lib/api/types";
@@ -75,9 +76,7 @@ function SessionRow({ session }: { session: Session }) {
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate text-body font-medium">{name}</span>
         {session.current ? (
-          <span className="w-fit rounded-sm bg-pill-positive px-2 py-0.5 text-small font-medium text-pill-positive-ink">
-            {t("current")}
-          </span>
+          <Badge variant="positive">{t("current")}</Badge>
         ) : (
           <span className="text-small text-muted-foreground">
             {t("lastUsed", { when: format.relativeTime(lastUsed, now) })}
@@ -199,8 +198,7 @@ export function SignOutEverywhere() {
       <div>
         <Button
           type="button"
-          variant="outline"
-          className="text-negative"
+          variant="destructive"
           onClick={() => {
             setOpen(true);
           }}

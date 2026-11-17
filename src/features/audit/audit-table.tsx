@@ -138,7 +138,7 @@ function Row({ entry }: { entry: AuditEntry }) {
   return (
     <Fragment>
       <tr className="h-14 border-t border-rule hover:bg-raised">
-        <td className="px-3 ps-0">
+        <td className="px-3">
           <When at={entry.at} />
         </td>
         <td className="px-3">{describe.actor(entry)}</td>
@@ -153,7 +153,7 @@ function Row({ entry }: { entry: AuditEntry }) {
         <td className="px-3 font-mono text-small text-muted-foreground">
           {describe.target(entry)}
         </td>
-        <td className="px-3 pe-0 text-end">
+        <td className="px-3 text-end">
           <Button
             type="button"
             variant="ghost"
@@ -330,10 +330,7 @@ export function AuditTable() {
               <caption className="sr-only">{t("caption")}</caption>
               <thead>
                 <tr className="text-small text-muted-foreground">
-                  <th
-                    scope="col"
-                    className="h-9 px-3 ps-0 text-start font-normal"
-                  >
+                  <th scope="col" className="h-9 px-3 text-start font-normal">
                     {t("when")}
                   </th>
                   <th scope="col" className="h-9 px-3 text-start font-normal">
@@ -345,10 +342,7 @@ export function AuditTable() {
                   <th scope="col" className="h-9 px-3 text-start font-normal">
                     {t("target")}
                   </th>
-                  <th
-                    scope="col"
-                    className="h-9 px-3 pe-0 text-end font-normal"
-                  >
+                  <th scope="col" className="h-9 px-3 text-end font-normal">
                     <span className="sr-only">{t("details")}</span>
                   </th>
                 </tr>

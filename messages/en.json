@@ -948,6 +948,9 @@
         "archived": "Archived"
       },
       "search": "Search title or text",
+      "title": "Title",
+      "created": "Created",
+      "notes": "Notes",
       "clear": "Clear filters"
     },
     "table": {
@@ -975,7 +978,13 @@
       "deleteTitle": "Delete “{title}”?",
       "deleteBody": "The note is gone for good. This can’t be undone.",
       "deleteConfirm": "Delete note",
-      "deleted": "Note deleted."
+      "deleted": "Note deleted.",
+      "bulkDelete": "Delete",
+      "bulkDeleteTitle": "Delete {count, plural, one {# note} other {# notes}}?",
+      "bulkDeleteConfirm": "Delete notes",
+      "bulkDeleted": "{count, plural, =0 {No notes deleted.} one {# note deleted.} other {# notes deleted.}}",
+      "bulkFailed": "{count, plural, one {# note was} other {# notes were}} already gone.",
+      "bulkTooMany": "That’s more than 1,000 notes. Narrow the filters and try again."
     },
     "create": {
       "open": "New note",

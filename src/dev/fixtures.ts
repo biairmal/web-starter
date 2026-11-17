@@ -5,6 +5,10 @@ import type {
 import { useEffect, useState } from "react";
 import type { PageQuery } from "@/components/data-table/data-table";
 import { sortList } from "@/components/data-table/use-list-params";
+import {
+  decodeFilter,
+  type FilterOperator,
+} from "@/components/filters/filters";
 import type { ComboboxOption } from "@/components/ui/combobox";
 import type { ListParams } from "@/lib/api/query-keys";
 import type { Page } from "@/lib/api/types";
@@ -104,6 +108,7 @@ export type Order = {
   amount: number;
   created_at: string;
   owner: string;
+  owner_id: string;
 };
 
 const STATUSES: Order["status"][] = ["paid", "pending", "refunded", "failed"];
@@ -128,27 +133,86 @@ export const ORDERS: Order[] = Array.from({ length: 10_000 }, (_, i) => {
       .toISOString()
       .slice(0, 10),
     owner: pick(PEOPLE, 17).label,
+    owner_id: pick(PEOPLE, 17).value,
   };
 });
 
 const ORDER_SORTS = ["customer", "amount", "created_at", "status"] as const;
 
+/** The value each filter key compares; `search` is a plain "contains". */
+const ORDER_FIELDS: Record<string, (order: Order) => string | number> = {
+  search: (o) => o.customer,
+  customer: (o) => o.customer,
+  status: (o) => o.status,
+  region: (o) => o.region,
+  owner: (o) => o.owner_id,
+  created_at: (o) => o.created_at,
+  amount: (o) => o.amount,
+};
+
+/** One condition, as the backend list query would apply it. */
+function holds(
+  actual: string | number,
+  op: FilterOperator,
+  items: string[],
+): boolean {
+  const as = (item: string) =>
+    typeof actual === "number" ? Number(item) : item;
+  const [a = "", b = ""] = items;
+  switch (op) {
+    case "eq":
+      return actual === as(a);
+    case "ne":
+      return actual !== as(a);
+    case "like":
+      return String(actual).toLowerCase().includes(a.toLowerCase());
+    case "gt":
+      return actual > as(a);
+    case "gte":
+      return actual >= as(a);
+    case "lt":
+      return actual < as(a);
+    case "lte":
+      return actual <= as(a);
+    case "in":
+      return items.includes(String(actual));
+    case "between":
+      return actual >= as(a) && actual <= as(b);
+  }
+}
+
+function matches(order: Order, filters: Record<string, string>) {
+  return Object.entries(filters).every(([key, raw]) => {
+    const field = ORDER_FIELDS[key];
+    if (!field) {
+      return true;
+    }
+    const { op, items } =
+      key === "search"
+        ? { op: "like" as const, items: [raw] }
+        : decodeFilter(raw);
+    return holds(field(order), op, items);
+  });
+}
+
 function orderPage(params: ListParams): Page<Order> {
   const sorts = sortList(params.sort).filter((s) =>
     (ORDER_SORTS as readonly string[]).includes(s.field),
   );
-  const rows = [...ORDERS].sort((a, b) => {
-    for (const { field, direction } of sorts) {
-      const key = field as (typeof ORDER_SORTS)[number];
-      const order = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
-      if (order !== 0) {
-        return direction === "ASC" ? order : -order;
+  const rows = ORDERS.filter((order) => matches(order, params.filters)).sort(
+    (a, b) => {
+      for (const { field, direction } of sorts) {
+        const key = field as (typeof ORDER_SORTS)[number];
+        const order = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
+        if (order !== 0) {
+          return direction === "ASC" ? order : -order;
+        }
       }
-    }
-    return 0;
-  });
+      return 0;
+    },
+  );
   const start = (params.page - 1) * params.size;
-  const total_pages = Math.ceil(rows.length / params.size);
+  const total_pages = Math.max(1, Math.ceil(rows.length / params.size));
   return {
     items: rows.slice(start, start + params.size),
     total: rows.length,
@@ -160,13 +224,17 @@ function orderPage(params: ListParams): Page<Order> {
   };
 }
 
-/** A fake server-paged order list: sorted, paged and a little slow. */
-export function useFakeOrders(params: ListParams): PageQuery<Order> {
+/** A fake server-paged order list: filtered, sorted, paged and a little slow. */
+export function useFakeOrders(
+  params: ListParams,
+): PageQuery<Order> & { isFetching: boolean } {
   const key = JSON.stringify(params);
   const [data, setData] = useState<Page<Order>>();
+  const [loadedKey, setLoadedKey] = useState<string>();
   useEffect(() => {
     const id = setTimeout(() => {
       setData(orderPage(JSON.parse(key) as ListParams));
+      setLoadedKey(key);
     }, 350);
     return () => {
       clearTimeout(id);
@@ -175,6 +243,7 @@ export function useFakeOrders(params: ListParams): PageQuery<Order> {
   return {
     data,
     isPending: data === undefined,
+    isFetching: loadedKey !== key,
     isError: false,
     error: null,
     refetch: () => undefined,

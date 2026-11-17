@@ -173,6 +173,85 @@ const RANGE_CLOSE_DELAY_MS = 250;
  * then. The old range stays highlighted until the first click. `presets` adds
  * quick ranges (today, last 7 and 30 days, this month).
  */
+/**
+ * Presets and a calendar for a range: the first click is the start (the old
+ * range leaves the view), the second the end, in either order. Used by
+ * DateRangePicker and shown inline by the date range filter.
+ */
+function DateRangePanel({
+  value,
+  onCommit,
+  min,
+  max,
+  presets = true,
+  numberOfMonths = 2,
+}: {
+  value: IsoRange | null;
+  onCommit: (value: IsoRange) => void;
+  min?: string | undefined;
+  max?: string | undefined;
+  presets?: boolean;
+  numberOfMonths?: number;
+}) {
+  const t = useTranslations("forms.date");
+  // The start clicked since the panel opened; null until the first click.
+  const [start, setStart] = React.useState<Date | null>(null);
+  const committed: DateRange | undefined = value
+    ? { from: fromIso(value.from), to: fromIso(value.to) }
+    : undefined;
+  const shown: DateRange | undefined = start
+    ? { from: start, to: start }
+    : committed;
+  const commit = (from: Date, to: Date) => {
+    setStart(null);
+    onCommit({ from: toIso(from), to: toIso(to) });
+  };
+
+  return (
+    <div className="flex flex-col sm:flex-row">
+      {presets && (
+        <div
+          role="group"
+          aria-label={t("presets")}
+          className="flex flex-wrap gap-1 border-b border-rule p-2 sm:w-36 sm:flex-col sm:flex-nowrap sm:border-e sm:border-b-0"
+        >
+          {rangePresets(new Date()).map((preset) => (
+            <Button
+              key={preset.key}
+              variant="ghost"
+              size="sm"
+              className="justify-start"
+              onClick={() => {
+                commit(preset.from, preset.to);
+              }}
+            >
+              {t(preset.key)}
+            </Button>
+          ))}
+        </div>
+      )}
+      <Calendar
+        mode="range"
+        // eslint-disable-next-line jsx-a11y/no-autofocus -- the panel just opened; focus goes to the chosen day, not the month button
+        autoFocus
+        numberOfMonths={numberOfMonths}
+        selected={shown}
+        defaultMonth={committed?.from}
+        disabled={limits(min, max)}
+        onSelect={(_range, day) => {
+          if (start === null) {
+            setStart(day);
+          } else if (day.getTime() < start.getTime()) {
+            commit(day, start);
+          } else {
+            commit(start, day);
+          }
+        }}
+      />
+    </div>
+  );
+}
+
 function DateRangePicker({
   value,
   onValueChange,
@@ -191,8 +270,6 @@ function DateRangePicker({
   const t = useTranslations("forms.date");
   const text = useDateText();
   const [open, setOpen] = React.useState(false);
-  // The start clicked in this opening; null until the first click.
-  const [start, setStart] = React.useState<Date | null>(null);
   const closeTimer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
   React.useEffect(
     () => () => {
@@ -201,22 +278,13 @@ function DateRangePicker({
     [],
   );
 
-  const committed: DateRange | undefined = value
-    ? { from: fromIso(value.from), to: fromIso(value.to) }
-    : undefined;
-  const shown: DateRange | undefined = start
-    ? { from: start, to: start }
-    : committed;
-
   const changeOpen = (next: boolean) => {
     clearTimeout(closeTimer.current);
     setOpen(next);
-    setStart(null);
   };
 
-  const commit = (from: Date, to: Date) => {
-    onValueChange({ from: toIso(from), to: toIso(to) });
-    setStart(null);
+  const commit = (range: IsoRange) => {
+    onValueChange(range);
     clearTimeout(closeTimer.current);
     closeTimer.current = setTimeout(() => {
       setOpen(false);
@@ -233,64 +301,28 @@ function DateRangePicker({
         />
       </PopoverTrigger>
       <PopoverContent className="w-auto max-w-dvw p-0">
-        <div className="flex flex-col sm:flex-row">
-          {presets && (
-            <div
-              role="group"
-              aria-label={t("presets")}
-              className="flex flex-wrap gap-1 border-b border-rule p-2 sm:w-36 sm:flex-col sm:flex-nowrap sm:border-e sm:border-b-0"
-            >
-              {rangePresets(new Date()).map((preset) => (
-                <Button
-                  key={preset.key}
-                  variant="ghost"
-                  size="sm"
-                  className="justify-start"
-                  onClick={() => {
-                    commit(preset.from, preset.to);
-                  }}
-                >
-                  {t(preset.key)}
-                </Button>
-              ))}
+        <div className="flex flex-col">
+          <DateRangePanel
+            value={value}
+            onCommit={commit}
+            min={min}
+            max={max}
+            presets={presets}
+          />
+          {value !== null && (
+            <div className="flex justify-end border-t border-rule p-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  onValueChange(null);
+                  changeOpen(false);
+                }}
+              >
+                {t("clear")}
+              </Button>
             </div>
           )}
-          <div className="flex flex-col">
-            <Calendar
-              mode="range"
-              // eslint-disable-next-line jsx-a11y/no-autofocus -- the popover just opened; focus goes to the chosen day, not the month button
-              autoFocus
-              numberOfMonths={2}
-              selected={shown}
-              defaultMonth={committed?.from}
-              disabled={limits(min, max)}
-              onSelect={(_range, day) => {
-                if (start === null) {
-                  setStart(day);
-                  return;
-                }
-                if (day.getTime() < start.getTime()) {
-                  commit(day, start);
-                } else {
-                  commit(start, day);
-                }
-              }}
-            />
-            {value !== null && (
-              <div className="flex justify-end border-t border-rule p-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    onValueChange(null);
-                    changeOpen(false);
-                  }}
-                >
-                  {t("clear")}
-                </Button>
-              </div>
-            )}
-          </div>
         </div>
       </PopoverContent>
     </Popover>
@@ -350,4 +382,11 @@ function MultiDatePicker({
   );
 }
 
-export { DatePicker, DateRangePicker, MultiDatePicker, type IsoRange };
+export {
+  DateRangePanel,
+  RANGE_CLOSE_DELAY_MS,
+  DatePicker,
+  DateRangePicker,
+  MultiDatePicker,
+  type IsoRange,
+};

@@ -15,10 +15,18 @@ import {
 } from "@/components/data-table/selection";
 import { useListParams } from "@/components/data-table/use-list-params";
 import { toast } from "@/components/feedback/toast";
+import { FilterBar } from "@/components/filters/filter-bar";
+import type { FilterDef } from "@/components/filters/filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/typography";
-import { type Order, useFakeOrders } from "../fixtures";
+import {
+  COUNTRIES,
+  fakePeopleFetcher,
+  type Order,
+  resolvePeople,
+  useFakeOrders,
+} from "../fixtures";
 import { Demo, Section } from "./section";
 
 const STATUS_BADGE = {
@@ -27,6 +35,49 @@ const STATUS_BADGE = {
   refunded: "neutral",
   failed: "negative",
 } as const;
+
+const people = fakePeopleFetcher();
+
+/** One of each filter type, all filtered by the fake server in fixtures.ts. */
+const ORDER_FILTERS: FilterDef[] = [
+  {
+    key: "status",
+    label: "Status",
+    type: "multiSelect",
+    options: [
+      { value: "paid", label: "Paid" },
+      { value: "pending", label: "Pending" },
+      { value: "refunded", label: "Refunded" },
+      { value: "failed", label: "Failed" },
+    ],
+  },
+  {
+    key: "region",
+    label: "Region",
+    type: "select",
+    options: COUNTRIES.map((c) => ({ value: c.label, label: c.label })),
+  },
+  {
+    key: "owner",
+    label: "Owner",
+    type: "async",
+    fetchOptions: people,
+    resolveLabels: resolvePeople,
+    multiple: true,
+  },
+  { key: "created_at", label: "Created", type: "dateRange" },
+  {
+    key: "amount",
+    label: "Amount",
+    type: "number",
+    formatValue: (value) =>
+      new Intl.NumberFormat("en", {
+        style: "currency",
+        currency: "USD",
+      }).format(value),
+  },
+  { key: "customer", label: "Customer", type: "text" },
+];
 
 function describe(selection: RowSelection) {
   return selection.allMatching
@@ -37,9 +88,16 @@ function describe(selection: RowSelection) {
 function OrdersDemo() {
   const format = useFormatter();
   // Sort and page live in the URL, so the address bar shows repeated `sort`.
-  const list = useListParams({ filters: [], defaultSize: 25 });
+  const list = useListParams({
+    filters: ["search", ...ORDER_FILTERS.map((def) => def.key)],
+    searchKey: "search",
+    defaultSize: 25,
+  });
   const orders = useFakeOrders(list.params);
-  const [selection, setSelection] = useRowSelection("");
+  // A selection made under one filter never carries into another.
+  const [selection, setSelection] = useRowSelection(
+    JSON.stringify(list.params.filters),
+  );
 
   const columns: DataTableColumn<Order>[] = [
     {
@@ -134,8 +192,22 @@ function OrdersDemo() {
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-stack-sm">
-      <Text variant="mono" className="text-muted-foreground">
-        {JSON.stringify(list.params.sort ?? null)}
+      <FilterBar
+        search={{
+          value: list.search.value,
+          onChange: list.search.onChange,
+          label: "Search customers",
+          loading: orders.isFetching && list.search.value !== "",
+        }}
+        filters={ORDER_FILTERS}
+        values={list.params.filters}
+        onChange={(key, value) => {
+          list.setFilter(key, value);
+        }}
+        onClear={list.clearFilters}
+      />
+      <Text variant="mono" className="break-all text-muted-foreground">
+        {JSON.stringify({ sort: list.params.sort, ...list.params.filters })}
       </Text>
       <DataTable
         columns={columns}
@@ -144,7 +216,7 @@ function OrdersDemo() {
         getRowLabel={(order) => order.id}
         caption="Orders"
         errorTitle="Couldn't load orders."
-        empty={<p>{"No orders"}</p>}
+        empty={<p>{"No orders match these filters"}</p>}
         sort={list.params.sort}
         onSortChange={list.setSort}
         multiSort
@@ -236,7 +308,7 @@ export function DataTables() {
       title="Data table"
       source="src/components/data-table/ (fake 10,000 orders: src/dev/fixtures.ts)"
     >
-      <Demo label="Multi-sort (shift-click), selection with bulk bar, pinned columns, row actions, row click">
+      <Demo label="Filters of every type, multi-sort (shift-click), selection with bulk bar, pinned columns, row actions, row click">
         <Suspense>
           <OrdersDemo />
         </Suspense>

@@ -626,7 +626,21 @@
     "addFilter": "Tambah filter",
     "clearFilters": "Hapus filter",
     "apply": "Terapkan",
-    "remove": "Hapus filter {label}"
+    "remove": "Hapus filter {label}",
+    "operator": "Operator",
+    "and": "dan",
+    "more": "{first} +{count}",
+    "op": {
+      "eq": "adalah",
+      "ne": "bukan",
+      "like": "berisi",
+      "gt": "lebih dari",
+      "gte": "minimal",
+      "lt": "kurang dari",
+      "lte": "maksimal",
+      "in": "salah satu dari",
+      "between": "antara"
+    }
   },
   "feedback": {
     "loading": "Memuat",

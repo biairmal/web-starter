@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { RuleDialog } from "@/components/feedback/rule-dialog";
 import { isApiError } from "@/lib/api/errors";

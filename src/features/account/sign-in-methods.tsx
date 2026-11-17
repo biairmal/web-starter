@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { useMe } from "@/components/auth/session-provider";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { Button } from "@/components/ui/button";

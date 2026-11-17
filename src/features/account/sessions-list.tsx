@@ -3,7 +3,7 @@
 import { MonitorSmartphone } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { ErrorState } from "@/components/feedback/error-state";
 import { SkeletonBar } from "@/components/feedback/page-skeleton";

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { z } from "zod";
 import { FormErrorSummary, FormField } from "@/components/forms/form-field";
 import { SubmitButton } from "@/components/forms/submit-button";

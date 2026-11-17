@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useId, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { useMe } from "@/components/auth/session-provider";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { ConflictBanner } from "@/components/feedback/conflict-banner";

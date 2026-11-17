@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { api, unwrap } from "@/lib/api/client";
 import { bffPost } from "@/lib/api/bff-fetch";
 import type { NextResult } from "@/lib/api/bff-types";

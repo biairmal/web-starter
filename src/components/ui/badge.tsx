@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Slot } from "radix-ui";
 
 const badgeVariants = cva(
-  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-sm border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-sm border border-transparent px-2 py-0.5 text-small font-medium whitespace-nowrap transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
   {
     variants: {
       variant: {
@@ -19,6 +19,11 @@ const badgeVariants = cva(
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-brand-accent underline-offset-4 hover:underline",
+        // Status pills: the pill-* colour pairs, for a record's state.
+        positive: "bg-pill-positive text-pill-positive-ink",
+        negative: "bg-pill-negative text-pill-negative-ink",
+        warning: "bg-pill-warning text-pill-warning-ink",
+        neutral: "bg-pill-neutral text-pill-neutral-ink",
       },
     },
     defaultVariants: {
@@ -27,13 +32,16 @@ const badgeVariants = cva(
   },
 );
 
+/** `dot` adds a small dot in the text colour before the label. */
 function Badge({
   className,
   variant = "default",
   asChild = false,
+  dot = false,
+  children,
   ...props
 }: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+  VariantProps<typeof badgeVariants> & { asChild?: boolean; dot?: boolean }) {
   const Comp = asChild ? Slot.Root : "span";
 
   return (
@@ -42,7 +50,15 @@ function Badge({
       data-variant={variant}
       className={cn(badgeVariants({ variant }), className)}
       {...props}
-    />
+    >
+      {dot && !asChild && (
+        <span
+          aria-hidden="true"
+          className="size-1.5 shrink-0 rounded-full bg-current"
+        />
+      )}
+      {children}
+    </Comp>
   );
 }
 

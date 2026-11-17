@@ -48,3 +48,14 @@ describe("Toaster", () => {
     expect(source).not.toMatch(/#[0-9a-f]{3,8}\b/i);
   });
 });
+
+describe("Toaster placement", () => {
+  it("sits at the top centre and closes after 4 seconds", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/ui/sonner.tsx"),
+      "utf8",
+    );
+    expect(source).toContain('position="top-center"');
+    expect(source).toContain("duration={4000}");
+  });
+});

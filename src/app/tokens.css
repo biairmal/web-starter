@@ -126,6 +126,9 @@
   --dialog-max-h: calc(100dvh - 32px); /* a tall dialog scrolls its body */
   --drawer-w: 384px;
   --drawer-w-lg: 560px;
+  --avatar-sm: 24px;
+  --avatar-md: 32px;
+  --avatar-lg: 40px;
 
   /* spacing, radius, layout (4.3) */
   --gap: 24px;

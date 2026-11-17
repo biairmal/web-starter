@@ -47,12 +47,22 @@ function DialogOverlay({
   );
 }
 
+// Widths come from --dialog-w-*. A dialog never grows past --dialog-max-h:
+// put long content in DialogBody, which scrolls between header and footer.
+const DIALOG_SIZES = {
+  sm: "sm:max-w-dialog-sm",
+  md: "sm:max-w-dialog-md",
+  lg: "sm:max-w-dialog-lg",
+} as const;
+
 function DialogContent({
   className,
   children,
+  size = "md",
   showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
+  size?: keyof typeof DIALOG_SIZES;
   showCloseButton?: boolean;
 }) {
   return (
@@ -61,7 +71,8 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-xl bg-popover p-6 text-sm text-popover-foreground shadow-float ring-1 ring-foreground/10 duration-160 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-50 flex max-h-dialog-h w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-xl bg-popover p-6 text-sm text-popover-foreground shadow-float ring-1 ring-foreground/10 duration-160 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          DIALOG_SIZES[size],
           className,
         )}
         {...props}
@@ -89,6 +100,19 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-header"
       className={cn("flex flex-col gap-2", className)}
+      {...props}
+    />
+  );
+}
+
+function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn(
+        "scroll-edges -mx-6 -my-3 min-h-0 flex-1 overflow-y-auto px-6 py-3",
+        className,
+      )}
       {...props}
     />
   );
@@ -152,6 +176,7 @@ function DialogDescription({
 
 export {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,

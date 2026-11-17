@@ -92,6 +92,12 @@
   --spacing-button-lg: var(--button-h-lg);
   --spacing-input: var(--input-h);
   --spacing-table-head: var(--table-head-h);
+  --spacing-dialog-h: var(--dialog-max-h);
+  --container-dialog-sm: var(--dialog-w-sm);
+  --container-dialog-md: var(--dialog-w-md);
+  --container-dialog-lg: var(--dialog-w-lg);
+  --container-drawer: var(--drawer-w);
+  --container-drawer-lg: var(--drawer-w-lg);
 
   /* Type roles (DESIGN.md 4): text-stat, text-title, text-section, text-body,
      text-meta, text-small, text-mono. Each carries its line height. "meta", not
@@ -132,9 +138,39 @@
   box-shadow: inset 0 -1px 0 0 var(--rule);
 }
 
+/* A scrolling region inside a fixed frame (a dialog or drawer body): a rule
+   shows at the top edge once content has scrolled under it, and at the bottom
+   edge while more is below. Driven by the element's own scroll position, so
+   it needs no script; where scroll timelines are unsupported, no rules show. */
+@utility scroll-edges {
+  border-block: 1px solid transparent;
+  overscroll-behavior: contain;
+  animation: scroll-edges linear both;
+  animation-timeline: scroll(self);
+}
+
+@keyframes scroll-edges {
+  0% {
+    border-top-color: transparent;
+    border-bottom-color: var(--border);
+  }
+  2%,
+  98% {
+    border-top-color: var(--border);
+    border-bottom-color: var(--border);
+  }
+  100% {
+    border-top-color: var(--border);
+    border-bottom-color: transparent;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* Thin scrollbars in the theme's control colour, on every scroll area. */
+    scrollbar-width: thin;
+    scrollbar-color: var(--control) transparent;
   }
 
   /* Tailwind v4 resets buttons to the default cursor. Clickable things get a

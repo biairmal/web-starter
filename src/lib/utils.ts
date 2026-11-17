@@ -3,10 +3,11 @@ import { createCn } from "cn/config";
 // The class merger, told about the theme's own type roles and spacing names
 // (globals.css @theme). Without them it reads `text-small` as a colour and
 // drops it next to `text-muted-foreground`, and never lets `p-2` replace
-// `p-inset-md`. Add a name here when you add a `--text-*` or `--spacing-*`.
+// `p-inset-md`. Add a name here when you add a `--text-*`, `--spacing-*` or `--container-*`.
 export const cn = createCn({
   extend: {
     theme: {
+      container: ["dialog-sm", "dialog-md", "dialog-lg", "drawer", "drawer-lg"],
       text: ["stat", "title", "section", "body", "meta", "small", "mono"],
       spacing: [
         "gap",
@@ -23,6 +24,7 @@ export const cn = createCn({
         "topbar",
         "input",
         "table-head",
+        "dialog-h",
         "button-xs",
         "button-sm",
         "button-md",

@@ -7,6 +7,7 @@ import { Layout } from "./layout";
 import { Navigation } from "./navigation";
 import { Overlays } from "./overlays";
 import { Pickers } from "./pickers";
+import { Upload } from "./upload";
 
 // The development-only component gallery: every shared component in its
 // variants and states, on one page.
@@ -50,6 +51,7 @@ const INDEX = [
       ["combobox", "Combobox"],
       ["async-combobox", "Async combobox"],
       ["date-picker", "Date pickers"],
+      ["upload", "File upload"],
     ],
   ],
   ["Data", [["data-table", "Data table"]]],
@@ -119,6 +121,7 @@ export function ComponentGallery() {
         <Controls />
         <Inputs />
         <Pickers />
+        <Upload />
         <DataTables />
         <Navigation />
         <Overlays />

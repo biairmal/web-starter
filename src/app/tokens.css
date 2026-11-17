@@ -132,6 +132,7 @@
   --avatar-sm: 24px;
   --avatar-md: 32px;
   --avatar-lg: 40px;
+  --avatar-xl: 72px; /* a photo being chosen, big enough to judge */
 
   /* spacing, radius, layout (4.3) */
   --gap: 24px;

@@ -14,6 +14,7 @@ const SIZES = {
   sm: "size-avatar-sm text-small",
   md: "size-avatar-md text-small",
   lg: "size-avatar-lg text-body",
+  xl: "size-avatar-xl text-section",
 } as const;
 
 function Avatar({

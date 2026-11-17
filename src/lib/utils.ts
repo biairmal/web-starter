@@ -30,6 +30,7 @@ export const cn = createCn({
         "avatar-sm",
         "avatar-md",
         "avatar-lg",
+        "avatar-xl",
         "button-xs",
         "button-sm",
         "button-md",

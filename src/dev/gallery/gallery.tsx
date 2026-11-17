@@ -3,6 +3,7 @@ import { Feedback } from "./feedback";
 import { Foundations } from "./foundations";
 import { Inputs } from "./inputs";
 import { Layout } from "./layout";
+import { Navigation } from "./navigation";
 import { Overlays } from "./overlays";
 
 // The development-only component gallery: every shared component in its
@@ -39,6 +40,13 @@ const INDEX = [
       ["switch", "Switch"],
       ["slider", "Slider"],
       ["toggle-group", "Toggle group"],
+    ],
+  ],
+  [
+    "Navigation",
+    [
+      ["tabs", "Tabs"],
+      ["sidebar", "Sidebar"],
     ],
   ],
   [
@@ -96,6 +104,7 @@ export function ComponentGallery() {
         <Layout />
         <Controls />
         <Inputs />
+        <Navigation />
         <Overlays />
         <Feedback />
       </div>

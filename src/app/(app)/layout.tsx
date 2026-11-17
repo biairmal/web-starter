@@ -1,5 +1,10 @@
+import { cookies } from "next/headers";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { AppShell } from "@/components/layout/app-shell";
+import {
+  SIDEBAR_COOKIE,
+  isSidebarCollapsed,
+} from "@/components/layout/sidebar-cookie";
 import { requireMe } from "@/lib/session/require-permission";
 import { getAuthConfig } from "@/lib/session/me";
 
@@ -10,10 +15,21 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [me, config] = await Promise.all([requireMe(), getAuthConfig()]);
+  const [me, config, cookieStore] = await Promise.all([
+    requireMe(),
+    getAuthConfig(),
+    cookies(),
+  ]);
   return (
     <SessionProvider me={me}>
-      <AppShell tenancy={config?.tenancy ?? "single"}>{children}</AppShell>
+      <AppShell
+        tenancy={config?.tenancy ?? "single"}
+        sidebarCollapsed={isSidebarCollapsed(
+          cookieStore.get(SIDEBAR_COOKIE)?.value,
+        )}
+      >
+        {children}
+      </AppShell>
     </SessionProvider>
   );
 }

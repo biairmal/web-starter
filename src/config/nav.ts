@@ -35,6 +35,12 @@ export type NavItem = {
   permission?: string;
   superAdmin?: boolean;
   multiOnly?: boolean;
+  /**
+   * Sub-entries: the entry becomes a group that opens in place (an accordion)
+   * and is not a link itself; its `href` is then only its id. It shows when
+   * any child is visible.
+   */
+  children?: readonly NavItem[];
 };
 
 export const navItems: readonly NavItem[] = [

@@ -138,6 +138,7 @@
   --control-height: 32px;
   --field-height: 40px;
   --sidebar-width: 228px;
+  --sidebar-rail-width: 56px; /* the collapsed sidebar: icons only */
   --topbar-height: 48px;
   --sheet-inset: 8px;
   --radius-sheet: 16px;

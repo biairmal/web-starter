@@ -58,6 +58,7 @@
 
   /* Shell dimensions (DESIGN_BRIEF 5.2) as spacing: w-sidebar, h-topbar… */
   --spacing-sidebar: var(--sidebar-width);
+  --spacing-sidebar-rail: var(--sidebar-rail-width);
   --spacing-topbar: var(--topbar-height);
   --spacing-sheet-inset: var(--sheet-inset);
   --spacing-nav-row: var(--nav-row);

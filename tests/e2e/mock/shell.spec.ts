@@ -125,11 +125,15 @@ test.describe("at 375px", () => {
     const drawer = page.getByRole("dialog", { name: "Menu" });
     await expect(drawer).toBeVisible();
     // The drawer slides and fades in; axe reads colours blended with the page
-    // behind it until that ends, so wait for the animations to finish.
+    // behind it until that ends, so wait for the timed animations to finish
+    // (scroll-linked ones, like the nav's scroll edges, never finish).
     await page.evaluate(() =>
-      Promise.all(document.getAnimations().map((a) => a.finished)).then(
-        () => undefined,
-      ),
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((a) => a.timeline === document.timeline)
+          .map((a) => a.finished),
+      ).then(() => undefined),
     );
     await expectNoA11yViolations(page);
     await drawer.getByRole("link", { name: "Users" }).click();

@@ -74,7 +74,9 @@
     "tenantSwitcher": {
       "open": "Ganti tenant",
       "label": "Tenant Anda"
-    }
+    },
+    "collapseSidebar": "Ciutkan bilah sisi",
+    "expandSidebar": "Lebarkan bilah sisi"
   },
   "userMenu": {
     "open": "Buka menu akun",

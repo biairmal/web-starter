@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 import { useMe } from "@/components/auth/session-provider";
+import { cn } from "@/lib/utils";
 import { useChangeLocale } from "@/components/layout/language-switcher";
 import {
   DropdownMenu,
@@ -42,7 +43,8 @@ export function initials(name: string): string {
   return `${first}${last}`.toUpperCase();
 }
 
-export function UserMenu() {
+/** `compact` shows only the avatar, for the collapsed sidebar rail. */
+export function UserMenu({ compact = false }: { compact?: boolean }) {
   const t = useTranslations("userMenu");
   const tLanguage = useTranslations("common.language");
   const me = useMe();
@@ -64,14 +66,21 @@ export function UserMenu() {
     <DropdownMenu>
       {/* The accessible name keeps the visible name and role, then says what
           the button opens (WCAG 2.5.3 label in name). */}
-      <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-md p-2 text-start hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+      <DropdownMenuTrigger
+        className={cn(
+          "flex w-full items-center gap-3 rounded-md p-2 text-start hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+          compact && "justify-center",
+        )}
+      >
         <span
           aria-hidden="true"
           className="flex size-8 shrink-0 items-center justify-center rounded-full bg-active text-small font-medium"
         >
           {initials(me.display_name)}
         </span>
-        <span className="flex min-w-0 flex-1 flex-col">
+        <span
+          className={cn("flex min-w-0 flex-1 flex-col", compact && "sr-only")}
+        >
           <span
             title={me.display_name}
             className="truncate text-body font-medium"
@@ -87,7 +96,10 @@ export function UserMenu() {
         <span className="sr-only">{t("open")}</span>
         <EllipsisVertical
           aria-hidden="true"
-          className="size-4 shrink-0 text-muted-foreground"
+          className={cn(
+            "size-4 shrink-0 text-muted-foreground",
+            compact && "hidden",
+          )}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent side="top" align="start" className="w-56">

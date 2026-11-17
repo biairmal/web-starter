@@ -19,6 +19,7 @@ const PUBLIC_ROUTES = [
   "/reset-password",
   "/invite",
   "/forbidden",
+  "/dev/components",
 ];
 
 const APP_ROUTES = [

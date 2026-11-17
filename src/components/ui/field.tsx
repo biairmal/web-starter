@@ -224,8 +224,29 @@ function FieldError({
   );
 }
 
+// "12 / 200" under a field with a length limit; turns negative when over.
+function FieldCounter({
+  length,
+  max,
+  className,
+  ...props
+}: React.ComponentProps<"p"> & { length: number; max: number }) {
+  return (
+    <p
+      data-slot="field-counter"
+      data-over={length > max || undefined}
+      className={cn(
+        "text-end text-small text-muted-foreground tabular-nums data-[over]:text-negative",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export {
   Field,
+  FieldCounter,
   FieldLabel,
   FieldDescription,
   FieldError,

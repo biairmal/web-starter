@@ -571,7 +571,8 @@
         "met": "(terpenuhi)",
         "notMet": "(belum)"
       }
-    }
+    },
+    "counter": "{length} / {max}"
   },
   "dataTable": {
     "loading": "Memuat",

@@ -9,6 +9,9 @@
  */
 
 :root {
+  /* native controls and scrollbars follow the theme */
+  color-scheme: light;
+
   /* ground and surfaces: three levels, no fourth */
   --frame: #f3f5fa; /* sidebar + top bar: a soft blue-grey ground, no rule between them */
   --surface: #ffffff; /* the work sheet and cards on it */
@@ -156,6 +159,7 @@
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --frame: #0d0f14;
   --surface: #161920;
   --raised: #1e222b;

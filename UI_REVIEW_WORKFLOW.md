@@ -147,36 +147,7 @@ Never claim browser verification or passing tests that did not happen.
 
 ## Pull request template
 
-### UI change
-
-- What user problem does this solve?
-- Which screens/components changed?
-
-### Design intent
-
-- What is the intended hierarchy and visual direction?
-- Which existing tokens/components were reused?
-- Were any design-system decisions changed?
-
-### Verification
-
-- [ ] Browser inspected at mobile width
-- [ ] Browser inspected at desktop width
-- [ ] Main interactions tested
-- [ ] Keyboard and focus states checked
-- [ ] Loading/empty/error states checked where relevant
-- [ ] Accessibility review completed
-- [ ] Tests/lint/type checks completed
-
-### Evidence
-
-- Before:
-- After:
-- Notes:
-
-### Known limitations
-
-- None / list remaining issues
+Use `.github/pull_request_template.md` (GitHub pre-fills it). For UI changes, fill in its **Design intent** and **Evidence** sections and the browser rows of **Verification**: the viewports, the interactions, keyboard and focus, the loading, empty and error states, and the axe result.
 
 ## Definition of done
 

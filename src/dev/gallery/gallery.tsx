@@ -63,7 +63,10 @@ const INDEX = [
     "Feedback",
     [
       ["badge", "Badge"],
+      ["avatar", "Avatar"],
+      ["alert", "Alert"],
       ["toast", "Toast"],
+      ["progress", "Progress and spinner"],
       ["skeleton", "Skeleton"],
       ["states", "Empty and error"],
     ],

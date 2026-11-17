@@ -184,6 +184,30 @@ const eslintConfig = [
     },
   },
   {
+    // Toasts go through the presets, which hold the duration rules (errors
+    // stay until dismissed). Only the presets and the Toaster touch sonner.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/components/feedback/toast.ts",
+      "src/components/ui/sonner.tsx",
+      "src/lib/toast.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "sonner",
+              message:
+                "Import { toast } from @/components/feedback/toast (or @/lib/toast on public pages).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // Test files use literal labels as fixtures. They are not user-facing copy.
     files: ["tests/**/*.{ts,tsx}"],
     rules: {

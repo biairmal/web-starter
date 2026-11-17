@@ -28,6 +28,7 @@ import {
   isThemePreference,
   readThemePreference,
 } from "@/lib/theme";
+import { initials } from "@/lib/initials";
 import { signOut } from "@/lib/sign-out";
 
 // The user row pinned to the bottom of the sidebar, and its menu: Account,
@@ -35,13 +36,7 @@ import { signOut } from "@/lib/sign-out";
 
 const THEMES: readonly ThemePreference[] = ["light", "dark", "system"];
 
-/** Up to two initials from a display name, for the avatar. */
-export function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  const first = parts[0]?.[0] ?? "";
-  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
-  return `${first}${last}`.toUpperCase();
-}
+export { initials };
 
 /** `compact` shows only the avatar, for the collapsed sidebar rail. */
 export function UserMenu({ compact = false }: { compact?: boolean }) {

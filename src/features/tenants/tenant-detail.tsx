@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { z } from "zod";
 import { useMe } from "@/components/auth/session-provider";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";

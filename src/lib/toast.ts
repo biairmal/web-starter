@@ -8,13 +8,19 @@ import type { ExternalToast, toast as sonnerToast } from "sonner";
 
 type Message = Parameters<typeof sonnerToast.error>[0];
 
+/** An error toast stays until dismissed (DESIGN.md: toasts). */
+export const ERROR_TOAST: ExternalToast = {
+  duration: Number.POSITIVE_INFINITY,
+  closeButton: true,
+};
+
 function show(
   kind: "error" | "success",
   message: Message,
   data?: ExternalToast,
 ) {
   void import("sonner").then(({ toast }) => {
-    toast[kind](message, data);
+    toast[kind](message, kind === "error" ? { ...ERROR_TOAST, ...data } : data);
   });
 }
 

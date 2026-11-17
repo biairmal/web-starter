@@ -3,7 +3,7 @@
 import { MoreHorizontal, NotebookPen, Pin, SearchX } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/feedback/toast";
 import { useCan } from "@/components/auth/can";
 import {
   DataTable,

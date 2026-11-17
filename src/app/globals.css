@@ -94,6 +94,9 @@
   --spacing-input: var(--input-h);
   --spacing-table-head: var(--table-head-h);
   --spacing-dialog-h: var(--dialog-max-h);
+  --spacing-avatar-sm: var(--avatar-sm);
+  --spacing-avatar-md: var(--avatar-md);
+  --spacing-avatar-lg: var(--avatar-lg);
   --container-dialog-sm: var(--dialog-w-sm);
   --container-dialog-md: var(--dialog-w-md);
   --container-dialog-lg: var(--dialog-w-lg);
@@ -148,6 +151,20 @@
   overscroll-behavior: contain;
   animation: scroll-edges linear both;
   animation-timeline: scroll(self);
+}
+
+/* An indeterminate progress bar: a short bar sliding across the track. */
+@utility animate-progress {
+  animation: progress 1.2s ease-in-out infinite;
+}
+
+@keyframes progress {
+  0% {
+    translate: -100% 0;
+  }
+  100% {
+    translate: 250% 0;
+  }
 }
 
 @keyframes scroll-edges {

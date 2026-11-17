@@ -133,6 +133,11 @@
   --avatar-md: 32px;
   --avatar-lg: 40px;
   --avatar-xl: 72px; /* a photo being chosen, big enough to judge */
+  --dropzone-border: color-mix(
+    in srgb,
+    var(--muted) 55%,
+    var(--surface)
+  ); /* dashed lines read lighter than solid ones, so this sits above --control */
 
   /* spacing, radius, layout (4.3) */
   --gap: 24px;

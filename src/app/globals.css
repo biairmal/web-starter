@@ -29,6 +29,7 @@
   --color-accent-foreground: var(--text);
   --color-destructive: var(--negative);
   --color-border: var(--border);
+  --color-dropzone: var(--dropzone-border);
   --color-input: var(--control);
   --color-ring: var(--brand-accent);
   --color-chart-1: var(--chart-1);

@@ -405,7 +405,7 @@ function FileUpload({
         onClick={browse}
         {...dropHandlers}
         {...aria}
-        className="flex min-h-32 w-full flex-col items-center justify-center gap-stack-xs rounded-md border border-dashed border-control bg-background px-inset-md py-stack-lg text-center not-disabled:hover:bg-raised focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-50 aria-invalid:border-destructive data-dragging:border-ring data-dragging:bg-accent"
+        className="flex min-h-32 w-full flex-col items-center justify-center gap-stack-xs rounded-md border border-dashed border-dropzone bg-background px-inset-md py-stack-lg text-center not-disabled:hover:bg-raised focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-50 aria-invalid:border-destructive data-dragging:border-ring data-dragging:bg-accent"
       >
         <Upload aria-hidden="true" className="size-5 text-muted-foreground" />
         <span className="text-body font-medium">

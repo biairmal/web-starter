@@ -1,10 +1,11 @@
 import { Controls } from "./controls";
 import { Feedback } from "./feedback";
 import { Foundations } from "./foundations";
+import { Layout } from "./layout";
 import { Overlays } from "./overlays";
 
 // The development-only component gallery: every shared component in its
-// variants and states, on one page, inside the real app shell.
+// variants and states, on one page.
 
 const INDEX = [
   [
@@ -13,6 +14,15 @@ const INDEX = [
       ["colors", "Colour"],
       ["typography", "Typography"],
       ["spacing", "Spacing and radius"],
+    ],
+  ],
+  [
+    "Layout",
+    [
+      ["page-header", "Page header"],
+      ["breadcrumb", "Breadcrumb"],
+      ["card", "Card"],
+      ["form-actions", "Form actions"],
     ],
   ],
   [
@@ -74,6 +84,7 @@ export function ComponentGallery() {
       </nav>
       <div className="flex min-w-0 flex-1 flex-col gap-section">
         <Foundations />
+        <Layout />
         <Controls />
         <Overlays />
         <Feedback />

@@ -120,6 +120,21 @@ beforeEach(() => {
   fakeRouter.reset(`/admin/roles/${ROLE_ID}`);
 });
 
+// The editor shows its actions twice: in the sticky header and at the end of
+// the form. Tests use the header's.
+function firstButton(name: string): HTMLElement {
+  const [button] = screen.getAllByRole("button", { name });
+  if (!button) throw new Error(`no ${name} button`);
+  return button;
+}
+
+/** Nothing left to save: Save stays in place, disabled, in both spots. */
+function expectNothingToSave(): void {
+  for (const button of screen.getAllByRole("button", { name: "Save" })) {
+    expect(button).toBeDisabled();
+  }
+}
+
 describe("RoleEditor", () => {
   it("FE-44 groups permissions by resource with a count per group", async () => {
     serve();
@@ -192,9 +207,11 @@ describe("RoleEditor", () => {
     await user.type(name, "Sales team");
     await user.click(screen.getByRole("checkbox", { name: "Write notes" }));
     expect(
-      screen.getByText("1 permission added, 0 removed"),
+      screen.getByText("1 permission added, 0 removed", {
+        selector: "[aria-live]",
+      }),
     ).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     expect(await screen.findByText("Saved")).toBeInTheDocument();
     expect(calls).toEqual([
       {
@@ -208,9 +225,9 @@ describe("RoleEditor", () => {
         body: { permissions: ["notes:read", "notes:write"] },
       },
     ]);
-    // Saved: the bar goes away.
+    // Saved: nothing left to save.
     await waitFor(() => {
-      expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
+      expectNothingToSave();
     });
   });
 
@@ -221,7 +238,7 @@ describe("RoleEditor", () => {
     await user.click(
       await screen.findByRole("checkbox", { name: "Read notes" }),
     );
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     await screen.findByText("Saved");
     expect(calls).toEqual([
       { method: "PUT", ifMatch: '"4"', body: { permissions: [] } },
@@ -239,7 +256,7 @@ describe("RoleEditor", () => {
     const user = userEvent.setup();
     const write = await screen.findByRole("checkbox", { name: "Write notes" });
     await user.click(write);
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     const banner = await screen.findByRole("alert");
     expect(banner).toHaveTextContent(
       "Someone else changed this. Reload to see their version.",
@@ -270,7 +287,7 @@ describe("RoleEditor", () => {
     await user.click(
       await screen.findByRole("checkbox", { name: "Write notes" }),
     );
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     await user.click(
       await screen.findByRole("button", { name: "Copy my changes" }),
     );
@@ -288,7 +305,7 @@ describe("RoleEditor", () => {
     const user = userEvent.setup();
     const write = await screen.findByRole("checkbox", { name: "Write notes" });
     await user.click(write);
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     const dialog = await screen.findByRole("dialog", {
       name: "The role wasn’t saved",
     });
@@ -325,11 +342,32 @@ describe("RoleEditor", () => {
     const name = await screen.findByRole("textbox", { name: "Name" });
     await user.clear(name);
     await user.type(name, "Admin");
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     expect(
       await screen.findByText("A role with this name already exists."),
     ).toBeInTheDocument();
     expect(name).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("shows Save in the header and at the end of the form, disabled until something changes", async () => {
+    serve();
+    render();
+    const user = userEvent.setup();
+    const write = await screen.findByRole("checkbox", { name: "Write notes" });
+    const saves = screen.getAllByRole("button", { name: "Save" });
+    expect(saves).toHaveLength(2);
+    expect(saves[0]?.closest('[data-slot="page-header"]')).not.toBeNull();
+    expect(saves[1]?.closest('[data-slot="form-actions"]')).not.toBeNull();
+    expectNothingToSave();
+    await user.click(write);
+    for (const save of saves) {
+      expect(save).toBeEnabled();
+    }
+    expect(
+      screen.getByText("1 permission added, 0 removed", {
+        selector: "[aria-live]",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("Discard changes goes back to the saved role", async () => {
@@ -338,9 +376,9 @@ describe("RoleEditor", () => {
     const user = userEvent.setup();
     const write = await screen.findByRole("checkbox", { name: "Write notes" });
     await user.click(write);
-    await user.click(screen.getByRole("button", { name: "Discard changes" }));
+    await user.click(firstButton("Discard changes"));
     expect(write).not.toBeChecked();
-    expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
+    expectNothingToSave();
   });
 
   it("asks before leaving through a link with unsaved changes", async () => {
@@ -383,7 +421,7 @@ describe("RoleEditor", () => {
     ).toBeInTheDocument();
     await user.type(screen.getByRole("textbox", { name: "Name" }), "Support");
     await user.click(screen.getByRole("checkbox", { name: "See users" }));
-    await user.click(screen.getByRole("button", { name: "Create role" }));
+    await user.click(firstButton("Create role"));
     await waitFor(() => {
       expect(fakeRouter.url).toBe(
         "/admin/roles/00000000-0000-4000-8000-000000000a09",

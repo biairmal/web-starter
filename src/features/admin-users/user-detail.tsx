@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, UserX } from "lucide-react";
+import { UserX } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 import { useMe } from "@/components/auth/session-provider";
@@ -8,6 +8,7 @@ import { useCan } from "@/components/auth/can";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { SkeletonBar } from "@/components/feedback/page-skeleton";
+import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { isApiError } from "@/lib/api/errors";
 import type { AdminUserDetail } from "@/lib/api/types";
@@ -24,27 +25,13 @@ import { useUser } from "@/features/admin-users/use-users";
 
 const NOW_REFRESH_MS = 60_000;
 
-function Breadcrumb({ name }: { name: React.ReactNode }) {
+function DetailBreadcrumb({ name }: { name: React.ReactNode }) {
   const t = useTranslations("adminUsers.detail");
   return (
-    <nav aria-label={t("breadcrumb")}>
-      <ol className="flex items-center gap-1 text-body text-muted-foreground">
-        <li>
-          <Link
-            href={USERS_PATH}
-            className="hover:text-foreground hover:underline"
-          >
-            {t("users")}
-          </Link>
-        </li>
-        <li aria-hidden="true">
-          <ChevronRight className="size-4 rtl:rotate-180" />
-        </li>
-        <li aria-current="page" className="truncate text-foreground">
-          {name}
-        </li>
-      </ol>
-    </nav>
+    <Breadcrumb
+      label={t("breadcrumb")}
+      items={[{ label: t("users"), href: USERS_PATH }, { label: name }]}
+    />
   );
 }
 
@@ -183,7 +170,7 @@ export function UserDetail({ id }: { id: string }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <Breadcrumb name={name} />
+        <DetailBreadcrumb name={name} />
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-title font-semibold">{name}</h1>
           <UserStatusPill user={data} />

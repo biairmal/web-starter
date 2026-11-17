@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Info, Lock, ShieldX } from "lucide-react";
+import { Info, Lock, ShieldX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,7 +13,11 @@ import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { SkeletonBar } from "@/components/feedback/page-skeleton";
 import { RuleDialog } from "@/components/feedback/rule-dialog";
+import { Breadcrumb } from "@/components/layout/breadcrumb";
+import { FormActions } from "@/components/layout/form-actions";
+import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { brand } from "@/config/brand";
 import { isApiError } from "@/lib/api/errors";
@@ -21,7 +25,6 @@ import type { Permission, Role } from "@/lib/api/types";
 import { can } from "@/lib/authz/can";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { useErrorToast } from "@/lib/api/use-error-toast";
-import { cn } from "@/lib/utils";
 import { DeleteRoleDialog } from "@/features/admin-roles/delete-role-dialog";
 import {
   describeChanges,
@@ -105,7 +108,7 @@ function baselineOf(role: Role | undefined): Baseline {
   };
 }
 
-function Breadcrumb({
+function EditorBreadcrumb({
   name,
   kind,
 }: {
@@ -115,24 +118,13 @@ function Breadcrumb({
   const t = useTranslations("adminRoles.editor");
   const tKind = useKindText(kind);
   return (
-    <nav aria-label={t("breadcrumb")}>
-      <ol className="flex items-center gap-1 text-body text-muted-foreground">
-        <li>
-          <Link
-            href={LIST_PATHS[kind]}
-            className="hover:text-foreground hover:underline"
-          >
-            {tKind("roles")}
-          </Link>
-        </li>
-        <li aria-hidden="true">
-          <ChevronRight className="size-4 rtl:rotate-180" />
-        </li>
-        <li aria-current="page" className="truncate text-foreground">
-          {name}
-        </li>
-      </ol>
-    </nav>
+    <Breadcrumb
+      label={t("breadcrumb")}
+      items={[
+        { label: tKind("roles"), href: LIST_PATHS[kind] },
+        { label: name },
+      ]}
+    />
   );
 }
 
@@ -337,26 +329,92 @@ function Form({
 
   const title = creating ? tKind("newTitle") : role.name;
 
+  const dirtyText = !dirty
+    ? ""
+    : keysDirty
+      ? t("changes", {
+          added: changes.added.length,
+          removed: changes.removed.length,
+        })
+      : t("detailsChanged");
+
+  // Shown twice: in the sticky header and at the end of the form. Save stays
+  // disabled until something changed, so the place never moves.
+  const editActions = (
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={!dirty || pending}
+        onClick={() => {
+          setConflict(false);
+          reset(baseline);
+        }}
+      >
+        {t("cancel")}
+      </Button>
+      <Button
+        type="button"
+        disabled={!dirty || pending}
+        aria-busy={pending || undefined}
+        onClick={onSave}
+      >
+        {creating ? tKind("create") : t("save")}
+      </Button>
+    </>
+  );
+
   return (
-    <div className={cn("flex flex-col gap-6", dirty && "pb-24")}>
-      <div className="flex flex-col gap-2">
-        <Breadcrumb name={title} kind={kind} />
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-title font-semibold">{title}</h1>
-          {!creating && !readOnly && (
-            <Button
-              type="button"
-              variant="outline"
-              className="text-negative"
-              onClick={() => {
-                setDeleting(true);
-              }}
-            >
-              {tKind("delete")}
-            </Button>
-          )}
-        </div>
-      </div>
+    <div className="flex flex-col gap-section">
+      <PageHeader
+        sticky={!readOnly}
+        breadcrumb={<EditorBreadcrumb name={title} kind={kind} />}
+        title={title}
+        status={
+          readOnly ? undefined : (
+            <>
+              {/* Always in the DOM so the change is announced; shown only
+                  when there is something to say, so it takes no space. */}
+              <p aria-live="polite" className="sr-only">
+                {dirtyText}
+              </p>
+              {dirtyText && (
+                <p
+                  aria-hidden="true"
+                  className="flex items-center gap-inline-xs text-meta text-muted-foreground"
+                >
+                  <span className="size-2 rounded-full bg-warning" />
+                  {dirtyText}
+                </p>
+              )}
+              {message && (
+                <p role="alert" className="text-meta text-negative">
+                  {message}
+                </p>
+              )}
+            </>
+          )
+        }
+        action={
+          readOnly ? undefined : (
+            <div className="flex flex-wrap gap-inline-sm">
+              {!creating && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-negative"
+                  onClick={() => {
+                    setDeleting(true);
+                  }}
+                >
+                  {tKind("delete")}
+                </Button>
+              )}
+              {editActions}
+            </div>
+          )
+        }
+      />
 
       {template && <TemplateNotice />}
 
@@ -374,13 +432,7 @@ function Form({
         />
       )}
 
-      <section
-        aria-labelledby="role-details"
-        className="flex flex-col gap-4 rounded-lg border border-border p-5"
-      >
-        <h2 id="role-details" className="text-section font-semibold">
-          {t("details")}
-        </h2>
+      <Card title={t("details")}>
         {readOnly && (
           <p className="flex items-center gap-2 rounded-md bg-pill-neutral px-3 py-2 text-body text-pill-neutral-ink">
             <Lock aria-hidden="true" className="size-4 shrink-0" />
@@ -449,16 +501,11 @@ function Form({
             </div>
           </div>
         )}
-      </section>
+      </Card>
 
-      <section
-        aria-labelledby="role-permissions"
-        className="flex flex-col gap-4 rounded-lg border border-border p-5"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="role-permissions" className="text-section font-semibold">
-            {t("permissions")}
-          </h2>
+      <Card
+        title={t("permissions")}
+        action={
           <div className="w-full sm:w-64">
             <label htmlFor={searchId} className="sr-only">
               {t("search")}
@@ -474,7 +521,8 @@ function Form({
               }}
             />
           </div>
-        </div>
+        }
+      >
         {visible.hidden > 0 && (
           <p aria-live="polite" className="text-small text-muted-foreground">
             {t("hidden", { count: visible.hidden })}
@@ -491,48 +539,9 @@ function Form({
             readOnly={readOnly}
           />
         )}
-      </section>
+      </Card>
 
-      {dirty && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background lg:start-sidebar">
-          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-8">
-            <p aria-live="polite" className="text-body text-muted-foreground">
-              {keysDirty
-                ? t("changes", {
-                    added: changes.added.length,
-                    removed: changes.removed.length,
-                  })
-                : t("detailsChanged")}
-            </p>
-            {message && (
-              <p role="alert" className="text-body text-negative">
-                {message}
-              </p>
-            )}
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={pending}
-                onClick={() => {
-                  setConflict(false);
-                  reset(baseline);
-                }}
-              >
-                {t("cancel")}
-              </Button>
-              <Button
-                type="button"
-                disabled={pending}
-                aria-busy={pending || undefined}
-                onClick={onSave}
-              >
-                {creating ? tKind("create") : t("save")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {!readOnly && <FormActions>{editActions}</FormActions>}
 
       <RuleDialog
         title={tKind("ruleTitle")}

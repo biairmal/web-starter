@@ -59,11 +59,17 @@ test.describe("role editor", () => {
     await page.keyboard.press("Space");
     await expect(write).toBeChecked();
     await page.getByRole("textbox", { name: "Description" }).fill("Sells");
-    await expect(page.getByText("1 permission added, 0 removed")).toBeVisible();
+    await expect(
+      page
+        .getByText("1 permission added, 0 removed")
+        .and(page.locator(":not([aria-live])")),
+    ).toBeVisible();
     await expectNoA11yViolations(page);
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save" }).first().click();
     await expect(page.getByText("Saved", { exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Save" }).first(),
+    ).toBeDisabled();
 
     await page.reload();
     await expect(
@@ -105,7 +111,7 @@ test.describe("role editor", () => {
     );
     expect(other.status()).toBe(200);
 
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save" }).first().click();
     const banner = page.getByRole("alert").filter({
       hasText: "Someone else changed this. Reload to see their version.",
     });
@@ -155,7 +161,7 @@ test.describe("role editor", () => {
     ).toBeVisible();
     await page.getByRole("textbox", { name: "Name" }).fill("Support");
     await page.getByRole("checkbox", { name: "All users permissions" }).click();
-    await page.getByRole("button", { name: "Create role" }).click();
+    await page.getByRole("button", { name: "Create role" }).first().click();
     await expect(page).toHaveURL(
       /\/admin\/roles\/0{8}-0000-4000-8000-0000000e/,
     );

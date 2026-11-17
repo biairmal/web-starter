@@ -71,7 +71,7 @@ test.describe("role templates in multi mode", () => {
     await expect(page.getByText(NOTICE)).toBeVisible();
     await expectNoA11yViolations(page);
     await page.getByRole("checkbox", { name: "Read notes" }).check();
-    await page.getByRole("button", { name: "Save" }).click();
+    await page.getByRole("button", { name: "Save" }).first().click();
     await expect(page.getByText("Saved")).toBeVisible();
     await page.reload();
     await expect(
@@ -99,13 +99,13 @@ test.describe("role templates in multi mode", () => {
       page.getByRole("heading", { level: 1, name: "New role template" }),
     ).toBeVisible();
     await page.getByRole("textbox", { name: "Name" }).fill("member");
-    await page.getByRole("button", { name: "Create template" }).click();
+    await page.getByRole("button", { name: "Create template" }).first().click();
     await expect(
       page.getByText("A template with this name already exists."),
     ).toBeVisible();
     await page.getByRole("textbox", { name: "Name" }).fill("Support");
     await page.getByRole("checkbox", { name: "See users" }).check();
-    await page.getByRole("button", { name: "Create template" }).click();
+    await page.getByRole("button", { name: "Create template" }).first().click();
     await expect(
       page.getByRole("heading", { level: 1, name: "Support" }),
     ).toBeVisible();

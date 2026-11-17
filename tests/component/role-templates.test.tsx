@@ -159,6 +159,14 @@ beforeEach(() => {
   fakeRouter.reset("/admin/role-templates");
 });
 
+// The editor shows its actions twice: in the sticky header and at the end of
+// the form. Tests use the header's.
+function firstButton(name: string): HTMLElement {
+  const [button] = screen.getAllByRole("button", { name });
+  if (!button) throw new Error(`no ${name} button`);
+  return button;
+}
+
 describe("RoleTemplatesTable", () => {
   it("FE-52 lists every template with its permission count and links into the editor", async () => {
     serve();
@@ -207,7 +215,7 @@ describe("RoleEditor for a template", () => {
     await user.clear(name);
     await user.type(name, "Sales team");
     await user.click(screen.getByRole("checkbox", { name: "Write notes" }));
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     expect(await screen.findByText("Saved")).toBeInTheDocument();
     expect(calls).toEqual([
       {
@@ -223,7 +231,7 @@ describe("RoleEditor for a template", () => {
     ]);
     // The next save builds on the version this one returned.
     await user.click(screen.getByRole("checkbox", { name: "See users" }));
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     await waitFor(() => {
       expect(calls).toHaveLength(2);
     });
@@ -245,7 +253,7 @@ describe("RoleEditor for a template", () => {
     await user.click(
       await screen.findByRole("checkbox", { name: "Write notes" }),
     );
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(firstButton("Save"));
     const banner = await screen.findByRole("alert");
     expect(banner).toHaveTextContent(/Someone else changed this/);
     expect(screen.getByRole("checkbox", { name: "Write notes" })).toBeChecked();
@@ -275,7 +283,7 @@ describe("RoleEditor for a template", () => {
     const user = userEvent.setup();
     await user.type(screen.getByRole("textbox", { name: "Name" }), "Support");
     await user.click(screen.getByRole("checkbox", { name: "Read notes" }));
-    await user.click(screen.getByRole("button", { name: "Create template" }));
+    await user.click(firstButton("Create template"));
     await waitFor(() => {
       expect(fakeRouter.url).toBe(
         "/admin/role-templates/00000000-0000-4000-8000-00000000b0ff",
@@ -307,7 +315,7 @@ describe("RoleEditor for a template", () => {
       await screen.findByRole("textbox", { name: "Name" }),
       "Sales",
     );
-    await user.click(screen.getByRole("button", { name: "Create template" }));
+    await user.click(firstButton("Create template"));
     expect(
       await screen.findByText("A template with this name already exists."),
     ).toBeInTheDocument();

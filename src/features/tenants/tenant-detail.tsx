@@ -1,13 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AlertCircle,
-  Building2,
-  ChevronRight,
-  Loader2,
-  LogIn,
-} from "lucide-react";
+import { AlertCircle, Building2, Loader2, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -22,6 +16,7 @@ import { ErrorState } from "@/components/feedback/error-state";
 import { SkeletonBar } from "@/components/feedback/page-skeleton";
 import { FormErrorSummary, FormField } from "@/components/forms/form-field";
 import { SubmitButton } from "@/components/forms/submit-button";
+import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -58,27 +53,13 @@ function isConflict(error: unknown): boolean {
   return isApiError(error) && error.reason === "VERSION_CONFLICT";
 }
 
-function Breadcrumb({ name }: { name: string }) {
+function DetailBreadcrumb({ name }: { name: string }) {
   const t = useTranslations("tenants.detail");
   return (
-    <nav aria-label={t("breadcrumb")}>
-      <ol className="flex items-center gap-1 text-body text-muted-foreground">
-        <li>
-          <Link
-            href={TENANTS_PATH}
-            className="hover:text-foreground hover:underline"
-          >
-            {t("tenants")}
-          </Link>
-        </li>
-        <li aria-hidden="true">
-          <ChevronRight className="size-4 rtl:rotate-180" />
-        </li>
-        <li aria-current="page" className="truncate text-foreground">
-          {name}
-        </li>
-      </ol>
-    </nav>
+    <Breadcrumb
+      label={t("breadcrumb")}
+      items={[{ label: t("tenants"), href: TENANTS_PATH }, { label: name }]}
+    />
   );
 }
 
@@ -515,7 +496,7 @@ export function TenantDetail({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <Breadcrumb name={data.name} />
+        <DetailBreadcrumb name={data.name} />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-3">

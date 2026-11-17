@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { PageHeader } from "@/components/layout/page-header";
 
 describe("PageHeader", () => {
@@ -30,7 +31,52 @@ describe("PageHeader", () => {
     );
     const action = screen.getByRole("button", { name: "Invite user" });
     const heading = screen.getByRole("heading", { level: 1 });
-    expect(action.parentElement).toBe(heading.closest("div")?.parentElement);
+    expect(action.parentElement?.parentElement).toBe(
+      heading.closest("div")?.parentElement,
+    );
+  });
+
+  it("puts a breadcrumb above the title and a status before the actions", () => {
+    render(
+      <PageHeader
+        title="Editor"
+        breadcrumb={
+          <Breadcrumb
+            label="Breadcrumb"
+            items={[
+              { label: "Roles", href: "/admin/roles" },
+              { label: "Editor" },
+            ]}
+          />
+        }
+        status={<p>{"Unsaved changes"}</p>}
+        action={<button type="button">{"Save"}</button>}
+      />,
+    );
+    const trail = screen.getByRole("navigation", { name: "Breadcrumb" });
+    expect(within(trail).getByRole("link", { name: "Roles" })).toHaveAttribute(
+      "href",
+      "/admin/roles",
+    );
+    expect(within(trail).getByText("Editor")).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    const status = screen.getByText("Unsaved changes");
+    const save = screen.getByRole("button", { name: "Save" });
+    expect(status.compareDocumentPosition(save)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
+
+  it("sticks to the top only when asked, and only from 640px up", () => {
+    const { container, rerender } = render(<PageHeader title="Users" />);
+    const header = () =>
+      container.querySelector('[data-slot="page-header"]')?.className ?? "";
+    expect(header()).not.toContain("sticky");
+    rerender(<PageHeader title="Users" sticky />);
+    expect(header()).toContain("sm:sticky");
+    expect(header()).not.toMatch(/(^|\s)sticky/);
   });
 
   it("lets a very long unbroken title wrap instead of widening the page", () => {

@@ -89,7 +89,7 @@ export function ComponentGallery() {
     <div className="flex flex-col gap-stack-lg lg:flex-row lg:items-start lg:gap-section">
       <nav
         aria-label="Components"
-        className="lg:sticky lg:top-20 lg:w-48 lg:shrink-0"
+        className="lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:w-48 lg:shrink-0 lg:overflow-y-auto lg:overscroll-contain lg:pb-stack-md"
       >
         <ul className="flex flex-wrap gap-x-inline-lg gap-y-stack-sm lg:flex-col lg:gap-stack-md">
           {INDEX.map(([group, items]) => (

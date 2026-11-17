@@ -188,6 +188,21 @@
   }
 }
 
+/* A loading placeholder breathing softly, so it reads as loading, not empty.
+   Still under reduced motion. */
+@utility animate-skeleton {
+  animation: skeleton var(--skeleton-pulse) ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes skeleton {
+  50% {
+    opacity: var(--skeleton-dim);
+  }
+}
+
 /* An indeterminate progress bar: a short bar sliding across the track. */
 @utility animate-progress {
   animation: progress 1.2s ease-in-out infinite;

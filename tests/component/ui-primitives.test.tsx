@@ -109,10 +109,9 @@ describe("menus and overlays", () => {
     expect(screen.getByText("Docs").className).toContain("text-brand-accent");
   });
 
-  it("Skeleton stops pulsing under reduced motion", () => {
+  it("Skeleton pulses with the shared animation, which holds still under reduced motion", () => {
     const { container } = render(<Skeleton />);
     const { className } = container.firstElementChild as HTMLElement;
-    expect(className).toContain("animate-pulse");
-    expect(className).toContain("motion-reduce:animate-none");
+    expect(className).toContain("animate-skeleton");
   });
 });

@@ -2,14 +2,17 @@ import type * as React from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-// Loading placeholders (DESIGN_BRIEF 6.6): flat bars at the height of what
-// they replace, no shimmer, so nothing shifts when the data arrives.
+// Loading placeholders: bars at the height of what they replace, so nothing
+// shifts when the data arrives. They pulse softly; no shimmer sweep.
 
 export function SkeletonBar({ className }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={cn("block h-3.5 rounded-sm bg-raised", className)}
+      className={cn(
+        "block h-3.5 animate-skeleton rounded-sm bg-raised",
+        className,
+      )}
     />
   );
 }

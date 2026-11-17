@@ -62,11 +62,12 @@ describe("POST /api/auth/login", () => {
   it("FE-2 sets the session cookies and returns next, never a token", async () => {
     let sent: unknown;
     let userAgent: string | null = null;
+    const issued = tokenResponse();
     server.use(
       http.post(`${IDENTITY}/v1/auth/login`, async ({ request }) => {
         sent = await request.json();
         userAgent = request.headers.get("user-agent");
-        return HttpResponse.json(envelope(tokenResponse()));
+        return HttpResponse.json(envelope(issued));
       }),
     );
     const res = await login({ ...credentials, next: "/admin/users?page=2" });
@@ -83,7 +84,7 @@ describe("POST /api/auth/login", () => {
 
     const { values, reader } = setCookies(res);
     const session = await readSessionCookies(reader);
-    expect(session.access?.token).toBe(fakeAccessToken());
+    expect(session.access?.token).toBe(issued.access_token);
     expect(session.refresh?.token).toBe("refresh-token-1");
     expect(values.get(names.restricted)).toBe("");
     for (const line of res.headers.getSetCookie()) {

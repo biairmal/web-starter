@@ -21,6 +21,7 @@ export const cn = createCn({
         "nav-row",
         "sheet-inset",
         "sidebar",
+        "sidebar-rail",
         "topbar",
         "input",
         "table-head",

@@ -74,7 +74,9 @@
     "tenantSwitcher": {
       "open": "Switch tenant",
       "label": "Your tenants"
-    }
+    },
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   },
   "userMenu": {
     "open": "Open account menu",

@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { SidebarContent } from "@/components/layout/sidebar";
+import { DesktopSidebar } from "@/components/layout/sidebar";
 import { TopBar } from "@/components/layout/top-bar";
 import type { Tenancy } from "@/lib/authz/can";
 
@@ -11,9 +11,12 @@ export const MAIN_CONTENT_ID = "main-content";
 
 export function AppShell({
   tenancy,
+  sidebarCollapsed = false,
   children,
 }: {
   tenancy: Tenancy;
+  /** From the sidebar cookie: start as the icon rail. */
+  sidebarCollapsed?: boolean;
   children: React.ReactNode;
 }) {
   const t = useTranslations("shell");
@@ -25,9 +28,7 @@ export function AppShell({
       >
         {t("skipToContent")}
       </a>
-      <aside className="sticky top-0 hidden h-dvh w-sidebar shrink-0 lg:block">
-        <SidebarContent tenancy={tenancy} />
-      </aside>
+      <DesktopSidebar tenancy={tenancy} defaultCollapsed={sidebarCollapsed} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar tenancy={tenancy} />
         <main

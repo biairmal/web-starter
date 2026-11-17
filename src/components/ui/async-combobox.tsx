@@ -64,41 +64,37 @@ const IDLE: LoadState = {
 /** How close to the end of the list, in pixels, the next page starts loading. */
 const LOAD_MORE_EDGE = 48;
 
-function AsyncCombobox({
+/**
+ * The searchable, paged list on its own: what AsyncCombobox shows in its
+ * popover, for places that show the list inline (a filter panel). It loads
+ * when it mounts and stops when it unmounts.
+ */
+function AsyncOptions({
   fetchOptions,
-  resolveLabels,
+  selection,
+  onPicked,
+  onLoaded,
   searchPlaceholder,
   emptyText,
-  ...rest
-}: ComboboxSelection &
-  ComboboxTriggerProps & {
-    fetchOptions: FetchOptions;
-    resolveLabels?: ResolveLabels;
-    searchPlaceholder?: string;
-    emptyText?: string;
-  }) {
+}: {
+  fetchOptions: FetchOptions;
+  selection: ComboboxSelection;
+  /** After a pick; `done` is true when a single choice was made. */
+  onPicked?: (done: boolean) => void;
+  /** Every loaded page, so the caller can remember labels. */
+  onLoaded?: (items: ComboboxOption[]) => void;
+  searchPlaceholder?: string | undefined;
+  emptyText?: string | undefined;
+}) {
   const t = useTranslations("forms.picker");
-  const { multiple, value, onValueChange, ...triggerProps } = rest;
-  const selection = { multiple, value, onValueChange } as ComboboxSelection;
   const chosen = selectedValues(selection);
-
-  const [open, setOpen] = React.useState(false);
+  const multiple = selection.multiple === true;
   const [input, setInput] = React.useState("");
   const [search, setSearch] = React.useState("");
   const [state, setState] = React.useState<LoadState>(IDLE);
-  const [labels, setLabels] = React.useState<Record<string, string>>({});
   const abort = React.useRef<AbortController | null>(null);
-  const asked = React.useRef(new Set<string>());
-
-  const remember = React.useCallback((items: ComboboxOption[]) => {
-    setLabels((prev) => {
-      const next = { ...prev };
-      for (const item of items) {
-        next[item.value] = item.label;
-      }
-      return next;
-    });
-  }, []);
+  const loaded = React.useRef(onLoaded);
+  loaded.current = onLoaded;
 
   const load = React.useCallback(
     (query: string, page: number) => {
@@ -115,7 +111,7 @@ function AsyncCombobox({
           if (controller.signal.aborted) {
             return;
           }
-          remember(result.items);
+          loaded.current?.(result.items);
           setState((prev) => ({
             search: query,
             items: page === 1 ? result.items : [...prev.items, ...result.items],
@@ -131,7 +127,7 @@ function AsyncCombobox({
         },
       );
     },
-    [fetchOptions, remember],
+    [fetchOptions],
   );
 
   // Debounce typing into the search that is sent.
@@ -145,27 +141,9 @@ function AsyncCombobox({
   }, [input]);
 
   React.useEffect(() => {
-    if (open) {
-      load(search, 1);
-    }
+    load(search, 1);
     return () => abort.current?.abort();
-  }, [open, search, load]);
-
-  // Name chosen values the options have not named yet, once each.
-  const missing = chosen.filter(
-    (v) => labels[v] === undefined && !asked.current.has(v),
-  );
-  const missingKey = missing.join(",");
-  React.useEffect(() => {
-    if (!resolveLabels || missingKey === "") {
-      return;
-    }
-    const ids = missingKey.split(",");
-    for (const id of ids) {
-      asked.current.add(id);
-    }
-    resolveLabels(ids).then(remember, () => undefined);
-  }, [missingKey, resolveLabels, remember]);
+  }, [search, load]);
 
   const loadMore = (list: HTMLElement) => {
     const nearEnd =
@@ -180,85 +158,147 @@ function AsyncCombobox({
   };
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (!next) {
-          setInput("");
-          setSearch("");
-        }
-      }}
-    >
+    <Command shouldFilter={false}>
+      <CommandInput
+        value={input}
+        onValueChange={setInput}
+        placeholder={searchPlaceholder ?? t("search")}
+      />
+      <CommandList
+        aria-multiselectable={multiple || undefined}
+        aria-busy={state.status === "loading" || undefined}
+        onScroll={(event) => {
+          loadMore(event.currentTarget);
+        }}
+      >
+        {state.items.map((option) => (
+          <ComboboxItem
+            key={option.value}
+            option={option}
+            selected={chosen.includes(option.value)}
+            onPick={() => {
+              // Pick first: an optional call skips its arguments when there is no handler.
+              const done = pick(selection, option.value);
+              onPicked?.(done);
+            }}
+          />
+        ))}
+        {(state.status === "loading" || state.status === "loadingMore") && (
+          <div role="status" className={statusRowClasses}>
+            <Spinner decorative />
+            {state.status === "loading" ? t("loading") : t("loadingMore")}
+          </div>
+        )}
+        {state.status === "done" && state.items.length === 0 && (
+          <div role="status" className={statusRowClasses}>
+            {emptyText ?? t("empty")}
+          </div>
+        )}
+        {state.status === "error" && (
+          <>
+            <div role="alert" className={statusRowClasses}>
+              {t("error")}
+            </div>
+            <CommandItem
+              value="retry"
+              onSelect={retry}
+              className="justify-center"
+            >
+              <RotateCw aria-hidden="true" />
+              {t("retry")}
+            </CommandItem>
+          </>
+        )}
+      </CommandList>
+    </Command>
+  );
+}
+
+function AsyncCombobox({
+  fetchOptions,
+  resolveLabels,
+  searchPlaceholder,
+  emptyText,
+  ...rest
+}: ComboboxSelection &
+  ComboboxTriggerProps & {
+    fetchOptions: FetchOptions;
+    resolveLabels?: ResolveLabels;
+    searchPlaceholder?: string;
+    emptyText?: string;
+  }) {
+  const { multiple, value, onValueChange, ...triggerProps } = rest;
+  const selection = { multiple, value, onValueChange } as ComboboxSelection;
+  const chosen = selectedValues(selection);
+  const [open, setOpen] = React.useState(false);
+  const labels = useOptionLabels(chosen, resolveLabels);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <ComboboxTrigger
           {...triggerProps}
-          labels={chosen.map((v) => labels[v] ?? v)}
+          labels={chosen.map((v) => labels.of(v))}
           multiple={multiple === true}
           open={open}
         />
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) min-w-56 p-0">
-        <Command shouldFilter={false}>
-          <CommandInput
-            value={input}
-            onValueChange={setInput}
-            placeholder={searchPlaceholder ?? t("search")}
-          />
-          <CommandList
-            aria-multiselectable={multiple === true || undefined}
-            aria-busy={state.status === "loading" || undefined}
-            onScroll={(event) => {
-              loadMore(event.currentTarget);
-            }}
-          >
-            {state.items.map((option) => (
-              <ComboboxItem
-                key={option.value}
-                option={option}
-                selected={chosen.includes(option.value)}
-                onPick={() => {
-                  if (pick(selection, option.value)) {
-                    setOpen(false);
-                  }
-                }}
-              />
-            ))}
-            {(state.status === "loading" || state.status === "loadingMore") && (
-              <div role="status" className={statusRowClasses}>
-                <Spinner decorative />
-                {state.status === "loading" ? t("loading") : t("loadingMore")}
-              </div>
-            )}
-            {state.status === "done" && state.items.length === 0 && (
-              <div role="status" className={statusRowClasses}>
-                {emptyText ?? t("empty")}
-              </div>
-            )}
-            {state.status === "error" && (
-              <>
-                <div role="alert" className={statusRowClasses}>
-                  {t("error")}
-                </div>
-                <CommandItem
-                  value="retry"
-                  onSelect={retry}
-                  className="justify-center"
-                >
-                  <RotateCw aria-hidden="true" />
-                  {t("retry")}
-                </CommandItem>
-              </>
-            )}
-          </CommandList>
-        </Command>
+        <AsyncOptions
+          fetchOptions={fetchOptions}
+          selection={selection}
+          searchPlaceholder={searchPlaceholder}
+          emptyText={emptyText}
+          onLoaded={labels.remember}
+          onPicked={(done) => {
+            if (done) {
+              setOpen(false);
+            }
+          }}
+        />
       </PopoverContent>
     </Popover>
   );
 }
 
+/**
+ * Labels for chosen values: remembered from loaded options, and asked of
+ * `resolveLabels` (once each) for values chosen before any options loaded.
+ */
+function useOptionLabels(chosen: readonly string[], resolve?: ResolveLabels) {
+  const [labels, setLabels] = React.useState<Record<string, string>>({});
+  const asked = React.useRef(new Set<string>());
+  const remember = React.useCallback((items: ComboboxOption[]) => {
+    setLabels((prev) => {
+      const next = { ...prev };
+      for (const item of items) {
+        next[item.value] = item.label;
+      }
+      return next;
+    });
+  }, []);
+
+  const missingKey = chosen
+    .filter((v) => labels[v] === undefined && !asked.current.has(v))
+    .join(",");
+  React.useEffect(() => {
+    if (!resolve || missingKey === "") {
+      return;
+    }
+    const ids = missingKey.split(",");
+    for (const id of ids) {
+      asked.current.add(id);
+    }
+    resolve(ids).then(remember, () => undefined);
+  }, [missingKey, resolve, remember]);
+
+  return { of: (v: string) => labels[v] ?? v, remember };
+}
+
 export {
   AsyncCombobox,
+  AsyncOptions,
+  useOptionLabels,
   type FetchOptions,
   type OptionsPage,
   type ResolveLabels,

@@ -7,13 +7,46 @@ import { FilterEditor } from "@/components/filters/filter-editor";
 import { FilterOverlay } from "@/components/filters/filter-overlay";
 import {
   activeFilters,
+  decodeFilter,
   type FilterDef,
   type FilterValues,
   inactiveFilters,
 } from "@/components/filters/filters";
+import {
+  type ResolveLabels,
+  useOptionLabels,
+} from "@/components/ui/async-combobox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
+
+/** The names of server options, looked up from their ids. */
+function AsyncLabels({
+  ids,
+  resolve,
+}: {
+  ids: string[];
+  resolve: ResolveLabels | undefined;
+}) {
+  const t = useTranslations("filterBar");
+  const labels = useOptionLabels(ids, resolve).of;
+  return (
+    <>
+      {listText(ids.map(labels), (first, count) => t("more", { first, count }))}
+    </>
+  );
+}
+
+/** "A, B" or "A, B +3": a pill stays short however many values it has. */
+function listText(
+  labels: string[],
+  more: (first: string, count: number) => string,
+): string {
+  return labels.length > 2
+    ? more(labels.slice(0, 2).join(", "), labels.length - 2)
+    : labels.join(", ");
+}
 
 // The toolbar above a list: a search box, one removable pill per applied
 // filter, "Add filter" for the rest, and "Clear filters". Values are the
@@ -38,6 +71,8 @@ export function FilterBar({
     /** The search box's accessible name, e.g. "Search by name". */
     label: string;
     placeholder?: string;
+    /** Shows a spinner while the results for the typed search load. */
+    loading?: boolean;
   };
   filters: readonly FilterDef[];
   values: FilterValues;
@@ -84,12 +119,65 @@ export function FilterBar({
       );
     }
     if (def.type === "date") {
-      return format.dateTime(new Date(`${value}T00:00:00Z`), {
+      return day(value);
+    }
+    if (def.type === "custom") {
+      return def.renderValue(value);
+    }
+    const { op, items } = decodeFilter(value);
+    if (def.type === "multiSelect") {
+      return listText(
+        items.map(
+          (item) =>
+            def.options.find((option) => option.value === item)?.label ?? item,
+        ),
+        (first, count) => t("more", { first, count }),
+      );
+    }
+    if (def.type === "async") {
+      return <AsyncLabels ids={items} resolve={def.resolveLabels} />;
+    }
+    if (def.type === "dateRange") {
+      const [from = "", to = ""] = items;
+      return format.dateTimeRange(dayDate(from), dayDate(to), {
         dateStyle: "medium",
         timeZone: "UTC",
       });
     }
-    return def.renderValue(value);
+    if (def.type === "number") {
+      const show = (item: string) => {
+        const number = Number(item);
+        return Number.isFinite(number)
+          ? (def.formatValue?.(number) ?? format.number(number))
+          : item;
+      };
+      return op === "between"
+        ? items.map(show).join("–")
+        : show(items[0] ?? "");
+    }
+    return items[0] ?? "";
+  }
+
+  /** "Label: value", or "Label at least value" for an operator other than is / is any of. */
+  function pillLabel(def: FilterDef, value: string): string {
+    const op =
+      def.type === "text" || def.type === "number"
+        ? decodeFilter(value).op
+        : "eq";
+    return op === "eq" || op === "in" || op === "between"
+      ? `${def.label}: `
+      : `${def.label} ${t(`op.${op}`)} `;
+  }
+
+  function dayDate(value: string) {
+    return new Date(`${value}T00:00:00Z`);
+  }
+
+  function day(value: string) {
+    return format.dateTime(dayDate(value), {
+      dateStyle: "medium",
+      timeZone: "UTC",
+    });
   }
 
   function close() {
@@ -143,18 +231,21 @@ export function FilterBar({
             placeholder={search.placeholder ?? search.label}
             autoComplete="off"
             spellCheck={false}
-            className="ps-8"
+            className={cn("ps-8", search.loading && "pe-8")}
             onChange={(event) => {
               search.onChange(event.target.value);
             }}
           />
+          {search.loading && (
+            <Spinner className="absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          )}
         </div>
       )}
       {applied.map((def) => {
         const value = values[def.key] ?? "";
         const text = valueText(def, value);
-        const title =
-          typeof text === "string" ? `${def.label}: ${text}` : undefined;
+        const prefix = pillLabel(def, value);
+        const title = typeof text === "string" ? `${prefix}${text}` : undefined;
         return (
           <div
             key={def.key}
@@ -180,8 +271,7 @@ export function FilterBar({
                   }}
                   className="max-w-48 truncate rounded-s-full ps-3 pe-1 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
-                  {def.label}
-                  {": "}
+                  {prefix}
                   {text}
                 </button>
               }

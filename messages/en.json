@@ -626,7 +626,21 @@
     "addFilter": "Add filter",
     "clearFilters": "Clear filters",
     "apply": "Apply",
-    "remove": "Remove filter {label}"
+    "remove": "Remove filter {label}",
+    "operator": "Operator",
+    "and": "and",
+    "more": "{first} +{count}",
+    "op": {
+      "eq": "is",
+      "ne": "is not",
+      "like": "contains",
+      "gt": "more than",
+      "gte": "at least",
+      "lt": "less than",
+      "lte": "at most",
+      "in": "is any of",
+      "between": "between"
+    }
   },
   "feedback": {
     "loading": "Loading",

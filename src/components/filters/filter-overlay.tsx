@@ -43,6 +43,8 @@ export function FilterOverlay({
         <PopoverTrigger asChild>{trigger}</PopoverTrigger>
         <PopoverContent
           aria-label={title}
+          // At least the usual width; wider for a calendar with presets.
+          className="w-auto max-w-dvw min-w-72"
           {...(onCloseAutoFocus ? { onCloseAutoFocus } : {})}
         >
           {children}

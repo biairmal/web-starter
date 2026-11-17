@@ -10,7 +10,12 @@ import {
   type FieldValues,
   useController,
 } from "react-hook-form";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldCounter,
+  FieldDescription,
+  FieldLabel,
+} from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 
 // One labelled form field bound to React Hook Form (DESIGN_BRIEF 6.1): label
@@ -34,6 +39,7 @@ export function FormField<T extends FieldValues, N extends FieldPath<T>>({
   description,
   required = false,
   optional = false,
+  counter,
   className,
   render,
 }: {
@@ -45,6 +51,8 @@ export function FormField<T extends FieldValues, N extends FieldPath<T>>({
   required?: boolean;
   /** Adds "(optional)" to the label. */
   optional?: boolean;
+  /** A length limit: shows "12 / 200" under the field. */
+  counter?: number;
   className?: string;
   render: (props: FieldControlProps<T, N>) => React.ReactNode;
 }) {
@@ -53,8 +61,11 @@ export function FormField<T extends FieldValues, N extends FieldPath<T>>({
   const { field, fieldState } = useController({ control, name });
   const descriptionId = description ? `${id}-description` : undefined;
   const errorId = fieldState.error ? `${id}-error` : undefined;
+  const counterId = counter === undefined ? undefined : `${id}-counter`;
   const describedBy =
-    [descriptionId, errorId].filter(Boolean).join(" ") || undefined;
+    [descriptionId, counterId, errorId].filter(Boolean).join(" ") || undefined;
+  const value: unknown = field.value;
+  const length = typeof value === "string" ? value.length : 0;
 
   return (
     <Field data-invalid={fieldState.invalid || undefined} className={className}>
@@ -80,6 +91,11 @@ export function FormField<T extends FieldValues, N extends FieldPath<T>>({
       })}
       {description && (
         <FieldDescription id={descriptionId}>{description}</FieldDescription>
+      )}
+      {counter !== undefined && (
+        <FieldCounter id={counterId} length={length} max={counter}>
+          {t("counter", { length, max: counter })}
+        </FieldCounter>
       )}
       {fieldState.error?.message && (
         <p

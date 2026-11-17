@@ -1,6 +1,7 @@
 import { Controls } from "./controls";
 import { Feedback } from "./feedback";
 import { Foundations } from "./foundations";
+import { Inputs } from "./inputs";
 import { Layout } from "./layout";
 import { Overlays } from "./overlays";
 
@@ -31,6 +32,13 @@ const INDEX = [
       ["button", "Button"],
       ["input", "Input and field"],
       ["checkbox", "Checkbox"],
+      ["input-group", "Input group"],
+      ["textarea", "Textarea and counter"],
+      ["number", "Number input"],
+      ["radio", "Radio group"],
+      ["switch", "Switch"],
+      ["slider", "Slider"],
+      ["toggle-group", "Toggle group"],
     ],
   ],
   [
@@ -86,6 +94,7 @@ export function ComponentGallery() {
         <Foundations />
         <Layout />
         <Controls />
+        <Inputs />
         <Overlays />
         <Feedback />
       </div>

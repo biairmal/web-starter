@@ -571,6 +571,11 @@
         "met": "(terpenuhi)",
         "notMet": "(belum)"
       }
+    },
+    "counter": "{length} / {max}",
+    "number": {
+      "increase": "Tambah",
+      "decrease": "Kurangi"
     }
   },
   "dataTable": {

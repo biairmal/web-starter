@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { applyServerErrors } from "@/lib/api/apply-server-errors";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { useErrorToast } from "@/lib/api/use-error-toast";
@@ -97,6 +98,7 @@ function CreateNoteForm({
         name="title"
         label={t("title")}
         required
+        counter={NOTE_TITLE_MAX}
         render={(field) => <Input {...field} autoComplete="off" />}
       />
       <FormField
@@ -104,13 +106,7 @@ function CreateNoteForm({
         name="body"
         label={t("body")}
         optional
-        render={(field) => (
-          <textarea
-            {...field}
-            rows={4}
-            className="min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-body shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive"
-          />
-        )}
+        render={(field) => <Textarea {...field} rows={4} />}
       />
       <FormErrorSummary
         invalidCount={

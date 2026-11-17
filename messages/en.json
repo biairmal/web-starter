@@ -571,6 +571,11 @@
         "met": "(done)",
         "notMet": "(not yet)"
       }
+    },
+    "counter": "{length} / {max}",
+    "number": {
+      "increase": "Increase",
+      "decrease": "Decrease"
     }
   },
   "dataTable": {

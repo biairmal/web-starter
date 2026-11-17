@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -224,8 +224,29 @@ function FieldError({
   );
 }
 
+// "12 / 200" under a field with a length limit; turns negative when over.
+function FieldCounter({
+  length,
+  max,
+  className,
+  ...props
+}: React.ComponentProps<"p"> & { length: number; max: number }) {
+  return (
+    <p
+      data-slot="field-counter"
+      data-over={length > max || undefined}
+      className={cn(
+        "text-end text-small text-muted-foreground tabular-nums data-[over]:text-negative",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export {
   Field,
+  FieldCounter,
   FieldLabel,
   FieldDescription,
   FieldError,

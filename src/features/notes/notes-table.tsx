@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  MoreHorizontal,
-  NotebookPen,
-  Pin,
-  SearchX,
-  Trash2,
-} from "lucide-react";
+import { NotebookPen, Pin, SearchX, Trash2 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "@/components/feedback/toast";
@@ -21,24 +15,18 @@ import {
   selectionCount,
   useRowSelection,
 } from "@/components/data-table/selection";
+import { RowActions } from "@/components/data-table/row-actions";
 import { useListParams } from "@/components/data-table/use-list-params";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { FilterBar } from "@/components/filters/filter-bar";
 import type { FilterDef } from "@/components/filters/filters";
 import { FilterTabs } from "@/components/filters/filter-tabs";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { isApiError } from "@/lib/api/errors";
 import { useErrorToast } from "@/lib/api/use-error-toast";
 import { NOTES_WRITE } from "@/lib/authz/permissions";
-import { cn } from "@/lib/utils";
 import { CreateNoteDialog } from "@/features/notes/create-note-dialog";
 import type { Note, NoteChange } from "@/features/notes/types";
 import {
@@ -65,16 +53,9 @@ const LIST_CONFIG = { filters: NOTE_FILTERS, searchKey: "search" } as const;
 function StatusPill({ status }: { status: Note["status"] }) {
   const t = useTranslations("notes.status");
   return (
-    <span
-      className={cn(
-        "inline-flex h-5 w-fit shrink-0 items-center rounded-sm px-2 text-small font-medium whitespace-nowrap",
-        status === "archived"
-          ? "bg-pill-neutral text-pill-neutral-ink"
-          : "bg-pill-positive text-pill-positive-ink",
-      )}
-    >
+    <Badge variant={status === "archived" ? "neutral" : "positive"}>
       {isNoteStatus(status) ? t(status) : (status ?? t("unknown"))}
-    </span>
+    </Badge>
   );
 }
 
@@ -111,44 +92,35 @@ function RowMenu({
 }) {
   const t = useTranslations("notes.table");
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label={t("actions", { title: note.title ?? "" })}
-        >
-          <MoreHorizontal aria-hidden="true" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onSelect={() => {
+    <RowActions
+      name={note.title ?? ""}
+      actions={[
+        {
+          id: "pin",
+          label: note.pinned ? t("unpin") : t("pin"),
+          onSelect: () => {
             onChange(note, { pinned: !note.pinned });
-          }}
-        >
-          {note.pinned ? t("unpin") : t("pin")}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => {
+          },
+        },
+        {
+          id: "archive",
+          label: note.status === "archived" ? t("restore") : t("archive"),
+          onSelect: () => {
             onChange(note, {
               status: note.status === "archived" ? "draft" : "archived",
             });
-          }}
-        >
-          {note.status === "archived" ? t("restore") : t("archive")}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onSelect={() => {
+          },
+        },
+        {
+          id: "delete",
+          label: t("delete"),
+          destructive: true,
+          onSelect: () => {
             onDelete(note);
-          }}
-        >
-          {t("delete")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          },
+        },
+      ]}
+    />
   );
 }
 
@@ -324,9 +296,8 @@ export function NotesTable() {
               onSelectionChange: setSelection,
               bulkActions: (chosen: RowSelection) => (
                 <Button
-                  variant="outline"
+                  variant="destructive"
                   size="sm"
-                  className="text-destructive"
                   onClick={() => {
                     setBulkDeleting(chosen);
                   }}

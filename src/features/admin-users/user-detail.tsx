@@ -9,6 +9,8 @@ import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { SkeletonBar } from "@/components/feedback/page-skeleton";
 import { Breadcrumb } from "@/components/layout/breadcrumb";
+import { PageHeader } from "@/components/layout/page-header";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { isApiError } from "@/lib/api/errors";
 import type { AdminUserDetail } from "@/lib/api/types";
@@ -57,13 +59,7 @@ function Profile({ user }: { user: AdminUserDetail }) {
     user.providers.google && t("google"),
   ].filter((entry): entry is string => typeof entry === "string");
   return (
-    <section
-      aria-labelledby="user-profile"
-      className="flex flex-col gap-3 rounded-lg border border-border p-5"
-    >
-      <h2 id="user-profile" className="text-section font-semibold">
-        {t("title")}
-      </h2>
+    <Card title={t("title")}>
       <dl className="grid gap-4 sm:grid-cols-2">
         <KeyValue label={t("name")}>
           {user.display_name || (
@@ -80,7 +76,7 @@ function Profile({ user }: { user: AdminUserDetail }) {
           {methods.length > 0 ? methods.join(", ") : t("noMethods")}
         </KeyValue>
       </dl>
-    </section>
+    </Card>
   );
 }
 
@@ -89,13 +85,7 @@ function Membership({ user }: { user: AdminUserDetail }) {
   const format = useFormatter();
   const now = useNow({ updateInterval: NOW_REFRESH_MS });
   return (
-    <section
-      aria-labelledby="user-membership"
-      className="flex flex-col gap-3 rounded-lg border border-border bg-raised p-5"
-    >
-      <h2 id="user-membership" className="text-section font-semibold">
-        {t("title")}
-      </h2>
+    <Card title={t("title")} className="bg-raised">
       <dl className="flex flex-col gap-3">
         <KeyValue label={t("status")}>
           <UserStatusPill user={user} />
@@ -109,7 +99,7 @@ function Membership({ user }: { user: AdminUserDetail }) {
             : t("never")}
         </KeyValue>
       </dl>
-    </section>
+    </Card>
   );
 }
 
@@ -169,13 +159,11 @@ export function UserDetail({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <DetailBreadcrumb name={name} />
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-title font-semibold">{name}</h1>
-          <UserStatusPill user={data} />
-        </div>
-      </div>
+      <PageHeader
+        breadcrumb={<DetailBreadcrumb name={name} />}
+        title={name}
+        status={<UserStatusPill user={data} />}
+      />
       <div className="grid items-start gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-2">
           <Profile user={data} />

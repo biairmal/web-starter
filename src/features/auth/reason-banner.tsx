@@ -1,8 +1,7 @@
-import { CheckCircle2, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { brand } from "@/config/brand";
 import { errorMessageValues, isReason } from "@/lib/api/errors";
-import { cn } from "@/lib/utils";
+import { Alert } from "@/components/ui/alert";
 
 // The banner on /sign-in for `?reason=` (TRD 5.3, 5.6, 10; DESIGN_BRIEF 6.6):
 // why the user is here, for example an ended session or a Google sign-in that
@@ -28,31 +27,17 @@ export function ReasonBanner({
   const tNotice = useTranslations("auth.notices");
   if (isNotice(reason)) {
     return (
-      <p
-        role="status"
-        className={cn(
-          "flex items-start gap-2 rounded-md border border-pill-positive-ink/15 bg-pill-positive px-3 py-2 text-body text-pill-positive-ink",
-          className,
-        )}
-      >
-        <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+      <Alert tone="positive" className={className}>
         {tNotice(reason)}
-      </p>
+      </Alert>
     );
   }
   if (!isReason(reason)) {
     return null;
   }
   return (
-    <p
-      role="status"
-      className={cn(
-        "flex items-start gap-2 rounded-md border border-pill-neutral-ink/15 bg-pill-neutral px-3 py-2 text-body text-pill-neutral-ink",
-        className,
-      )}
-    >
-      <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+    <Alert tone="info" className={className}>
       {t(reason, errorMessageValues({}, brand))}
-    </p>
+    </Alert>
   );
 }

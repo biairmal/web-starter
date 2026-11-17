@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Building2, Loader2, LogIn } from "lucide-react";
+import { Building2, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -17,6 +17,10 @@ import { SkeletonBar } from "@/components/feedback/page-skeleton";
 import { FormErrorSummary, FormField } from "@/components/forms/form-field";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Breadcrumb } from "@/components/layout/breadcrumb";
+import { PageHeader } from "@/components/layout/page-header";
+import { Card } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -82,13 +86,7 @@ function Facts({ tenant }: { tenant: Tenant }) {
   const t = useTranslations("tenants.detail.facts");
   const format = useFormatter();
   return (
-    <section
-      aria-labelledby="tenant-facts"
-      className="flex flex-col gap-3 rounded-lg border border-border bg-raised p-5"
-    >
-      <h2 id="tenant-facts" className="text-section font-semibold">
-        {t("title")}
-      </h2>
+    <Card title={t("title")} className="bg-raised">
       <dl className="grid gap-4 sm:grid-cols-2">
         <KeyValue label={t("slug")}>
           <span className="font-mono">{tenant.slug}</span>
@@ -107,21 +105,13 @@ function Facts({ tenant }: { tenant: Tenant }) {
           })}
         </KeyValue>
       </dl>
-    </section>
+    </Card>
   );
 }
 
 /** A rule identity enforces, in its own words, inside a dialog. */
 function RuleAlert({ text }: { text: string }) {
-  return (
-    <p
-      role="alert"
-      className="flex items-start gap-2 rounded-md bg-pill-negative px-3 py-2 text-body text-pill-negative-ink"
-    >
-      <AlertCircle aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-      {text}
-    </p>
-  );
+  return <Alert tone="negative">{text}</Alert>;
 }
 
 function RenameForm({
@@ -323,17 +313,9 @@ function DangerZone({
   };
 
   return (
-    <section
-      aria-labelledby="tenant-danger"
-      className="flex flex-col gap-4 rounded-lg border border-border p-5"
-    >
-      <h2 id="tenant-danger" className="text-section font-semibold">
-        {t("title")}
-      </h2>
+    <Card title={t("title")}>
       {isDefault ? (
-        <p className="rounded-md bg-pill-neutral px-3 py-2 text-body text-pill-neutral-ink">
-          {t("defaultTenant")}
-        </p>
+        <Alert tone="info">{t("defaultTenant")}</Alert>
       ) : (
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-0.5">
@@ -347,9 +329,8 @@ function DangerZone({
           <div>
             <Button
               type="button"
-              variant="outline"
+              variant={suspending ? "destructive" : "outline"}
               size="sm"
-              className={suspending ? "text-negative" : undefined}
               onClick={() => {
                 setRule(undefined);
                 setConflict(false);
@@ -393,7 +374,7 @@ function DangerZone({
           {rule && <RuleAlert text={rule} />}
         </ConfirmDialog>
       )}
-    </section>
+    </Card>
   );
 }
 
@@ -418,7 +399,7 @@ function OpenAsAdmin({ tenant }: { tenant: Tenant }) {
         }}
       >
         {pending ? (
-          <Loader2 aria-hidden="true" className="animate-spin" />
+          <Spinner decorative className="text-current" />
         ) : (
           <LogIn aria-hidden="true" />
         )}
@@ -495,24 +476,18 @@ export function TenantDetail({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <DetailBreadcrumb name={data.name} />
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-title font-semibold">{data.name}</h1>
-              <TenantStatusPill status={data.status} />
-            </div>
-            {current && (
-              <p className="text-body text-muted-foreground">{t("current")}</p>
-            )}
-          </div>
-          <div className="flex flex-wrap items-start gap-2">
+      <PageHeader
+        breadcrumb={<DetailBreadcrumb name={data.name} />}
+        title={data.name}
+        description={current ? t("current") : undefined}
+        status={<TenantStatusPill status={data.status} />}
+        action={
+          <div className="flex flex-wrap items-start gap-inline-sm">
             <Rename tenant={data} onReload={reload} />
             <OpenAsAdmin tenant={data} />
           </div>
-        </div>
-      </div>
+        }
+      />
       <div className="grid items-start gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Facts tenant={data} />

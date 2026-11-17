@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, Lock, ShieldX } from "lucide-react";
+import { ShieldX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -16,6 +16,7 @@ import { RuleDialog } from "@/components/feedback/rule-dialog";
 import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { FormActions } from "@/components/layout/form-actions";
 import { PageHeader } from "@/components/layout/page-header";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -84,12 +85,7 @@ function useKindText(kind: EditorKind) {
 /** "Changes apply only to tenants created later" (FE-52). */
 export function TemplateNotice() {
   const t = useTranslations("adminRoles.templateEditor");
-  return (
-    <p className="flex items-start gap-2 rounded-md bg-pill-warning px-3 py-2 text-body text-pill-warning-ink">
-      <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-      {t("notice")}
-    </p>
-  );
+  return <Alert tone="warning">{t("notice")}</Alert>;
 }
 
 type Baseline = {
@@ -401,8 +397,7 @@ function Form({
               {!creating && (
                 <Button
                   type="button"
-                  variant="ghost"
-                  className="text-negative"
+                  variant="destructive"
                   onClick={() => {
                     setDeleting(true);
                   }}
@@ -434,10 +429,9 @@ function Form({
 
       <Card title={t("details")}>
         {readOnly && (
-          <p className="flex items-center gap-2 rounded-md bg-pill-neutral px-3 py-2 text-body text-pill-neutral-ink">
-            <Lock aria-hidden="true" className="size-4 shrink-0" />
+          <Alert tone="info">
             {t("systemReadOnly", { appName: brand.appName })}
-          </p>
+          </Alert>
         )}
         {readOnly ? (
           <dl className="flex flex-col gap-3">

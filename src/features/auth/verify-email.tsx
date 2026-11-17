@@ -1,9 +1,9 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,10 +61,7 @@ export function VerifyEmail() {
   if (state.kind === "working") {
     return (
       <div role="status" className="flex items-center gap-3">
-        <Loader2
-          aria-hidden="true"
-          className="size-5 animate-spin text-muted-foreground"
-        />
+        <Spinner decorative className="size-5" />
         <h1 className="text-title font-semibold">{t("working")}</h1>
       </div>
     );

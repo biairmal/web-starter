@@ -9,6 +9,7 @@ import {
   type DataTableColumn,
 } from "@/components/data-table/data-table";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { Badge } from "@/components/ui/badge";
 import type { Page, RoleTemplate } from "@/lib/api/types";
 import {
   roleTemplatePath,
@@ -33,11 +34,7 @@ function asPage(items: RoleTemplate[]): Page<RoleTemplate> {
 
 function SystemChip() {
   const t = useTranslations("adminRoles.table");
-  return (
-    <span className="inline-flex h-5 items-center rounded-sm bg-pill-neutral px-2 text-small font-medium text-pill-neutral-ink">
-      {t("system")}
-    </span>
-  );
+  return <Badge variant="neutral">{t("system")}</Badge>;
 }
 
 export function RoleTemplatesTable() {

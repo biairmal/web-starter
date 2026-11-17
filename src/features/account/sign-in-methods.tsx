@@ -1,7 +1,6 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { KeyRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "@/components/feedback/toast";
 import { useMe } from "@/components/auth/session-provider";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ApiError, isApiError, isReason } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
@@ -153,16 +153,14 @@ export function SignInMethods({
         )}
       </ul>
       {(googleIsLast || lastMethod) && (
-        <p
-          id="security-google-last"
-          className="flex flex-wrap items-center gap-x-1 rounded-md border border-pill-neutral-ink/15 bg-pill-neutral px-3 py-2 text-body text-pill-neutral-ink"
-        >
-          <KeyRound aria-hidden="true" className="size-4 shrink-0" />
-          {t("lastMethod")}
-          <Link href={PASSWORD_FORM_PATH} className="font-medium underline">
-            {t("setPasswordFirst")}
-          </Link>
-        </p>
+        <div id="security-google-last">
+          <Alert tone="info">
+            {t("lastMethod")}{" "}
+            <Link href={PASSWORD_FORM_PATH} className="font-medium underline">
+              {t("setPasswordFirst")}
+            </Link>
+          </Alert>
+        </div>
       )}
       <ConfirmDialog
         open={confirming}

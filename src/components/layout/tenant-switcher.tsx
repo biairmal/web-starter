@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronsUpDown, Loader2 } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useMe } from "@/components/auth/session-provider";
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
 import { api, unwrap } from "@/lib/api/client";
 import { queryKeys, staleTimes } from "@/lib/api/query-keys";
 import { useErrorToast } from "@/lib/api/use-error-toast";
@@ -87,10 +88,7 @@ export function TenantSwitcher({ tenancy }: { tenancy: Tenancy }) {
               className="size-4 shrink-0 text-muted-foreground"
             />
           ) : (
-            <Loader2
-              aria-hidden="true"
-              className="size-4 shrink-0 animate-spin text-muted-foreground"
-            />
+            <Spinner decorative />
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="duration-0">

@@ -9,6 +9,7 @@ import { z } from "zod";
 import { useMe } from "@/components/auth/session-provider";
 import { FormErrorSummary, FormField } from "@/components/forms/form-field";
 import { SubmitButton } from "@/components/forms/submit-button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { applyServerErrors } from "@/lib/api/apply-server-errors";
 import { useErrorText } from "@/lib/api/use-error-text";
@@ -100,13 +101,9 @@ export function ProfileForm() {
         >
           <span className="text-body">{me.email}</span>
           {me.email_verified ? (
-            <span className="rounded-sm bg-pill-positive px-2 py-0.5 text-small font-medium text-pill-positive-ink">
-              {t("verified")}
-            </span>
+            <Badge variant="positive">{t("verified")}</Badge>
           ) : (
-            <span className="rounded-sm bg-pill-warning px-2 py-0.5 text-small font-medium text-pill-warning-ink">
-              {t("unverified")}
-            </span>
+            <Badge variant="warning">{t("unverified")}</Badge>
           )}
         </div>
         <p className="text-small text-muted-foreground">{t("emailHint")}</p>

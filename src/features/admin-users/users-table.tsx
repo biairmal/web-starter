@@ -14,7 +14,8 @@ import { Button } from "@/components/ui/button";
 import type { AdminUser } from "@/lib/api/types";
 import { ROLES_MANAGE } from "@/lib/authz/permissions";
 import { UserFilters } from "@/features/admin-users/user-filters";
-import { Pill, UserStatusPill } from "@/features/admin-users/user-status";
+import { Badge } from "@/components/ui/badge";
+import { UserStatusPill } from "@/features/admin-users/user-status";
 import {
   USER_FILTERS,
   useRoleOptions,
@@ -43,9 +44,9 @@ function RolePills({ roles }: { roles: AdminUser["roles"] }) {
   return (
     <span className="flex flex-wrap items-center gap-1">
       {shown.map((role) => (
-        <Pill key={role.id} tone="neutral">
+        <Badge key={role.id} variant="neutral">
           {role.name}
-        </Pill>
+        </Badge>
       ))}
       {more > 0 && (
         <span

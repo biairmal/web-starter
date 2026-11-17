@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Loader2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -10,6 +10,7 @@ import { FormErrorSummary, FormField } from "@/components/forms/form-field";
 import { PasswordInput } from "@/components/forms/password-input";
 import { PasswordRules } from "@/components/forms/password-rules";
 import { SubmitButton } from "@/components/forms/submit-button";
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { brand } from "@/config/brand";
@@ -87,10 +88,7 @@ export function AcceptInvite({
   if (state.kind === "loading") {
     return (
       <div role="status" className="flex items-center gap-3">
-        <Loader2
-          aria-hidden="true"
-          className="size-5 animate-spin text-muted-foreground"
-        />
+        <Spinner decorative className="size-5" />
         <span className="text-body text-muted-foreground">{t("loading")}</span>
       </div>
     );

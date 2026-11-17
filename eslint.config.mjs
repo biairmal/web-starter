@@ -178,7 +178,7 @@ const eslintConfig = [
   {
     // The development-only component gallery. A production build returns 404
     // for it, so its demo copy is not user-facing and is not translated.
-    files: ["src/dev/**/*.tsx", "src/app/(app)/dev/**/*.tsx"],
+    files: ["src/dev/**/*.tsx", "src/app/(dev)/**/*.tsx"],
     rules: {
       "react/jsx-no-literals": "off",
     },

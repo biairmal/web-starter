@@ -16,6 +16,8 @@ export const PUBLIC_PAGES = [
   "/auth/callback",
   "/auth/session-check",
   "/forbidden",
+  // Development only: the page itself is a 404 in production.
+  "/dev/components",
 ] as const;
 
 /** Public pages a signed-in user is sent away from, to "/". */

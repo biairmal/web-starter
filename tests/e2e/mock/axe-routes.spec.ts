@@ -19,6 +19,7 @@ const PUBLIC_ROUTES = [
   "/reset-password",
   "/invite",
   "/forbidden",
+  "/dev/components",
 ];
 
 const APP_ROUTES = [
@@ -32,7 +33,6 @@ const APP_ROUTES = [
   `/admin/roles/${ROLE}`,
   "/admin/audit",
   "/notes",
-  "/dev/components",
   ...(multi
     ? ["/admin/tenants", `/admin/tenants/${TENANT}`, "/admin/role-templates"]
     : []),

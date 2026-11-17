@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 const { default: ComponentsPage } =
-  await import("@/app/(app)/dev/components/page");
+  await import("@/app/(dev)/dev/components/page");
 
 describe("/dev/components", () => {
   afterEach(() => {

@@ -48,7 +48,7 @@ export function ComponentGallery() {
     <div className="flex flex-col gap-stack-lg lg:flex-row lg:items-start lg:gap-section">
       <nav
         aria-label="Components"
-        className="lg:sticky lg:top-inset-lg lg:w-48 lg:shrink-0"
+        className="lg:sticky lg:top-20 lg:w-48 lg:shrink-0"
       >
         <ul className="flex flex-wrap gap-x-inline-lg gap-y-stack-sm lg:flex-col lg:gap-stack-md">
           {INDEX.map(([group, items]) => (

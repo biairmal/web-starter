@@ -1,4 +1,5 @@
 import { Controls } from "./controls";
+import { DataTables } from "./data-table";
 import { Feedback } from "./feedback";
 import { Foundations } from "./foundations";
 import { Inputs } from "./inputs";
@@ -51,6 +52,7 @@ const INDEX = [
       ["date-picker", "Date pickers"],
     ],
   ],
+  ["Data", [["data-table", "Data table"]]],
   [
     "Navigation",
     [
@@ -117,6 +119,7 @@ export function ComponentGallery() {
         <Controls />
         <Inputs />
         <Pickers />
+        <DataTables />
         <Navigation />
         <Overlays />
         <Feedback />

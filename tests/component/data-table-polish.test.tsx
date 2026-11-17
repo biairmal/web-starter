@@ -9,6 +9,11 @@ import {
 import type { Page } from "@/lib/api/types";
 import { renderWithIntl } from "../helpers/intl";
 
+vi.mock(
+  "next/navigation",
+  async () => (await import("../helpers/fake-router")).navigation,
+);
+
 type Person = { id: string; name: string };
 
 const page: Page<Person> = {
@@ -27,7 +32,6 @@ const columns: DataTableColumn<Person>[] = [
     id: "actions",
     header: "Actions",
     cell: () => <button type="button">{"Open menu"}</button>,
-    rowActions: true,
   },
 ];
 
@@ -58,17 +62,13 @@ function renderTable(density?: "comfortable" | "compact") {
 }
 
 describe("DataTable polish", () => {
-  it("reveals a row-actions cell on hover or focus, and always on touch", () => {
+  it("shows row actions on every row without hover or focus", () => {
     renderTable();
     const row = screen.getAllByRole("row")[1];
-    const cell = within(row as HTMLElement)
-      .getByRole("button", { name: "Open menu" })
-      .closest("td");
-    const className = cell?.className ?? "";
-    expect(className).toContain("opacity-0");
-    expect(className).toContain("group-hover/row:opacity-100");
-    expect(className).toContain("group-focus-within/row:opacity-100");
-    expect(className).toContain("pointer-coarse:opacity-100");
+    const button = within(row as HTMLElement).getByRole("button", {
+      name: "Open menu",
+    });
+    expect(button.closest("td")?.outerHTML).not.toContain("opacity-0");
   });
 
   it("rows are comfortable by default and compact on request", () => {
@@ -91,6 +91,7 @@ describe("DataTable polish", () => {
     renderTable();
     const head = screen.getAllByRole("rowgroup")[0];
     expect(head?.className).toContain("sticky");
-    expect(head?.className).toContain("border-b");
+    // The rule is drawn by each header cell, so it moves with the header.
+    expect(head?.querySelector("th")?.className).toContain("shadow-rule-inset");
   });
 });

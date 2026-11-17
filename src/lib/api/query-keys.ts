@@ -5,7 +5,8 @@
 export type ListParams = {
   page: number;
   size: number;
-  sort?: string;
+  /** One sort, or several (repeated `sort` params) in priority order. */
+  sort?: string | string[];
   filters: Record<string, string>;
 };
 

@@ -610,7 +610,17 @@
       "perPage": "Per halaman",
       "previous": "Halaman sebelumnya",
       "next": "Halaman berikutnya"
-    }
+    },
+    "sortPriority": "urutan {priority}",
+    "sortHint": "Shift-klik kolom untuk menambahkannya ke urutan",
+    "selectPage": "Pilih semua baris di halaman ini",
+    "selectRow": "Pilih {name}",
+    "selected": "{count, number} dipilih",
+    "pageSelected": "Semua {count} baris di halaman ini dipilih.",
+    "selectAllMatching": "Pilih semua {total, number} yang cocok",
+    "allMatchingSelected": "Semua {total, number} baris yang cocok dipilih.",
+    "clearSelection": "Hapus pilihan",
+    "rowActions": "Tindakan untuk {name}"
   },
   "filterBar": {
     "addFilter": "Tambah filter",

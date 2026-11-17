@@ -18,6 +18,8 @@ export function MobileCards<T>({
   card,
   label,
   className,
+  leading,
+  onActivate,
 }: {
   rows: readonly T[];
   getRowId: (row: T) => string;
@@ -25,6 +27,10 @@ export function MobileCards<T>({
   /** The list's accessible name, the same as the table's caption. */
   label: string;
   className?: string;
+  /** Before the text, e.g. the row's selection checkbox. */
+  leading?: (row: T) => React.ReactNode;
+  /** A click on the card; the caller ignores clicks on its controls. */
+  onActivate?: (row: T, event: React.MouseEvent<HTMLElement>) => void;
 }) {
   return (
     <ul aria-label={label} className={className}>
@@ -34,10 +40,21 @@ export function MobileCards<T>({
           (item) => item !== null && item !== undefined && item !== "",
         );
         return (
+          // A card that opens on click keeps its keyboard path in the
+          // title link; the click is a larger target for touch.
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
           <li
             key={getRowId(row)}
+            onClick={
+              onActivate
+                ? (event) => {
+                    onActivate(row, event);
+                  }
+                : undefined
+            }
             className="flex min-h-16 items-center gap-3 border-b border-rule py-3 last:border-b-0"
           >
+            {leading && <div className="shrink-0">{leading(row)}</div>}
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="min-w-0 truncate text-body font-medium">

@@ -190,7 +190,6 @@ export function NotesTable() {
             id: "actions",
             header: <span className="sr-only">{t("actionsHeader")}</span>,
             align: "end" as const,
-            rowActions: true,
             cell: (note: Note) => (
               <RowMenu note={note} onChange={change} onDelete={setDeleting} />
             ),

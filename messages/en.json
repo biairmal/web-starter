@@ -610,7 +610,17 @@
       "perPage": "Per page",
       "previous": "Previous page",
       "next": "Next page"
-    }
+    },
+    "sortPriority": "sort {priority}",
+    "sortHint": "Shift-click a column to add it to the sort",
+    "selectPage": "Select all rows on this page",
+    "selectRow": "Select {name}",
+    "selected": "{count, plural, one {# selected} other {# selected}}",
+    "pageSelected": "All {count, plural, one {# row} other {# rows}} on this page are selected.",
+    "selectAllMatching": "Select all {total, number} matching",
+    "allMatchingSelected": "All {total, number} matching rows are selected.",
+    "clearSelection": "Clear selection",
+    "rowActions": "Actions for {name}"
   },
   "filterBar": {
     "addFilter": "Add filter",

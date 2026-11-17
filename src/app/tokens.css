@@ -120,6 +120,9 @@
   --button-h-lg: 40px;
   --input-h: 36px;
   --table-head-h: 40px;
+  --table-max-h: 560px; /* a table that scrolls in its own box */
+  /* the line beside a pinned column once rows scroll under it */
+  --table-pinned-edge: var(--border);
   --dialog-w-sm: 384px;
   --dialog-w-md: 448px;
   --dialog-w-lg: 640px;

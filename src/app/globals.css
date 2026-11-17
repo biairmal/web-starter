@@ -93,6 +93,7 @@
   --spacing-button-lg: var(--button-h-lg);
   --spacing-input: var(--input-h);
   --spacing-table-head: var(--table-head-h);
+  --spacing-table-max: var(--table-max-h);
   --spacing-dialog-h: var(--dialog-max-h);
   --spacing-avatar-sm: var(--avatar-sm);
   --spacing-avatar-md: var(--avatar-md);
@@ -153,6 +154,38 @@
   animation-timeline: scroll(self);
 }
 
+/* A pinned table column: a line shows at its inner edge once the table has
+   scrolled sideways under it. Driven by the scroll container's position, so it
+   needs no script; where scroll timelines are unsupported, no line shows. */
+@utility pin-edge-start {
+  animation: pin-edge-start linear both;
+  animation-timeline: scroll(nearest inline);
+}
+@utility pin-edge-end {
+  animation: pin-edge-end linear both;
+  animation-timeline: scroll(nearest inline);
+}
+
+@keyframes pin-edge-start {
+  0% {
+    box-shadow: inset -1px 0 0 0 transparent;
+  }
+  1%,
+  100% {
+    box-shadow: inset -1px 0 0 0 var(--table-pinned-edge);
+  }
+}
+
+@keyframes pin-edge-end {
+  0%,
+  99% {
+    box-shadow: inset 1px 0 0 0 var(--table-pinned-edge);
+  }
+  100% {
+    box-shadow: inset 1px 0 0 0 transparent;
+  }
+}
+
 /* An indeterminate progress bar: a short bar sliding across the track. */
 @utility animate-progress {
   animation: progress 1.2s ease-in-out infinite;
@@ -208,7 +241,8 @@
   [role="tab"],
   [role="option"]:not([data-disabled]),
   [role="switch"],
-  [role="checkbox"]:not(:disabled) {
+  [role="checkbox"]:not(:disabled),
+  tr[data-activatable] {
     cursor: pointer;
   }
   :disabled,

@@ -49,7 +49,10 @@ function oneOf<T extends string>(
  * edited URL) is left out, so the list still loads.
  */
 export function usersQuery(params: ListParams) {
-  const sort = oneOf(USER_SORTS, params.sort);
+  const sort = oneOf(
+    USER_SORTS,
+    typeof params.sort === "string" ? params.sort : undefined,
+  );
   const status = oneOf(ACCOUNT_STATUSES, params.filters.status);
   const membership = oneOf(
     MEMBERSHIP_STATUSES,

@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { X } from "lucide-react";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   type DataTableColumn,
@@ -8,9 +10,21 @@ import {
   type PageQuery,
 } from "@/components/data-table/data-table";
 import { MobileCards } from "@/components/data-table/mobile-cards";
+import { RowActions } from "@/components/data-table/row-actions";
+import {
+  NO_SELECTION,
+  type RowSelection,
+} from "@/components/data-table/selection";
+import type { SortValue } from "@/components/data-table/use-list-params";
 import { ApiError } from "@/lib/api/errors";
 import type { Page } from "@/lib/api/types";
+import { fakeRouter } from "../helpers/fake-router";
 import { renderWithIntl } from "../helpers/intl";
+
+vi.mock(
+  "next/navigation",
+  async () => (await import("../helpers/fake-router")).navigation,
+);
 
 type Person = { id: string; name: string; role: string; joined: string };
 
@@ -54,7 +68,7 @@ function query(overrides: Partial<PageQuery<Person>> = {}): PageQuery<Person> {
 function renderTable(
   q: PageQuery<Person>,
   handlers: Partial<{
-    onSortChange: (sort: string | undefined) => void;
+    onSortChange: (sort: SortValue) => void;
     onPageChange: (page: number) => void;
   }> = {},
   sort?: string,
@@ -178,5 +192,211 @@ describe("DataTable", () => {
     expect(alert).toHaveTextContent("Request ID req-42");
     await user.click(within(alert).getByRole("button", { name: "Retry" }));
     expect(refetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+function table() {
+  return screen.getByRole("table", { name: "Users" });
+}
+
+function renderPlain(
+  props: Partial<React.ComponentProps<typeof DataTable<Person>>>,
+) {
+  return renderWithIntl(
+    <DataTable
+      columns={columns}
+      query={query()}
+      getRowId={(row) => row.id}
+      mobileCard={(row) => ({ title: row.name })}
+      caption="Users"
+      errorTitle="Failed"
+      empty={null}
+      onPageChange={vi.fn()}
+      onSizeChange={vi.fn()}
+      {...props}
+    />,
+  );
+}
+
+describe("DataTable multi-sort", () => {
+  const sortable: DataTableColumn<Person>[] = [
+    {
+      id: "name",
+      header: "Name",
+      cell: (r) => r.name,
+      sortField: "display_name",
+    },
+    { id: "role", header: "Role", cell: (r) => r.role, sortField: "role" },
+  ];
+
+  it("adds a column on shift-click and shows each column's priority", async () => {
+    const user = userEvent.setup();
+    const onSortChange = vi.fn();
+    renderPlain({
+      columns: sortable,
+      multiSort: true,
+      sort: ["display_name,ASC", "role,DESC"],
+      onSortChange,
+    });
+    const role = screen.getByRole("columnheader", { name: /Role/ });
+    expect(role).toHaveAttribute("aria-sort", "descending");
+    expect(role).toHaveTextContent("sort 2");
+    await user.keyboard("{Shift>}");
+    await user.click(within(role).getByRole("button"));
+    await user.keyboard("{/Shift}");
+    // Shift on a descending column drops it from the sort.
+    expect(onSortChange).toHaveBeenLastCalledWith(["display_name,ASC"]);
+    await user.click(
+      within(screen.getByRole("columnheader", { name: /Name/ })).getByRole(
+        "button",
+      ),
+    );
+    // A plain click sorts by that column alone.
+    expect(onSortChange).toHaveBeenLastCalledWith(["display_name,ASC"]);
+  });
+});
+
+function Selectable({ onRowClick }: { onRowClick?: (row: Person) => void }) {
+  const [selection, setSelection] = useState<RowSelection>(NO_SELECTION);
+  return (
+    <>
+      <DataTable
+        columns={columns}
+        query={query()}
+        getRowId={(row) => row.id}
+        getRowLabel={(row) => row.name}
+        mobileCard={(row) => ({ title: row.name })}
+        caption="Users"
+        errorTitle="Failed"
+        empty={null}
+        selectable="multiple"
+        selection={selection}
+        onSelectionChange={setSelection}
+        bulkActions={() => <button type="button">{"Delete"}</button>}
+        {...(onRowClick ? { onRowClick } : {})}
+        onPageChange={vi.fn()}
+        onSizeChange={vi.fn()}
+      />
+      <output>{JSON.stringify(selection)}</output>
+    </>
+  );
+}
+
+describe("DataTable selection", () => {
+  it("selects the page, then every matching row, and drops back to ids", async () => {
+    const user = userEvent.setup();
+    renderWithIntl(<Selectable />);
+    await user.click(
+      within(table()).getByRole("checkbox", {
+        name: "Select all rows on this page",
+      }),
+    );
+    expect(screen.getByText("2 selected")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "Select all 48 matching" }),
+    );
+    expect(screen.getByText("48 selected")).toBeInTheDocument();
+    const output = document.querySelector("output");
+    expect(output).toHaveTextContent('{"ids":[],"allMatching":true}');
+    await user.click(
+      within(table()).getByRole("checkbox", { name: "Select Ari Wibowo" }),
+    );
+    expect(output).toHaveTextContent('{"ids":["1"],"allMatching":false}');
+    await user.click(screen.getByRole("button", { name: "Clear selection" }));
+    expect(screen.queryByText(/selected/)).toBeNull();
+  });
+
+  it("shows the page checkbox as mixed when some rows are chosen", async () => {
+    const user = userEvent.setup();
+    renderWithIntl(<Selectable />);
+    await user.click(
+      within(table()).getByRole("checkbox", { name: "Select Dina Pratama" }),
+    );
+    expect(
+      within(table()).getByRole("checkbox", {
+        name: "Select all rows on this page",
+      }),
+    ).toHaveAttribute("aria-checked", "mixed");
+  });
+});
+
+describe("DataTable row click", () => {
+  it("opens a row on click or Enter, but not from its checkbox", async () => {
+    const user = userEvent.setup();
+    const onRowClick = vi.fn();
+    renderWithIntl(<Selectable onRowClick={onRowClick} />);
+    await user.click(within(table()).getByText("Dina Pratama"));
+    expect(onRowClick).toHaveBeenCalledTimes(1);
+    await user.click(
+      within(table()).getByRole("checkbox", { name: "Select Dina Pratama" }),
+    );
+    expect(onRowClick).toHaveBeenCalledTimes(1);
+    within(table()).getByText("Ari Wibowo").closest("tr")?.focus();
+    await user.keyboard("{Enter}");
+    expect(onRowClick).toHaveBeenLastCalledWith(people[1]);
+  });
+
+  it("navigates to rowHref", async () => {
+    const user = userEvent.setup();
+    fakeRouter.reset("/users");
+    renderPlain({ rowHref: (row) => `/users/${row.id}` });
+    await user.click(within(table()).getByText("Ari Wibowo"));
+    expect(fakeRouter.url).toBe("/users/2");
+  });
+});
+
+describe("DataTable pinned columns", () => {
+  it("keeps pinned cells at their offsets", () => {
+    renderPlain({
+      columns: [
+        {
+          id: "name",
+          header: "Name",
+          cell: (r) => r.name,
+          pin: "start",
+          width: 120,
+        },
+        {
+          id: "role",
+          header: "Role",
+          cell: (r) => r.role,
+          pin: "end",
+          width: 80,
+        },
+      ],
+      selectable: "multiple",
+    });
+    const name = within(table()).getByText("Dina Pratama").closest("td");
+    // After the 40px checkbox column, which is pinned with it.
+    expect(name).toHaveStyle({ insetInlineStart: "40px", width: "120px" });
+    const role = within(table()).getByText("Manager").closest("td");
+    expect(role).toHaveStyle({ insetInlineEnd: "0px" });
+  });
+});
+
+describe("RowActions", () => {
+  it("shows inline actions as buttons and the rest in a menu", async () => {
+    const user = userEvent.setup();
+    const onDelete = vi.fn();
+    renderWithIntl(
+      <RowActions
+        name="Ayu"
+        inline={1}
+        actions={[
+          { id: "view", label: "View", icon: X, onSelect: vi.fn() },
+          {
+            id: "delete",
+            label: "Delete",
+            destructive: true,
+            onSelect: onDelete,
+          },
+        ]}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "View" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Actions for Ayu" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Delete" }));
+    expect(onDelete).toHaveBeenCalledTimes(1);
   });
 });

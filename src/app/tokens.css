@@ -117,6 +117,12 @@
   --button-h-lg: 40px;
   --input-h: 36px;
   --table-head-h: 40px;
+  --dialog-w-sm: 384px;
+  --dialog-w-md: 448px;
+  --dialog-w-lg: 640px;
+  --dialog-max-h: calc(100dvh - 32px); /* a tall dialog scrolls its body */
+  --drawer-w: 384px;
+  --drawer-w-lg: 560px;
 
   /* spacing, radius, layout (4.3) */
   --gap: 24px;

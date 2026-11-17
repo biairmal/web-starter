@@ -5,6 +5,7 @@ import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -13,30 +14,53 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
+  Menubar,
+  MenubarCheckboxItem,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
@@ -46,6 +70,8 @@ import {
 import { Text } from "@/components/ui/typography";
 import { Demo, Section } from "./section";
 
+const PARAGRAPHS = Array.from({ length: 14 }, (_, index) => index + 1);
+
 export function Overlays() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   // Kept after closing so the dialog does not change text while it animates out.
@@ -53,6 +79,8 @@ export function Overlays() {
     "plain",
   );
   const [showArchived, setShowArchived] = useState(false);
+  const [sort, setSort] = useState("updated");
+  const [wrap, setWrap] = useState(true);
   return (
     <>
       <Section
@@ -60,23 +88,53 @@ export function Overlays() {
         title="Dialog"
         source="src/components/ui/dialog.tsx, feedback/confirm-dialog.tsx"
       >
-        <Demo label="Dialog, confirm, destructive confirm (type the name)">
+        <Demo label="Sizes (--dialog-w-*)">
+          {(["sm", "md", "lg"] as const).map((size) => (
+            <Dialog key={size}>
+              <DialogTrigger asChild>
+                <Button variant="outline">{size}</Button>
+              </DialogTrigger>
+              <DialogContent size={size}>
+                <DialogHeader>
+                  <DialogTitle>Edit note</DialogTitle>
+                  <DialogDescription>
+                    Dialogs hold one short task. Longer work gets its own page.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button>Done</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          ))}
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline">Open dialog</Button>
+              <Button variant="outline">Long content</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent size="lg">
               <DialogHeader>
-                <DialogTitle>Edit note</DialogTitle>
+                <DialogTitle>Terms of the workspace</DialogTitle>
                 <DialogDescription>
-                  Dialogs hold one short task. Longer work gets its own page.
+                  The body scrolls; the title and buttons stay put.
                 </DialogDescription>
               </DialogHeader>
+              <DialogBody className="flex flex-col gap-stack-sm">
+                {PARAGRAPHS.map((n) => (
+                  <Text key={n}>
+                    Clause {n}. Members of the workspace keep their own notes
+                    and see shared ones. An admin can remove a member, and the
+                    notes they wrote stay with the workspace.
+                  </Text>
+                ))}
+              </DialogBody>
               <DialogFooter>
-                <Button>Done</Button>
+                <Button variant="outline">Decline</Button>
+                <Button>Accept</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </Demo>
+        <Demo label="Confirm, destructive confirm (type the name)">
           <Button
             variant="outline"
             onClick={() => {
@@ -122,24 +180,44 @@ export function Overlays() {
 
       <Section
         id="sheet"
-        title="Sheet (drawer)"
-        source="src/components/ui/sheet.tsx"
+        title="Drawer"
+        source="src/components/ui/drawer.tsx, sheet.tsx"
       >
-        <Demo label="Sides">
-          {(["right", "left", "bottom"] as const).map((side) => (
-            <Sheet key={side}>
-              <SheetTrigger asChild>
-                <Button variant="outline">{side}</Button>
-              </SheetTrigger>
-              <SheetContent side={side}>
-                <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
-                  <SheetDescription>
-                    A drawer from the {side} edge.
-                  </SheetDescription>
-                </SheetHeader>
-              </SheetContent>
-            </Sheet>
+        <Demo label="Sides and sizes (--drawer-w, --drawer-w-lg)">
+          {(
+            [
+              ["right", "md"],
+              ["right", "lg"],
+              ["left", "md"],
+              ["bottom", "md"],
+            ] as const
+          ).map(([side, size]) => (
+            <Drawer key={`${side}-${size}`}>
+              <DrawerTrigger asChild>
+                <Button variant="outline">
+                  {side} {size}
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent side={side} size={size}>
+                <DrawerHeader>
+                  <DrawerTitle>Note details</DrawerTitle>
+                  <DrawerDescription>
+                    A drawer from the {side} edge. The body scrolls.
+                  </DrawerDescription>
+                </DrawerHeader>
+                <DrawerBody className="flex flex-col gap-stack-sm">
+                  {PARAGRAPHS.map((n) => (
+                    <Text key={n}>
+                      Activity {n}: Dina edited the title and moved the note to
+                      Archive.
+                    </Text>
+                  ))}
+                </DrawerBody>
+                <DrawerFooter>
+                  <Button>Close</Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           ))}
         </Demo>
       </Section>
@@ -149,15 +227,21 @@ export function Overlays() {
         title="Dropdown menu"
         source="src/components/ui/dropdown-menu.tsx"
       >
-        <Demo label="Items, checkbox item, sub-menu">
+        <Demo label="Items with shortcuts, sub-menu, checkbox and radio items">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">Actions</Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="start" className="w-56">
               <DropdownMenuLabel>Note</DropdownMenuLabel>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem>
+                Edit
+                <DropdownMenuShortcut>E</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Duplicate
+                <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+              </DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>Move to</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
@@ -173,6 +257,16 @@ export function Overlays() {
                 Show archived
               </DropdownMenuCheckboxItem>
               <DropdownMenuSeparator />
+              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+              <DropdownMenuRadioGroup value={sort} onValueChange={setSort}>
+                <DropdownMenuRadioItem value="updated">
+                  Last updated
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="title">
+                  Title
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+              <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -180,11 +274,49 @@ export function Overlays() {
       </Section>
 
       <Section
-        id="popover"
-        title="Popover and tooltip"
-        source="src/components/ui/popover.tsx, tooltip.tsx"
+        id="menubar"
+        title="Menubar"
+        source="src/components/ui/menubar.tsx"
       >
-        <Demo label="Popover, tooltip">
+        <Demo label="Arrow keys move between menus">
+          <Menubar>
+            <MenubarMenu>
+              <MenubarTrigger>File</MenubarTrigger>
+              <MenubarContent>
+                <MenubarItem>
+                  New note
+                  <MenubarShortcut>N</MenubarShortcut>
+                </MenubarItem>
+                <MenubarSub>
+                  <MenubarSubTrigger>Export</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <MenubarItem>CSV</MenubarItem>
+                    <MenubarItem>PDF</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+                <MenubarSeparator />
+                <MenubarItem variant="destructive">Delete</MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+            <MenubarMenu>
+              <MenubarTrigger>View</MenubarTrigger>
+              <MenubarContent>
+                <MenubarCheckboxItem checked={wrap} onCheckedChange={setWrap}>
+                  Wrap long lines
+                </MenubarCheckboxItem>
+                <MenubarItem disabled>Full screen</MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
+        </Demo>
+      </Section>
+
+      <Section
+        id="popover"
+        title="Popover, hover card and tooltip"
+        source="src/components/ui/popover.tsx, hover-card.tsx, tooltip.tsx"
+      >
+        <Demo label="Popover, hover card, tooltip">
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">Open popover</Button>
@@ -193,6 +325,17 @@ export function Overlays() {
               <Text>Popovers hold small editors, like a filter value.</Text>
             </PopoverContent>
           </Popover>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <a href="#popover" className="text-meta underline">
+                Dina Pratama
+              </a>
+            </HoverCardTrigger>
+            <HoverCardContent>
+              <Text variant="label">Dina Pratama</Text>
+              <Text variant="secondary">Billing admin, joined March 2026.</Text>
+            </HoverCardContent>
+          </HoverCard>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

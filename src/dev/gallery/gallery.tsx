@@ -45,9 +45,10 @@ const INDEX = [
     "Overlays",
     [
       ["dialog", "Dialog"],
-      ["sheet", "Sheet"],
+      ["sheet", "Drawer"],
       ["menu", "Dropdown menu"],
-      ["popover", "Popover and tooltip"],
+      ["menubar", "Menubar"],
+      ["popover", "Popover, hover card, tooltip"],
     ],
   ],
   [

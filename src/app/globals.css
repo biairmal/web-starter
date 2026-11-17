@@ -92,6 +92,12 @@
   --spacing-button-lg: var(--button-h-lg);
   --spacing-input: var(--input-h);
   --spacing-table-head: var(--table-head-h);
+  --spacing-dialog-h: var(--dialog-max-h);
+  --container-dialog-sm: var(--dialog-w-sm);
+  --container-dialog-md: var(--dialog-w-md);
+  --container-dialog-lg: var(--dialog-w-lg);
+  --container-drawer: var(--drawer-w);
+  --container-drawer-lg: var(--drawer-w-lg);
 
   /* Type roles (DESIGN.md 4): text-stat, text-title, text-section, text-body,
      text-meta, text-small, text-mono. Each carries its line height. "meta", not

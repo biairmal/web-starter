@@ -429,7 +429,7 @@ export function DataTable<T>({
                       aria-sort={ariaSort(column)}
                       style={pinStyle(header.column, widthOf(header.column.id))}
                       className={cn(
-                        "h-9 bg-background px-3 text-small font-normal text-muted-foreground shadow-rule-inset first:ps-0 last:pe-0",
+                        "h-9 bg-background px-3 text-small font-normal text-muted-foreground shadow-rule-inset",
                         nowrap,
                         column?.align === "end" ? "text-end" : "text-start",
                         column?.identity && "w-1/3",
@@ -486,7 +486,7 @@ export function DataTable<T>({
                               widthOf(header.column.id),
                             )}
                             className={cn(
-                              "px-3 first:ps-0 last:pe-0",
+                              "px-3",
                               nowrap,
                               pinClasses(header.column),
                               header.column.getIsPinned() && "bg-background",
@@ -552,19 +552,26 @@ export function DataTable<T>({
                                 widthOf(cell.column.id),
                               )}
                               className={cn(
-                                "px-3 first:ps-0 last:pe-0",
+                                "px-3",
                                 nowrap,
                                 column?.align === "end" &&
                                   "text-end tabular-nums",
                                 pinClasses(cell.column),
                                 pinned && pinnedBg,
-                                // Hidden until the row is hovered or focused, but
-                                // never on touch, and never while its menu is open.
-                                column?.rowActions &&
-                                  "opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 pointer-coarse:opacity-100 has-data-[state=open]:opacity-100",
                               )}
                             >
-                              {cell.column.id === SELECT_ID ? (
+                              {column?.rowActions ? (
+                                // Hidden until the row is hovered or focused, but
+                                // never on touch, and never while its menu is open.
+                                // The cell itself stays, so a pinned one keeps its
+                                // background and edge.
+                                <div className="opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 pointer-coarse:opacity-100 has-data-[state=open]:opacity-100">
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
+                                  )}
+                                </div>
+                              ) : cell.column.id === SELECT_ID ? (
                                 <Checkbox
                                   aria-label={t("selectRow", {
                                     name: label(row.original),

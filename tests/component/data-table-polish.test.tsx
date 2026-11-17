@@ -66,10 +66,12 @@ describe("DataTable polish", () => {
   it("reveals a row-actions cell on hover or focus, and always on touch", () => {
     renderTable();
     const row = screen.getAllByRole("row")[1];
-    const cell = within(row as HTMLElement)
-      .getByRole("button", { name: "Open menu" })
-      .closest("td");
-    const className = cell?.className ?? "";
+    const button = within(row as HTMLElement).getByRole("button", {
+      name: "Open menu",
+    });
+    // The content fades, not the cell, so a pinned cell keeps its background.
+    expect(button.closest("td")?.className).not.toContain("opacity-0");
+    const className = button.parentElement?.className ?? "";
     expect(className).toContain("opacity-0");
     expect(className).toContain("group-hover/row:opacity-100");
     expect(className).toContain("group-focus-within/row:opacity-100");

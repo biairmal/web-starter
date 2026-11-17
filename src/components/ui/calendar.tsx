@@ -72,7 +72,7 @@ function Calendar({
         range_middle: "rdp-range-middle bg-muted",
         range_end: "rdp-range-end rounded-e-md bg-muted",
         day_button:
-          "inline-flex size-8 items-center justify-center rounded-md text-body tabular-nums outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 group-data-[outside=true]/day:text-muted-foreground group-data-[today=true]/day:font-semibold group-data-[today=true]/day:text-brand-accent group-data-[disabled=true]/day:pointer-events-none group-data-[disabled=true]/day:opacity-40 group-data-[selected=true]/day:bg-primary group-data-[selected=true]/day:text-primary-foreground group-data-[selected=true]/day:hover:bg-primary-hover group-[.rdp-range-middle]/day:bg-transparent group-[.rdp-range-middle]/day:text-foreground",
+          "inline-flex size-8 items-center justify-center rounded-md text-body tabular-nums outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 group-data-[outside=true]/day:text-muted-foreground group-data-[today=true]/day:font-semibold group-[[data-today]:not([data-selected])]/day:text-brand-accent group-data-[disabled=true]/day:pointer-events-none group-data-[disabled=true]/day:opacity-40 group-data-[selected=true]/day:bg-primary group-data-[selected=true]/day:text-primary-foreground group-data-[selected=true]/day:hover:bg-primary-hover group-[.rdp-range-middle]/day:bg-transparent group-[.rdp-range-middle]/day:text-foreground",
         hidden: "invisible",
         ...classNames,
       }}

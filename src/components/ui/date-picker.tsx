@@ -334,6 +334,8 @@ function MultiDatePicker({
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="multiple"
+          // Separate days, so two chosen side by side do not read as a range.
+          classNames={{ weekdays: "flex gap-0.5", week: "mt-0.5 flex gap-0.5" }}
           // eslint-disable-next-line jsx-a11y/no-autofocus -- the popover just opened; focus goes to the chosen day, not the month button
           autoFocus
           selected={selected}

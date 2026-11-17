@@ -162,3 +162,50 @@ describe("DateRangePicker", () => {
     );
   });
 });
+
+describe("DateRangePicker with a range already set", () => {
+  function dayButton(iso: string) {
+    const button = document.querySelector(`[data-day="${iso}"] button`);
+    if (!(button instanceof HTMLButtonElement)) {
+      throw new Error(`no day ${iso}`);
+    }
+    return button;
+  }
+
+  it("starts a new range on the first click and ends it on the second", async () => {
+    const onChange = vi.fn();
+    renderWithIntl(
+      <DateRangePicker
+        aria-label="Created"
+        value={{ from: "2026-11-03", to: "2026-11-05" }}
+        onValueChange={onChange}
+      />,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Created" }));
+    await user.click(dayButton("2026-11-20"));
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await user.click(dayButton("2026-11-10"));
+    expect(onChange).toHaveBeenCalledWith({
+      from: "2026-11-10",
+      to: "2026-11-20",
+    });
+  });
+
+  it("has month and year selects", async () => {
+    renderWithIntl(
+      <DatePicker
+        aria-label="Due"
+        value="2026-11-10"
+        onValueChange={() => undefined}
+      />,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Due" }));
+    const selects = screen.getAllByRole("combobox");
+    expect(selects).toHaveLength(2);
+    await user.selectOptions(selects[1] as HTMLSelectElement, "2030");
+    expect(document.querySelector('[data-day="2030-11-10"]')).not.toBeNull();
+  });
+});

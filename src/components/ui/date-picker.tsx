@@ -164,9 +164,14 @@ function rangePresets(today: Date) {
   ] as const;
 }
 
+/** How long a finished range stays in view before the picker closes. */
+const RANGE_CLOSE_DELAY_MS = 250;
+
 /**
- * A start and end date. The value changes only once both ends are picked;
- * `presets` adds quick ranges (today, last 7 and 30 days, this month).
+ * A start and end date. Each opening picks a new range: the first click is
+ * the start, the second the end (either order), and the value changes only
+ * then. The old range stays highlighted until the first click. `presets` adds
+ * quick ranges (today, last 7 and 30 days, this month).
  */
 function DateRangePicker({
   value,
@@ -186,24 +191,40 @@ function DateRangePicker({
   const t = useTranslations("forms.date");
   const text = useDateText();
   const [open, setOpen] = React.useState(false);
+  // The start clicked in this opening; null until the first click.
+  const [start, setStart] = React.useState<Date | null>(null);
+  const closeTimer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
+  React.useEffect(
+    () => () => {
+      clearTimeout(closeTimer.current);
+    },
+    [],
+  );
+
   const committed: DateRange | undefined = value
     ? { from: fromIso(value.from), to: fromIso(value.to) }
     : undefined;
-  const [draft, setDraft] = React.useState<DateRange | undefined>(committed);
+  const shown: DateRange | undefined = start
+    ? { from: start, to: start }
+    : committed;
+
+  const changeOpen = (next: boolean) => {
+    clearTimeout(closeTimer.current);
+    setOpen(next);
+    setStart(null);
+  };
 
   const commit = (from: Date, to: Date) => {
     onValueChange({ from: toIso(from), to: toIso(to) });
-    setOpen(false);
+    setStart(null);
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => {
+      setOpen(false);
+    }, RANGE_CLOSE_DELAY_MS);
   };
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        setDraft(committed);
-      }}
-    >
+    <Popover open={open} onOpenChange={changeOpen}>
       <PopoverTrigger asChild>
         <DateTrigger
           {...triggerProps}
@@ -240,13 +261,18 @@ function DateRangePicker({
               // eslint-disable-next-line jsx-a11y/no-autofocus -- the popover just opened; focus goes to the chosen day, not the month button
               autoFocus
               numberOfMonths={2}
-              selected={draft}
-              defaultMonth={draft?.from}
+              selected={shown}
+              defaultMonth={committed?.from}
               disabled={limits(min, max)}
-              onSelect={(range) => {
-                setDraft(range);
-                if (range?.from && range.to && range.from !== range.to) {
-                  commit(range.from, range.to);
+              onSelect={(_range, day) => {
+                if (start === null) {
+                  setStart(day);
+                  return;
+                }
+                if (day.getTime() < start.getTime()) {
+                  commit(day, start);
+                } else {
+                  commit(start, day);
                 }
               }}
             />
@@ -257,7 +283,7 @@ function DateRangePicker({
                   size="sm"
                   onClick={() => {
                     onValueChange(null);
-                    setOpen(false);
+                    changeOpen(false);
                   }}
                 >
                   {t("clear")}

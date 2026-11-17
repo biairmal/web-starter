@@ -572,7 +572,11 @@
         "notMet": "(belum)"
       }
     },
-    "counter": "{length} / {max}"
+    "counter": "{length} / {max}",
+    "number": {
+      "increase": "Tambah",
+      "decrease": "Kurangi"
+    }
   },
   "dataTable": {
     "loading": "Memuat",

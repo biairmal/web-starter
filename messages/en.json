@@ -572,7 +572,11 @@
         "notMet": "(not yet)"
       }
     },
-    "counter": "{length} / {max}"
+    "counter": "{length} / {max}",
+    "number": {
+      "increase": "Increase",
+      "decrease": "Decrease"
+    }
   },
   "dataTable": {
     "loading": "Loading",

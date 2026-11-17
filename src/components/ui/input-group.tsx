@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Loader2 } from "lucide-react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
 // An input with text or icons before and after it (a currency, a unit, a

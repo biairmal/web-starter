@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import { Dialog as DialogPrimitive } from "radix-ui";
 
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-black/10 duration-160 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 isolate z-50 bg-black/20 duration-160 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className,
       )}
       {...props}

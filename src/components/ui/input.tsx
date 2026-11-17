@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 
 // The border, hover, focus, invalid, disabled and read-only look that every
 // text control shares (Input, Textarea, InputGroup).

@@ -60,9 +60,30 @@ describe("text controls", () => {
   });
 
   it("NumberInput is a spinbutton with its unit beside it", () => {
-    render(<NumberInput aria-label="Storage" unit="GB" defaultValue={5} />);
+    renderWithIntl(
+      <NumberInput aria-label="Storage" unit="GB" defaultValue={5} />,
+    );
     expect(screen.getByRole("spinbutton", { name: "Storage" })).toHaveValue(5);
     expect(screen.getByText("GB")).toBeInTheDocument();
+  });
+
+  it("NumberInput steps with its buttons, reports the change and keeps to max", async () => {
+    const values: string[] = [];
+    renderWithIntl(
+      <NumberInput
+        aria-label="Seats"
+        defaultValue={9}
+        max={10}
+        onChange={(event) => values.push(event.target.value)}
+      />,
+    );
+    const increase = screen.getByRole("button", { name: "Increase" });
+    expect(increase).toHaveAttribute("tabindex", "-1");
+    await userEvent.click(increase);
+    await userEvent.click(increase);
+    expect(screen.getByRole("spinbutton", { name: "Seats" })).toHaveValue(10);
+    await userEvent.click(screen.getByRole("button", { name: "Decrease" }));
+    expect(values).toEqual(["10", "9"]);
   });
 });
 

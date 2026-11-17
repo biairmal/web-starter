@@ -5,6 +5,7 @@ import { Inputs } from "./inputs";
 import { Layout } from "./layout";
 import { Navigation } from "./navigation";
 import { Overlays } from "./overlays";
+import { Pickers } from "./pickers";
 
 // The development-only component gallery: every shared component in its
 // variants and states, on one page.
@@ -40,6 +41,14 @@ const INDEX = [
       ["switch", "Switch"],
       ["slider", "Slider"],
       ["toggle-group", "Toggle group"],
+    ],
+  ],
+  [
+    "Pickers",
+    [
+      ["combobox", "Combobox"],
+      ["async-combobox", "Async combobox"],
+      ["date-picker", "Date pickers"],
     ],
   ],
   [
@@ -107,6 +116,7 @@ export function ComponentGallery() {
         <Layout />
         <Controls />
         <Inputs />
+        <Pickers />
         <Navigation />
         <Overlays />
         <Feedback />

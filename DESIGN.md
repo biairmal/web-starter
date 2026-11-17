@@ -177,6 +177,7 @@ Motion rules:
 - Motion must explain a state change, relationship, or spatial transition.
 - Keep feedback immediate and purposeful.
 - Respect `prefers-reduced-motion`.
+- Loading placeholders (skeletons) pulse softly (`animate-skeleton`: opacity down to `--skeleton-dim` and back over `--skeleton-pulse`), and hold still under reduced motion. No shimmer sweep.
 - Avoid animation that blocks task completion.
 - Use consistent duration and easing tokens.
 

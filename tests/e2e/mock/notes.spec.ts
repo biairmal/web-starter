@@ -93,8 +93,8 @@ const ROWS = [
   },
 ];
 
-function isList(url: string) {
-  return new URL(url).pathname === "/api/notes/notes";
+function isList(url: URL) {
+  return url.pathname === "/api/notes/notes";
 }
 
 test.describe("notes as the reference module", () => {
@@ -155,7 +155,7 @@ test.describe("notes as the reference module", () => {
     await dialog.getByLabel("Title", { exact: true }).fill("Ideas");
     const listed = page.waitForRequest(
       (request) =>
-        isList(request.url()) &&
+        isList(new URL(request.url())) &&
         new URL(request.url()).searchParams.get("title") === "Ideas;ne",
     );
     await dialog.getByRole("button", { name: "Apply" }).click();
@@ -170,7 +170,7 @@ test.describe("notes as the reference module", () => {
     await expect(page).toHaveURL("/notes?sort=title%2CASC");
     const listed = page.waitForRequest(
       (request) =>
-        isList(request.url()) &&
+        isList(new URL(request.url())) &&
         new URL(request.url()).searchParams.getAll("sort").length === 2,
     );
     await table

@@ -1,6 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from "@/config/password-policy";
 import { bffGet } from "@/lib/api/bff-fetch";
 import { queryKeys, staleTimes } from "@/lib/api/query-keys";
 import type { AuthConfig } from "@/lib/api/types";
@@ -10,6 +14,10 @@ export const FALLBACK_AUTH_CONFIG: AuthConfig = {
   providers: { password: true, google: false },
   registration: false,
   tenancy: "single",
+  password: {
+    min_length: PASSWORD_MIN_LENGTH,
+    max_length: PASSWORD_MAX_LENGTH,
+  },
 };
 
 /**

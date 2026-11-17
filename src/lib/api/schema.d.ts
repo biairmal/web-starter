@@ -756,7 +756,7 @@ export interface paths {
         };
         /**
          * List roles
-         * @description Requires roles:manage.
+         * @description Requires roles:manage or users:manage.
          */
         get: operations["listRoles"];
         put?: never;
@@ -780,7 +780,7 @@ export interface paths {
         };
         /**
          * One role
-         * @description Requires roles:manage.
+         * @description Requires roles:manage or users:manage.
          */
         get: operations["getRole"];
         put?: never;
@@ -1056,6 +1056,20 @@ export interface components {
             /** @description Exponent, base64url encoded. */
             e: string;
         };
+        /**
+         * @example {
+         *       "providers": {
+         *         "password": true,
+         *         "google": false
+         *       },
+         *       "registration": true,
+         *       "tenancy": "single",
+         *       "password": {
+         *         "min_length": 10,
+         *         "max_length": 128
+         *       }
+         *     }
+         */
         AuthConfig: {
             providers: {
                 password: boolean;
@@ -1065,6 +1079,17 @@ export interface components {
             registration: boolean;
             /** @enum {string} */
             tenancy: "single" | "multi";
+            /**
+             * @description Password length rules in characters (runes). Always present, also when
+             *     password sign-in is off. The minimum is configurable (floor 10); the
+             *     maximum is the policy cap.
+             */
+            password: {
+                /** @example 10 */
+                min_length: number;
+                /** @example 128 */
+                max_length: number;
+            };
         };
         RegisterRequest: {
             /** Format: email */
@@ -1197,6 +1222,8 @@ export interface components {
             status: "pending" | "active" | "disabled";
             /** @enum {string} */
             membership_status: "invited" | "active" | "disabled" | "removed";
+            /** @description True for the platform super admin, who cannot be disabled, removed or given other roles. */
+            is_super_admin: boolean;
             roles: components["schemas"]["RoleRef"][];
             /** Format: date-time */
             created_at: string;
@@ -2588,6 +2615,10 @@ export interface operations {
                 action?: string;
                 from?: string;
                 to?: string;
+                /** @description Exact match on the target type, for example user. */
+                target_type?: string;
+                /** @description Exact match on the target ID, any string. Needs target_type; without it the answer is 400. */
+                target_id?: string;
             };
             header?: never;
             path?: never;

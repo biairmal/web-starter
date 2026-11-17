@@ -46,6 +46,7 @@ const users: AdminUser[] = [
     display_name: "Dina Pratama",
     status: "active",
     membership_status: "active",
+    is_super_admin: false,
     roles: [
       { id: ROLE_ADMIN, name: "Admin" },
       { id: ROLE_SALES, name: "Sales" },
@@ -60,6 +61,7 @@ const users: AdminUser[] = [
     display_name: "Budi",
     status: "pending",
     membership_status: "invited",
+    is_super_admin: false,
     roles: [{ id: ROLE_SALES, name: "Sales" }],
     created_at: "2026-11-09T00:00:00Z",
   },

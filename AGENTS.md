@@ -4,7 +4,7 @@ Read this before changing code. The task list is `project-files/phase2/frontend/
 
 ## Rules for every task
 
-1. **One task = one branch = one pull request.** Branch name: `fe/<task-id>-<short-slug>`, e.g. `fe/F3.1-sign-in`.
+1. **One task = one branch = one pull request.** Branch, commit and PR format: see [Git conventions](#git-conventions).
 2. **Do only what the task says.** Anything outside its "Files" list or "Out of scope" goes in a follow-up note in the PR description, not in the code.
 3. **Read before writing:** the task's "Read first" list, then the existing code it touches. Match the surrounding style.
 4. **Conventions:**
@@ -28,6 +28,14 @@ Read this before changing code. The task list is `project-files/phase2/frontend/
    - [ ] The task's row in the **Status** table of `IMPLEMENTATION_PLAN.md` is set to ✅ in the same PR.
 6. **When the TRD is unclear:** choose the simplest option consistent with the TRD, implement it, and add one line to `docs/DECISIONS.md` (`date · task · decision · reason`). Do not stop and wait.
 7. **Never** weaken a rule from TRD 11 (security) to make a test pass.
+
+## Git conventions
+
+Checked on every PR by `.github/workflows/pr-conventions.yml`. PRs are squash-merged, so the PR title becomes the commit on `main`.
+
+- **Branch:** `<type>/<group>/<task-id>-<slug>`. `<group>` is optional and names the work stream, so parallel streams don't collide. The task ID keeps the plan's casing. Examples: `feat/fe/F8.11-upload`, `chore/ui-refresh/2-table-filters`.
+- **Commit and PR title:** [Conventional Commits](https://www.conventionalcommits.org/), `<type>(<scope>)?: <what it does, lower case>`, plus ` (<task id>)` on the PR title. Types: `feat fix refactor perf test docs build ci chore revert`. A breaking change adds `!` and a `BREAKING CHANGE:` footer. The commit body says why, not how.
+- **PR body:** fill in `.github/pull_request_template.md`. `### Why` (requirement, bug, security, or refactor, with its source), `### What changed` and `### Verification` are required. Verification quotes each command's real output from the final pushed head, keeps failed or skipped checks in the table, and lists what was not verified.
 
 ## Commands
 

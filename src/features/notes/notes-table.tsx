@@ -1,6 +1,12 @@
 "use client";
 
-import { MoreHorizontal, NotebookPen, Pin, SearchX } from "lucide-react";
+import {
+  MoreHorizontal,
+  NotebookPen,
+  Pin,
+  SearchX,
+  Trash2,
+} from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "@/components/feedback/toast";
@@ -9,10 +15,17 @@ import {
   DataTable,
   type DataTableColumn,
 } from "@/components/data-table/data-table";
+import {
+  NO_SELECTION,
+  type RowSelection,
+  selectionCount,
+  useRowSelection,
+} from "@/components/data-table/selection";
 import { useListParams } from "@/components/data-table/use-list-params";
 import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { FilterBar } from "@/components/filters/filter-bar";
+import type { FilterDef } from "@/components/filters/filters";
 import { FilterTabs } from "@/components/filters/filter-tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,15 +44,21 @@ import type { Note, NoteChange } from "@/features/notes/types";
 import {
   NOTE_FILTERS,
   NOTE_STATUSES,
+  NOTE_TITLE_OPERATORS,
+  fetchNoteOptions,
   isNoteStatus,
+  notesFilterString,
+  resolveNoteLabels,
+  useBulkDeleteNotes,
   useDeleteNote,
   useNotes,
   useUpdateNote,
 } from "@/features/notes/use-notes";
 
 // The example module's one screen: the caller's notes (or the tenant's, with
-// notes:read:any), with status tabs and a search in the URL. Holders of
-// notes:write create, pin, archive and delete.
+// notes:read:any), with status tabs, a search, filters with operators and a
+// multi-column sort in the URL. Holders of notes:write create, pin, archive
+// and delete, one note or a selection at a time.
 
 const LIST_CONFIG = { filters: NOTE_FILTERS, searchKey: "search" } as const;
 
@@ -143,8 +162,58 @@ export function NotesTable() {
   const update = useUpdateNote();
   const remove = useDeleteNote();
   const errorToast = useErrorToast();
+  const bulkDelete = useBulkDeleteNotes();
   const [deleting, setDeleting] = useState<Note | undefined>();
+  const [selection, setSelection] = useRowSelection(
+    JSON.stringify(list.params.filters),
+  );
+  const [bulkDeleting, setBulkDeleting] = useState<RowSelection | undefined>();
   const status = list.params.filters.status ?? "";
+
+  const filterDefs: FilterDef[] = [
+    {
+      key: "title",
+      label: tFilters("title"),
+      type: "text",
+      operators: NOTE_TITLE_OPERATORS,
+    },
+    { key: "created_at", label: tFilters("created"), type: "dateRange" },
+    {
+      key: "id",
+      label: tFilters("notes"),
+      type: "async",
+      fetchOptions: fetchNoteOptions,
+      resolveLabels: resolveNoteLabels,
+      multiple: true,
+    },
+  ];
+
+  const confirmBulkDelete = (chosen: RowSelection) => {
+    bulkDelete.mutate(
+      chosen.allMatching
+        ? { filter: notesFilterString(list.params) }
+        : { ids: chosen.ids },
+      {
+        onSuccess: (result) => {
+          setBulkDeleting(undefined);
+          setSelection(NO_SELECTION);
+          toast.success(t("bulkDeleted", { count: result.affected ?? 0 }));
+          const failed = result.failed ?? [];
+          if (failed.length > 0) {
+            toast.error(t("bulkFailed", { count: failed.length }));
+          }
+        },
+        onError: (error) => {
+          setBulkDeleting(undefined);
+          if (isApiError(error) && error.reason === "TOO_MANY_ROWS") {
+            toast.error(t("bulkTooMany"));
+            return;
+          }
+          errorToast(error);
+        },
+      },
+    );
+  };
 
   const change = (note: Note, noteChange: NoteChange) => {
     update.mutate(
@@ -170,17 +239,20 @@ export function NotesTable() {
     {
       id: "title",
       header: t("title"),
+      sortField: "title",
       identity: true,
       cell: (note) => <NoteTitle note={note} />,
     },
     {
       id: "status",
       header: t("status"),
+      sortField: "status",
       cell: (note) => <StatusPill status={note.status} />,
     },
     {
       id: "updated",
       header: t("updated"),
+      sortField: "updated_at",
       align: "end",
       cell: updated,
     },
@@ -228,7 +300,7 @@ export function NotesTable() {
           onChange: list.search.onChange,
           label: tFilters("search"),
         }}
-        filters={[]}
+        filters={filterDefs}
         values={list.params.filters}
         onChange={(key, value) => {
           list.setFilter(key, value);
@@ -239,8 +311,32 @@ export function NotesTable() {
         columns={columns}
         query={notes}
         getRowId={(note) => note.id ?? ""}
+        getRowLabel={(note) => note.title ?? ""}
         caption={t("caption")}
         errorTitle={t("loadFailed")}
+        sort={list.params.sort}
+        onSortChange={list.setSort}
+        multiSort
+        {...(canWrite
+          ? {
+              selectable: "multiple" as const,
+              selection,
+              onSelectionChange: setSelection,
+              bulkActions: (chosen: RowSelection) => (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-destructive"
+                  onClick={() => {
+                    setBulkDeleting(chosen);
+                  }}
+                >
+                  <Trash2 aria-hidden="true" />
+                  {t("bulkDelete")}
+                </Button>
+              ),
+            }
+          : {})}
         onPageChange={list.setPage}
         onSizeChange={list.setSize}
         mobileCard={(note) => ({
@@ -303,6 +399,26 @@ export function NotesTable() {
             },
             onError: errorToast,
           });
+        }}
+      />
+      <ConfirmDialog
+        open={bulkDeleting !== undefined}
+        onOpenChange={(open) => {
+          if (!open) {
+            setBulkDeleting(undefined);
+          }
+        }}
+        title={t("bulkDeleteTitle", {
+          count: bulkDeleting ? selectionCount(bulkDeleting, total ?? 0) : 0,
+        })}
+        description={t("deleteBody")}
+        confirmLabel={t("bulkDeleteConfirm")}
+        destructive
+        pending={bulkDelete.isPending}
+        onConfirm={() => {
+          if (bulkDeleting) {
+            confirmBulkDelete(bulkDeleting);
+          }
         }}
       />
     </div>

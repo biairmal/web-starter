@@ -92,6 +92,22 @@ grant them in the role editor. Remember that `x:y:any` does not imply `x:y` (TRD
 - `src/app/(app)/notes/page.tsx`: thin; `await requirePermission(NOTES_READ)` then the feature's
   component. Gate buttons with `useCan(NOTES_WRITE)`; the service still decides.
 
+`notes-table.tsx` is the reference list. Copy its wiring for a go-service-template list:
+
+- **Sort:** `sortField` on each column the service sorts by, `sort`/`onSortChange` from
+  `useListParams`, and `multiSort`; the hook's query passes the repeated `sort` params through.
+- **Filters:** one `FilterDef` per filter field, with the operators the service's swagger lists
+  for it (`text` with `operators`, `number`, `dateRange`). Add each key to the list's `filters`.
+  The value already has the service's `value;op` format, so the query passes it as is; the one
+  exception is a day range, which `use-notes.ts` stretches to the end of its last day because
+  the service reads a bare date as midnight UTC.
+- **Async filter:** a `type: "async"` def whose `fetchOptions` and `resolveLabels` call the
+  service's `GET /v1/<resource>/options` (`search`, `page`; `ids` for labels).
+- **Bulk actions:** `selectable="multiple"` with `useRowSelection(JSON.stringify(filters))`, and a
+  `bulkActions` button that confirms first. Send `{ ids }`, or with "Select all N matching"
+  (`selection.allMatching`) `{ filter }`, the list's filters as a query string without page,
+  size and sort. Toast `affected`, mention any `failed`, and give `TOO_MANY_ROWS` its own message.
+
 ### 8. Navigation entry
 
 `src/config/nav.ts`: one entry with `href`, `labelKey`, a lucide icon and `permission`. The shell

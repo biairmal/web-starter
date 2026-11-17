@@ -231,4 +231,115 @@ describe("NotesTable", () => {
     expect(await screen.findByText("Note deleted.")).toBeInTheDocument();
     expect(deleted).toBe(true);
   });
+
+  it("operator filters, the created range and multi-sort go to the API in its format", async () => {
+    const seen: URLSearchParams[] = [];
+    server.use(
+      http.get("*/api/notes/notes", ({ request }) => {
+        seen.push(new URL(request.url).searchParams);
+        return HttpResponse.json(page([groceries]));
+      }),
+    );
+    fakeRouter.reset(
+      "/notes?title=gro%3Blike&created_at=2026-11-01%2C2026-11-30%3Bbetween&id=n1%2Cn2%3Bin&sort=title,ASC&sort=updated_at,DESC",
+    );
+    renderSignedIn(<NotesTable />, reader, fakeRouter.url);
+    await waitFor(() => {
+      expect(seen.length).toBeGreaterThan(0);
+    });
+    const query = seen.at(-1);
+    expect(query?.get("title")).toBe("gro;like");
+    expect(query?.get("created_at")).toBe(
+      "2026-11-01,2026-11-30T23%3A59%3A59.999Z;between",
+    );
+    expect(query?.get("id")).toBe("n1,n2;in");
+    expect(query?.getAll("sort")).toEqual(["title,ASC", "updated_at,DESC"]);
+  });
+
+  it("bulk delete sends the selected ids and reports what went", async () => {
+    serveList();
+    let sent: unknown;
+    server.use(
+      http.post("*/api/notes/notes/bulk-delete", async ({ request }) => {
+        sent = await request.json();
+        return HttpResponse.json({
+          data: { affected: 1, failed: [{ id: "n2", reason: "not_found" }] },
+        });
+      }),
+    );
+    renderSignedIn(<NotesTable />, writer, "/notes");
+    const user = userEvent.setup();
+    await screen.findByText("2 notes");
+    const table = screen.getByRole("table", { name: "Notes" });
+    await user.click(
+      within(table).getByRole("checkbox", { name: "Select Groceries" }),
+    );
+    await user.click(
+      within(table).getByRole("checkbox", { name: "Select Ideas" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    const dialog = screen.getByRole("dialog", { name: "Delete 2 notes?" });
+    await user.click(
+      within(dialog).getByRole("button", { name: "Delete notes" }),
+    );
+    expect(await screen.findByText("1 note deleted.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("1 note was already gone."),
+    ).toBeInTheDocument();
+    expect(sent).toEqual({ ids: ["n1", "n2"] });
+  });
+
+  it("select all matching sends the list's filters, and the cap has its own message", async () => {
+    server.use(
+      http.get("*/api/notes/notes", () =>
+        HttpResponse.json({
+          data: {
+            items: [groceries, ideas],
+            page: 1,
+            size: 2,
+            total: 1500,
+            total_pages: 750,
+          },
+        }),
+      ),
+    );
+    let sent: unknown;
+    server.use(
+      http.post("*/api/notes/notes/bulk-delete", async ({ request }) => {
+        sent = await request.json();
+        return HttpResponse.json(
+          {
+            error: {
+              code: "BAD_REQUEST",
+              message: "too many",
+              meta: { reason: "TOO_MANY_ROWS" },
+            },
+          },
+          { status: 400 },
+        );
+      }),
+    );
+    fakeRouter.reset("/notes?status=draft&title=a%3Blike&sort=title,ASC");
+    renderSignedIn(<NotesTable />, writer, fakeRouter.url);
+    const user = userEvent.setup();
+    await user.click(
+      await screen.findByRole("checkbox", {
+        name: "Select all rows on this page",
+      }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Select all 1,500 matching" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    const dialog = screen.getByRole("dialog", { name: "Delete 1,500 notes?" });
+    await user.click(
+      within(dialog).getByRole("button", { name: "Delete notes" }),
+    );
+    expect(
+      await screen.findByText(
+        "That’s more than 1,000 notes. Narrow the filters and try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(sent).toEqual({ filter: "status=draft&title=a%3Blike" });
+  });
 });

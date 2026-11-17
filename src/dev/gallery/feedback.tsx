@@ -103,7 +103,7 @@ export function Feedback() {
           <Avatar name="Ayu Lestari" size="lg" />
         </Demo>
         <Demo label="Broken image falls back to initials">
-          <Avatar name="Budi Santoso" src="/does-not-exist.png" />
+          <Avatar name="Budi Santoso" src="data:image/png;base64,broken" />
         </Demo>
         <Demo label="Group (max 4)">
           <AvatarGroup people={PEOPLE} label="6 people with access" />

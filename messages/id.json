@@ -578,6 +578,29 @@
     "number": {
       "increase": "Tambah",
       "decrease": "Kurangi"
+    },
+    "picker": {
+      "placeholder": "Pilih…",
+      "search": "Cari…",
+      "empty": "Tidak ada hasil",
+      "loading": "Memuat…",
+      "loadingMore": "Memuat lagi…",
+      "error": "Tidak dapat memuat opsi.",
+      "retry": "Coba lagi",
+      "more": "+{count}",
+      "clear": "Hapus"
+    },
+    "date": {
+      "placeholder": "Pilih tanggal",
+      "rangePlaceholder": "Pilih rentang tanggal",
+      "multiPlaceholder": "Pilih tanggal",
+      "count": "{count} tanggal",
+      "presets": "Pilihan cepat",
+      "today": "Hari ini",
+      "last7": "7 hari terakhir",
+      "last30": "30 hari terakhir",
+      "thisMonth": "Bulan ini",
+      "clear": "Hapus"
     }
   },
   "dataTable": {

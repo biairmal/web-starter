@@ -578,6 +578,29 @@
     "number": {
       "increase": "Increase",
       "decrease": "Decrease"
+    },
+    "picker": {
+      "placeholder": "Select…",
+      "search": "Search…",
+      "empty": "No results",
+      "loading": "Loading…",
+      "loadingMore": "Loading more…",
+      "error": "Couldn’t load options.",
+      "retry": "Retry",
+      "more": "+{count}",
+      "clear": "Clear"
+    },
+    "date": {
+      "placeholder": "Pick a date",
+      "rangePlaceholder": "Pick a date range",
+      "multiPlaceholder": "Pick dates",
+      "count": "{count, plural, one {# date} other {# dates}}",
+      "presets": "Presets",
+      "today": "Today",
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "thisMonth": "This month",
+      "clear": "Clear"
     }
   },
   "dataTable": {

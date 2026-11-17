@@ -29,6 +29,7 @@
   --color-accent-foreground: var(--text);
   --color-destructive: var(--negative);
   --color-border: var(--border);
+  --color-dropzone: var(--dropzone-border);
   --color-input: var(--control);
   --color-ring: var(--brand-accent);
   --color-chart-1: var(--chart-1);
@@ -98,6 +99,7 @@
   --spacing-avatar-sm: var(--avatar-sm);
   --spacing-avatar-md: var(--avatar-md);
   --spacing-avatar-lg: var(--avatar-lg);
+  --spacing-avatar-xl: var(--avatar-xl);
   --container-dialog-sm: var(--dialog-w-sm);
   --container-dialog-md: var(--dialog-w-md);
   --container-dialog-lg: var(--dialog-w-lg);

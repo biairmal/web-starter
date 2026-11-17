@@ -601,6 +601,26 @@
       "last30": "30 hari terakhir",
       "thisMonth": "Bulan ini",
       "clear": "Hapus"
+    },
+    "upload": {
+      "drop": "Letakkan file di sini, atau klik untuk memilih",
+      "dropOne": "Letakkan file di sini, atau klik untuk memilih",
+      "dropping": "Lepaskan untuk mengunggah",
+      "paste": "Anda juga bisa menempelkan file.",
+      "maxSize": "Maksimal {size} per file",
+      "maxSizeOne": "Maksimal {size}",
+      "tooBig": "Lebih besar dari {size}",
+      "wrongType": "Jenis file ini tidak diizinkan",
+      "tooMany": "Hanya {max} file yang diizinkan",
+      "failed": "Gagal mengunggah",
+      "retry": "Coba lagi {name}",
+      "remove": "Hapus {name}",
+      "cancel": "Batalkan unggahan {name}",
+      "uploading": "Mengunggah {name}",
+      "files": "File",
+      "choosePhoto": "Unggah foto",
+      "changePhoto": "Ganti foto",
+      "removePhoto": "Hapus foto"
     }
   },
   "dataTable": {

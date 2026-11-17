@@ -601,6 +601,26 @@
       "last30": "Last 30 days",
       "thisMonth": "This month",
       "clear": "Clear"
+    },
+    "upload": {
+      "drop": "Drop files here, or click to choose",
+      "dropOne": "Drop a file here, or click to choose",
+      "dropping": "Drop to upload",
+      "paste": "You can also paste a file.",
+      "maxSize": "Up to {size} each",
+      "maxSizeOne": "Up to {size}",
+      "tooBig": "Larger than {size}",
+      "wrongType": "This type of file isn’t allowed",
+      "tooMany": "Only {max, plural, one {# file} other {# files}} allowed",
+      "failed": "Couldn’t upload",
+      "retry": "Retry {name}",
+      "remove": "Remove {name}",
+      "cancel": "Cancel upload of {name}",
+      "uploading": "Uploading {name}",
+      "files": "Files",
+      "choosePhoto": "Upload photo",
+      "changePhoto": "Change photo",
+      "removePhoto": "Remove photo"
     }
   },
   "dataTable": {

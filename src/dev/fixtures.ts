@@ -10,6 +10,7 @@ import {
   type FilterOperator,
 } from "@/components/filters/filters";
 import type { ComboboxOption } from "@/components/ui/combobox";
+import type { UploadFile } from "@/components/ui/file-upload";
 import type { ListParams } from "@/lib/api/query-keys";
 import type { Page } from "@/lib/api/types";
 
@@ -247,5 +248,47 @@ export function useFakeOrders(
     isError: false,
     error: null,
     refetch: () => undefined,
+  };
+}
+
+let uploads = 0;
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(typeof reader.result === "string" ? reader.result : "");
+    };
+    reader.onerror = () => {
+      reject(reader.error ?? new Error("Could not read the file"));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * A pretend upload that reports progress over about two seconds. With
+ * `flaky`, each file's first try fails halfway, to show Retry. Images come
+ * back with a data URL so the stored file has a thumbnail.
+ */
+export function fakeUploader(flaky = false): UploadFile {
+  const tried = new WeakSet<File>();
+  return async (file, { onProgress, signal }) => {
+    const fails = flaky && !tried.has(file);
+    tried.add(file);
+    for (let step = 1; step <= 10; step += 1) {
+      await wait(200, signal);
+      onProgress(step / 10);
+      if (fails && step === 6) {
+        throw new Error("Network request failed");
+      }
+    }
+    uploads += 1;
+    return {
+      id: `file_${String(uploads)}`,
+      ...(file.type.startsWith("image/")
+        ? { url: await readAsDataUrl(file) }
+        : {}),
+    };
   };
 }

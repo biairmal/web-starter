@@ -144,6 +144,8 @@ test.describe("notes as the reference module", () => {
     page,
   }) => {
     await page.goto("/notes");
+    // "Add filter" is server-rendered; a click before hydration opens nothing.
+    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: "Add filter" }).click();
     await page
       .getByRole("dialog", { name: "Add filter" })

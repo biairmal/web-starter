@@ -11,11 +11,8 @@ import { FormErrorSummary, FormField } from "@/components/forms/form-field";
 import { PasswordInput } from "@/components/forms/password-input";
 import { PasswordRules } from "@/components/forms/password-rules";
 import { newPasswordSchema } from "@/components/forms/password-schema";
+import { usePasswordLength } from "@/components/forms/use-password-length";
 import { SubmitButton } from "@/components/forms/submit-button";
-import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-} from "@/config/password-policy";
 import { isApiError } from "@/lib/api/errors";
 import { useErrorText } from "@/lib/api/use-error-text";
 import {
@@ -36,6 +33,7 @@ export const PASSWORD_SECTION_ID = "password";
 export function PasswordForm() {
   const t = useTranslations("account.password");
   const tPassword = useTranslations("auth.password");
+  const length = usePasswordLength();
   const me = useMe();
   const hasPassword = me.providers.password;
   const errorText = useErrorText();
@@ -50,10 +48,14 @@ export function PasswordForm() {
         current: hasPassword
           ? z.string().min(1, { error: t("currentRequired") })
           : z.string(),
-        password: newPasswordSchema({
-          tooShort: tPassword("tooShort", { min: PASSWORD_MIN_LENGTH }),
-          tooLong: tPassword("tooLong", { max: PASSWORD_MAX_LENGTH }),
-        }),
+        password: newPasswordSchema(
+          {
+            tooShort: tPassword("tooShort", { min: length.min }),
+            tooLong: tPassword("tooLong", { max: length.max }),
+          },
+          length.min,
+          length.max,
+        ),
       }),
     ),
     mode: "onTouched",
@@ -158,7 +160,12 @@ export function PasswordForm() {
           />
         )}
       />
-      <PasswordRules id={rulesId} value={password} />
+      <PasswordRules
+        id={rulesId}
+        value={password}
+        min={length.min}
+        max={length.max}
+      />
       <FormErrorSummary
         invalidCount={
           form.formState.submitCount > 0

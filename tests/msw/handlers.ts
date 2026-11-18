@@ -35,5 +35,8 @@ export const handlers = [
   http.get("*/v1/auth/config", () =>
     HttpResponse.json(envelope(authConfigFixture)),
   ),
+  http.get("*/api/auth/config", () =>
+    HttpResponse.json(envelope(authConfigFixture)),
+  ),
   http.get("*/v1/me", () => HttpResponse.json(envelope(meFixture))),
 ];

@@ -67,6 +67,8 @@ test.describe("audit log", () => {
   }) => {
     await signIn(context, { perms: AUDITOR });
     await page.goto("/admin/audit");
+    // "Add filter" is server-rendered; a click before hydration opens nothing.
+    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: "Add filter" }).click();
     await page.getByRole("button", { name: "By", exact: true }).click();
     await page.getByRole("searchbox", { name: "By" }).fill("dina");

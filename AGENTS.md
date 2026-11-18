@@ -1,13 +1,11 @@
 # AGENTS.md — conventions for web-starter
 
-Read this before changing code. The task list is `project-files/phase2/frontend/IMPLEMENTATION_PLAN.md`; the behaviour is in `TRD.md`, the requirements in `PRD.md`, and the flows in `APP_FLOW.md`.
+**Before any change, read [CONTRIBUTING.md](CONTRIBUTING.md)** for where tasks and specs come from, the scope of a change, the git conventions, the PR body and the Definition of Done. This file holds the code rules for web-starter, for humans and AI agents alike. How the app fits together is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Rules for every task
 
-1. **One task = one branch = one pull request.** Branch, commit and PR format: see [Git conventions](#git-conventions).
-2. **Do only what the task says.** Anything outside its "Files" list or "Out of scope" goes in a follow-up note in the PR description, not in the code.
-3. **Read before writing:** the task's "Read first" list, then the existing code it touches. Match the surrounding style.
-4. **Conventions:**
+1. **Read before writing:** the task's "Read first" list, then the existing code it touches. Match the surrounding style.
+2. **Conventions:**
    - TypeScript strict, no `any` (use `unknown` and narrow). No default exports except where Next.js requires them (`page.tsx`, `layout.tsx`, `route.ts`, `middleware.ts`, and the other special files in `eslint.config.mjs`).
    - Server-only code (`src/lib/session`, `src/lib/bff`, `src/config/env.ts`) starts with `import "server-only"`.
    - API types come only from `src/lib/api/types.ts` (generated). Never hand-write a type for an identity payload.
@@ -20,22 +18,9 @@ Read this before changing code. The task list is `project-files/phase2/frontend/
    - Never log or render tokens, cookies, passwords or emails; never put tokens in URLs (TRD 6.3, 11.1).
    - Comments describe the code, not its history (no task IDs in comments).
    - Package manager is bun only (`bun run <script>`, never `bun test`: that is Bun's own runner, not Vitest). Do not commit `pnpm-lock.yaml`, `package-lock.json` or `yarn.lock`.
-5. **Definition of Done (every task):**
-   - [ ] All "Acceptance" items pass.
-   - [ ] `bun run check` is green (lint, type check, format check, API types check, i18n key check, unit and component tests).
-   - [ ] `bun run e2e:mock` is green if the task adds or changes a screen (from F0.4).
-   - [ ] New screens have axe checks with no critical violations (from F0.4).
-   - [ ] The task's row in the **Status** table of `IMPLEMENTATION_PLAN.md` is set to ✅ in the same PR.
-6. **When the TRD is unclear:** choose the simplest option consistent with the TRD, implement it, and add one line to `docs/DECISIONS.md` (`date · task · decision · reason`). Do not stop and wait.
-7. **Never** weaken a rule from TRD 11 (security) to make a test pass.
+3. **Never** weaken a rule from TRD 11 (security) to make a test pass.
 
-## Git conventions
-
-Checked on every PR by `.github/workflows/pr-conventions.yml`. PRs are squash-merged, so the PR title becomes the commit on `main`.
-
-- **Branch:** `<type>/<group>/<task-id>-<slug>`. `<group>` is optional and names the work stream, so parallel streams don't collide. The task ID keeps the plan's casing. Examples: `feat/fe/F8.11-upload`, `chore/ui-refresh/2-table-filters`.
-- **Commit and PR title:** [Conventional Commits](https://www.conventionalcommits.org/), `<type>(<scope>)?: <what it does, lower case>`, plus ` (<task id>)` on the PR title. Types: `feat fix refactor perf test docs build ci chore revert`. A breaking change adds `!` and a `BREAKING CHANGE:` footer. The commit body says why, not how.
-- **PR body:** fill in `.github/pull_request_template.md`. `### Why` (requirement, bug, security, or refactor, with its source), `### What changed` and `### Verification` are required. Verification quotes each command's real output from the final pushed head, keeps failed or skipped checks in the table, and lists what was not verified.
+Scope, git conventions and the Definition of Done are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Commands
 

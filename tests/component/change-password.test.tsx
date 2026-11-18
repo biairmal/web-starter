@@ -7,6 +7,7 @@ import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ChangePasswordForm } from "@/features/auth/change-password-form";
 import { SESSION_CHANNEL_NAME } from "@/lib/session-channel";
 import { renderWithIntl } from "../helpers/intl";
+import { authConfigFixture } from "../msw/handlers";
 import { server } from "../msw/server";
 
 const hardNavigate = vi.fn();
@@ -44,6 +45,23 @@ describe("ChangePasswordForm", () => {
       expect(hardNavigate).toHaveBeenCalledWith("/admin/users");
     });
     expect(sent).toEqual({ new_password: "granite-harbor-root" });
+  });
+
+  it("FE-4 uses the password length from the auth config", async () => {
+    server.use(
+      http.get("*/api/auth/config", () =>
+        HttpResponse.json({
+          data: {
+            ...authConfigFixture,
+            password: { min_length: 12, max_length: 128 },
+          },
+        }),
+      ),
+    );
+    renderWithIntl(<ChangePasswordForm />);
+    expect(
+      await screen.findByText("At least 12 characters"),
+    ).toBeInTheDocument();
   });
 
   it("FE-7 shows the policy error on the field", async () => {

@@ -11,16 +11,13 @@ import { PasswordInput } from "@/components/forms/password-input";
 import { PasswordRules } from "@/components/forms/password-rules";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-} from "@/config/password-policy";
 import { bffPost } from "@/lib/api/bff-fetch";
 import { isApiError } from "@/lib/api/errors";
 import { useErrorText } from "@/lib/api/use-error-text";
 import { hardNavigate } from "@/lib/hard-navigate";
 import { AuthHeading, InlineNotice } from "@/features/auth/auth-screen";
 import { newPasswordSchema } from "@/components/forms/password-schema";
+import { usePasswordLength } from "@/components/forms/use-password-length";
 import { useFragmentToken } from "@/features/auth/use-fragment-token";
 
 // /reset-password#token=… (FE-6, APP_FLOW 5.5, DESIGN_BRIEF 7.3): a new
@@ -60,6 +57,7 @@ function NewPasswordForm({
 }) {
   const t = useTranslations("auth.resetPassword");
   const tPassword = useTranslations("auth.password");
+  const length = usePasswordLength();
   const errorText = useErrorText();
   const rulesId = useId();
   const [message, setMessage] = useState<string | undefined>();
@@ -67,10 +65,14 @@ function NewPasswordForm({
   const form = useForm<Values>({
     resolver: zodResolver(
       z.object({
-        password: newPasswordSchema({
-          tooShort: tPassword("tooShort", { min: PASSWORD_MIN_LENGTH }),
-          tooLong: tPassword("tooLong", { max: PASSWORD_MAX_LENGTH }),
-        }),
+        password: newPasswordSchema(
+          {
+            tooShort: tPassword("tooShort", { min: length.min }),
+            tooLong: tPassword("tooLong", { max: length.max }),
+          },
+          length.min,
+          length.max,
+        ),
       }),
     ),
     mode: "onTouched",
@@ -141,7 +143,12 @@ function NewPasswordForm({
             />
           )}
         />
-        <PasswordRules id={rulesId} value={password} />
+        <PasswordRules
+          id={rulesId}
+          value={password}
+          min={length.min}
+          max={length.max}
+        />
         <InlineNotice tone="warning">{t("warning")}</InlineNotice>
         <FormErrorSummary
           invalidCount={

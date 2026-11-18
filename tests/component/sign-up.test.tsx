@@ -80,6 +80,34 @@ describe("SignUpForm", () => {
     expect(rule).toHaveAttribute("data-met", "true");
   });
 
+  it("FE-4 uses the password length identity enforces", async () => {
+    let calls = 0;
+    server.use(
+      http.post("*/api/auth/register", () => {
+        calls += 1;
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    renderSignUp({
+      ...authConfigFixture,
+      password: { min_length: 12, max_length: 128 },
+    });
+    expect(screen.getByText("At least 12 characters")).toBeInTheDocument();
+    const user = await fill("01234567890");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+    expect(
+      await screen.findByText("Use at least 12 characters."),
+    ).toBeInTheDocument();
+    expect(calls).toBe(0);
+  });
+
+  it("FE-4 falls back to 10 characters when identity sends no lengths", () => {
+    const { providers, registration, tenancy } = authConfigFixture;
+    // An identity build from before the lengths were in the config.
+    renderSignUp({ providers, registration, tenancy } as unknown as AuthConfig);
+    expect(screen.getByText("At least 10 characters")).toBeInTheDocument();
+  });
+
   it("FE-4 registers and goes to check email, remembering the address", async () => {
     let sent: unknown;
     server.use(

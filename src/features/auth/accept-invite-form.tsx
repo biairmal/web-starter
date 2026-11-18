@@ -14,10 +14,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { brand } from "@/config/brand";
-import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-} from "@/config/password-policy";
 import { bffPost } from "@/lib/api/bff-fetch";
 import type { NextResult } from "@/lib/api/bff-types";
 import { isApiError } from "@/lib/api/errors";
@@ -28,6 +24,7 @@ import { SIGN_OUT_PATH } from "@/lib/sign-out";
 import { postSessionMessage } from "@/lib/session-channel";
 import { AuthHeading, InlineNotice } from "@/features/auth/auth-screen";
 import { newPasswordSchema } from "@/components/forms/password-schema";
+import { usePasswordLength } from "@/components/forms/use-password-length";
 import { useFragmentToken } from "@/features/auth/use-fragment-token";
 
 // /invite#token=… (FE-9, APP_FLOW 5.7, DESIGN_BRIEF 7.4): who is inviting the
@@ -218,6 +215,7 @@ function InviteForm({
 }) {
   const t = useTranslations("auth.invite");
   const tPassword = useTranslations("auth.password");
+  const length = usePasswordLength();
   const errorText = useErrorText();
   const rulesId = useId();
   const needsPassword = !invite.has_password;
@@ -232,10 +230,14 @@ function InviteForm({
           .trim()
           .max(100, { error: t("nameTooLong") }),
         password: needsPassword
-          ? newPasswordSchema({
-              tooShort: tPassword("tooShort", { min: PASSWORD_MIN_LENGTH }),
-              tooLong: tPassword("tooLong", { max: PASSWORD_MAX_LENGTH }),
-            })
+          ? newPasswordSchema(
+              {
+                tooShort: tPassword("tooShort", { min: length.min }),
+                tooLong: tPassword("tooLong", { max: length.max }),
+              },
+              length.min,
+              length.max,
+            )
           : z.string(),
       }),
     ),
@@ -322,7 +324,12 @@ function InviteForm({
                 />
               )}
             />
-            <PasswordRules id={rulesId} value={password} />
+            <PasswordRules
+              id={rulesId}
+              value={password}
+              min={length.min}
+              max={length.max}
+            />
           </>
         )}
         {!needsPassword && <InlineNotice>{t("existingAccount")}</InlineNotice>}

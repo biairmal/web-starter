@@ -13,10 +13,6 @@ import { PasswordRules } from "@/components/forms/password-rules";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Input } from "@/components/ui/input";
 import { brand } from "@/config/brand";
-import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-} from "@/config/password-policy";
 import { applyServerErrors } from "@/lib/api/apply-server-errors";
 import { bffPost } from "@/lib/api/bff-fetch";
 import { isApiError } from "@/lib/api/errors";
@@ -26,6 +22,7 @@ import { hardNavigate } from "@/lib/hard-navigate";
 import { AuthHeading, useErrorToast } from "@/features/auth/auth-screen";
 import { rememberSignUpEmail } from "@/features/auth/check-email-store";
 import { newPasswordSchema } from "@/components/forms/password-schema";
+import { passwordLength } from "@/components/forms/use-password-length";
 import { useAuthConfig } from "@/features/auth/use-auth-config";
 
 // Sign-up (FE-4, APP_FLOW 5.4, DESIGN_BRIEF 7.2). Identity answers 202 for a
@@ -50,6 +47,7 @@ export function SignUpForm({ initialConfig }: { initialConfig: AuthConfig }) {
   const tPassword = useTranslations("auth.password");
   const router = useRouter();
   const config = useAuthConfig(initialConfig);
+  const length = passwordLength(config);
   const multi = config.tenancy === "multi";
   const errorText = useErrorText();
   const errorToast = useErrorToast();
@@ -66,10 +64,14 @@ export function SignUpForm({ initialConfig }: { initialConfig: AuthConfig }) {
       .string()
       .trim()
       .pipe(z.email({ error: t("emailInvalid") })),
-    password: newPasswordSchema({
-      tooShort: tPassword("tooShort", { min: PASSWORD_MIN_LENGTH }),
-      tooLong: tPassword("tooLong", { max: PASSWORD_MAX_LENGTH }),
-    }),
+    password: newPasswordSchema(
+      {
+        tooShort: tPassword("tooShort", { min: length.min }),
+        tooLong: tPassword("tooLong", { max: length.max }),
+      },
+      length.min,
+      length.max,
+    ),
     tenant: multi
       ? z
           .string()
@@ -197,7 +199,12 @@ export function SignUpForm({ initialConfig }: { initialConfig: AuthConfig }) {
             />
           )}
         />
-        <PasswordRules id={rulesId} value={password} />
+        <PasswordRules
+          id={rulesId}
+          value={password}
+          min={length.min}
+          max={length.max}
+        />
 
         <FormErrorSummary invalidCount={errorCount} message={message} />
         <SubmitButton
